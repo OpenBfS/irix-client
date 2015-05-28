@@ -2,10 +2,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.bfs</groupId>
-    <artifactId>print</artifactId>
+    <artifactId>irix-client</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>print Maven Webapp</name>
+    <name>Application to create IRIX reports with map attachments</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
