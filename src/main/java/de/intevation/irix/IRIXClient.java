@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.GregorianCalendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.UUID;
 import java.math.BigInteger;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -46,11 +49,18 @@ import org.iaea._2012.irix.format.annexes.FileEnclosureType;
 import org.iaea._2012.irix.format.annexes.FileHashType;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 public class IRIXClient extends HttpServlet
 {
     private static Logger log = Logger.getLogger(IRIXClient.class);
+
+    /** The name of the json array containing the print descriptions. */
+    private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
+
+    /** The name of the json object containing the irix information. */
+    private static final String IRIX_DATA_KEY = "irix";
 
     private ObjectFactory mObjFactory;
 
@@ -78,23 +88,45 @@ public class IRIXClient extends HttpServlet
         }
     }
 
-    protected ReportType prepareReport() {
+    /** Prepare the IRIX report to take the PDF attachments.
+     *
+     * The irix information is taken from the Object specified
+     * by the IRIX_DATA_KEY name.
+     *
+     * @param jsonObject The full jsonObject of the request.
+     */
+    protected ReportType prepareReport(JSONObject jsonObject)
+        throws JSONException {
         ReportType report = mObjFactory.createReportType();
+        JSONObject idObj = jsonObject.getJSONObject(IRIX_DATA_KEY).getJSONObject("Identification");
 
         // Setup identification
         IdentificationType identification = new IdentificationType();
-        identification.setOrganisationReporting("Dummy Value");
+        identification.setOrganisationReporting(idObj.getString("OrganisationReporting"));
         identification.setDateAndTimeOfCreation(getXMLGregorianNow());
-        identification.setSequenceNumber(new BigInteger("42"));
-        identification.setReportUUID("Dummy Value");
+        if (idObj.has("SequenceNumber")) {
+            identification.setSequenceNumber(new BigInteger(idObj.getString("SequenceNumber")));
+        }
+        identification.setReportUUID(UUID.randomUUID().toString());
 
         // Setup identifications in identification
         IdentificationsType identifications = new IdentificationsType();
         identification.setIdentifications(identifications);
 
         // TODO setPersonContactInfo and organizationcontactinfo
-        identification.setReportContext(ReportContextType.fromValue("Test"));
+        identification.setReportContext(ReportContextType.fromValue(
+                idObj.getString("ReportContext")));
         report.setIdentification(identification);
+        AnnexesType annex = new AnnexesType();
+        report.setAnnexes(annex);
+
+        // Add an annoation
+        //AnnotationType annotation = new AnnotationType();
+        //annotation.setText("Some text here.");
+        //annotation.setTitle("The title of this annotation");
+        //annex.getAnnotation().add(annotation);
+
+
         return report;
     }
 
@@ -141,9 +173,20 @@ public class IRIXClient extends HttpServlet
         }
         return retval;
     }
-    protected String getPrintSpec(JSONObject jsonObject) {
-        // TODO this will be more complicated in reality.
-        return jsonObject.toString();
+
+    /** Obtain all the print specs in the JSON reques . */
+    protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
+        List <JSONObject> retval = new ArrayList<JSONObject>();
+        try {
+            JSONArray mapfishPrintList = jsonObject.getJSONArray(PRINT_JOB_LIST_KEY);
+            for (int i = 0; i < mapfishPrintList.length(); i++) {
+                JSONObject jobDesc = mapfishPrintList.getJSONObject(i);
+                retval.add(jobDesc);
+            }
+        } catch (JSONException e) {
+            log.warn("Request did not contain valid json: " + e.getMessage());
+        }
+        return retval;
     }
 
     /** Wrapper to wirte an error message as response. */
@@ -158,14 +201,7 @@ public class IRIXClient extends HttpServlet
     }
 
     /** Attach a pdf as Annex on a ReportType object */
-    public void attachPDF(byte[] pdf, ReportType report) {
-        AnnexesType annex = new AnnexesType();
-
-        // Add an annoation
-        //AnnotationType annotation = new AnnotationType();
-        //annotation.setText("Some text here.");
-        //annotation.setTitle("The title of this annotation");
-        //annex.getAnnotation().add(annotation);
+    public void attachPDF(String title, byte[] pdf, ReportType report) {
 
         // Hashsum, algo should probably be configurable.
         FileHashType hash = new FileHashType();
@@ -180,14 +216,12 @@ public class IRIXClient extends HttpServlet
 
         // Add the acutal file
         FileEnclosureType file = new FileEnclosureType();
-        file.setTitle("Dummy value");
+        file.setTitle(title);
         file.setMimeType("application/pdf");
         file.setFileSize(pdf.length);
         file.setFileHash(hash);
         file.setEnclosedObject(pdf);
-        annex.getFileEnclosure().add(file);
-
-        report.setAnnexes(annex);
+        report.getAnnexes().getFileEnclosure().add(file);
     }
 
     public void doPost(HttpServletRequest request,
@@ -200,22 +234,35 @@ public class IRIXClient extends HttpServlet
             return;
         }
 
-        String printSpec = getPrintSpec(jsonObject);
-        if (printSpec == null) {
-            writeError("Could not extract print spec from request", response);
+        List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
+        if (printSpecs.isEmpty()) {
+            writeError("Could not extract any print specs from request", response);
             return;
         }
 
-        byte[] pdfContent = PrintClient.getPDF(mPrintUrl, printSpec);
-
-        if (pdfContent == null) {
-            writeError("Failed to print requested spec.", response);
+        ReportType report = null;
+        try {
+            report = prepareReport(jsonObject);
+        } catch (JSONException e) {
+            writeError("Failed to IRIX information: "+ e.getMessage(), response);
             return;
         }
 
-        ReportType report = prepareReport();
+        for (JSONObject spec: printSpecs) {
+            byte[] pdfContent = PrintClient.getPDF(mPrintUrl, spec.toString());
+            String title = null;
+            try {
+                title = spec.getJSONObject("attributes").getString("title");
+            } catch (JSONException e) {
+                writeError("Failed to parse print sepc: "+ e.getMessage(), response);
+            }
 
-        attachPDF(pdfContent, report);
+            if (pdfContent == null) {
+                writeError("Failed to print requested spec: ", response);
+                return;
+            }
+            attachPDF(title, pdfContent, report);
+        }
 
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ReportType.class);
