@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	$Id: ResponseActions.xsd 7879 2013-03-31 20:52:07Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:resp="http://www.iaea.org/2012/IRIX/Format/ResponseActions"
+	xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base"
+	xmlns:html="http://www.w3.org/1999/xhtml" 
+	targetNamespace="http://www.iaea.org/2012/IRIX/Format/ResponseActions" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd" />
+
+	<xsd:element name="ResponseActions" type="resp:ResponseActionsType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A report section with structured and free text information on protective actions, 
+				taken or planned, in response to an event.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="ResponseActionsType">
+		<xsd:complexContent>
+			<xsd:extension base="base:InformationBlock">
+				<xsd:sequence>
+					<xsd:element name="ProtectiveActions" type="resp:ProtectiveActionsType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on protective actions taken/planned.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DescriptionOfActions" type="base:FreeTextType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Free text description of actions taken/planned in response to an event.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ProtectiveActionsType">
+		<xsd:sequence>
+			<xsd:element name="ProtectiveActionsTakenOrPlanned" type="base:YesNoType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether protective actions have been taken or are planned. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ProtectiveAction" type="resp:ProtectiveActionType"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on a specific type of protective action taken or planned.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ProtectiveActionType">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element name="TypeOfAction" type="resp:TypeOfProtectiveActionType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Type of protective action.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="TypeOfActionDescription" type="base:ShortStringType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Type of protective action. (free text)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="Status" type="resp:StatusType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Status of the protective action.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="StartTime" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Date and time protective action is ordered. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EndTime" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time protective action is cancelled/lifted.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice minOccurs="0">
+				<xsd:element name="AreaSector" type="resp:AreaSectorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Geographical sector within which the protective action is
+							applied. 
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="AreaDescription" type="base:FreeTextType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Free text description of the area in which the protective
+							action is applied.
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="FurthestDistance" type="base:LengthType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Furthest distance from the event location to which the 
+							protective action is applied (m).
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="CountriesAffected" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						List of countries affected by the protective action (if different from the
+						country ordering the protective action).
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:list itemType="base:CountryType" />
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Free text description of the protective action.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="AreaSectorType">
+		<xsd:sequence>
+			<xsd:element name="FromAngle" type="base:AngleType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Start angle of sector (degrees from North).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TillAngle" type="base:AngleType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Stop angle of sector (degrees from North).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="InnerRadius" type="base:LengthType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Inner radius of sector (m).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OuterRadius" type="base:LengthType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Outer radius of sector (m).
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:simpleType name="TypeOfProtectiveActionType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Stable Iodine Prophylaxis"/>
+			<xsd:enumeration value="Sheltering"/>
+			<xsd:enumeration value="Evacuation"/>
+			<xsd:enumeration value="Food Restrictions"/>
+			<xsd:enumeration value="Restriction on Water Use"/>
+			<xsd:enumeration value="Access Restrictions"/>
+			<xsd:enumeration value="Urgent Decontamination"/>
+			<xsd:enumeration value="Registration for Follow-Up"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="StatusType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Under Consideration"/>
+			<xsd:enumeration value="Planned"/>
+			<xsd:enumeration value="Ordered"/>
+			<xsd:enumeration value="Initiated"/>
+			<xsd:enumeration value="Taken"/>
+			<xsd:enumeration value="Withdrawn"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>

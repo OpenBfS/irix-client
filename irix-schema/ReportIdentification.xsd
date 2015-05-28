@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	$Id: ReportIdentification.xsd 7876 2013-03-31 07:46:12Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:id="http://www.iaea.org/2012/IRIX/Format/Identification"
+	xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base" 
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	targetNamespace="http://www.iaea.org/2012/IRIX/Format/Identification" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd" />
+	
+	<xsd:include schemaLocation="Confidentialities.xsd"/>
+	
+	<xsd:element name="Identification" type="id:IdentificationType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<html:p>
+					A mandatory report section with information about the report, e.g. sending organisation, date/time of creation, report ID etc.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:unique name="EventIdentifications">
+			<xsd:selector xpath="id:EventIdentifications/id:EventIdentification" />
+			<xsd:field xpath="@Organisation" />
+		</xsd:unique>
+		<xsd:keyref name="OrganisationIdentificationReferer" refer="id:OrganisationIdentification">
+			<xsd:selector xpath="id:OrganisationReporting" />
+			<xsd:field xpath="." />
+		</xsd:keyref>
+		<xsd:key name="OrganisationIdentification">
+			<xsd:selector xpath="id:Identifications/base:OrganisationContactInfo" />
+			<xsd:field xpath="base:OrganisationID" />
+		</xsd:key>
+	</xsd:element>
+	
+	<xsd:complexType name="IdentificationType">
+		<xsd:sequence>
+			<xsd:element name="OrganisationReporting" type="base:OrganisationIdentifierType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						<html:p>
+							Identifier (domain name) of the organisation issuing this report.
+						</html:p>
+						<html:p class="note">
+							The string must have the format of an internet domain name, but need not be a registered domain name on the internet.
+						</html:p>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DateAndTimeOfCreation" type="base:DateTimeType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time at which this report was created.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ReportContext" type="id:ReportContextType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The type of "context" in which this report was created. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SequenceNumber" type="xsd:positiveInteger"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						<html:p>
+							Sequence number of this report.
+						</html:p>
+						<html:p class="note">
+							The sequence number indicates the order of the report within a series of 
+							reports issued by an organisation in connection with a particular event. 
+							Normally "1" for the initial report.
+						</html:p>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ReportUUID" type="base:UUIDType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						<html:p>
+							Unique identifier of this report.
+						</html:p>
+						<html:p class="note">
+							The identifier is to be understood to be an identifier 
+							for the set of information contained in the report, independent of 
+							the format/representation in which the information is provided.
+						</html:p>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Follows" type="base:UUIDType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Reference to the unique identifier (ReportUUID) of a previous report, 
+						for which this report provides the next update.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Revokes" type="base:UUIDType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Reference to the unique identifier (ReportUUID) of a previous report
+						which is being revoked/replaced by this report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Confidentiality" type="id:ConfidentialityType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Confidentiality of the information contained in this report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Addressees" type="id:AddresseesType" 
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						List of organisations to which this report is addressed.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ReportingBases" type="id:ReportingBasesType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						List of reporting requirements under which this report is issued.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ContactPerson" type="base:PersonIdentifierType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Identifier of a contact person for this report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AdditionalInformationURL" type="xsd:anyURI"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Web address of web site on which additional information is made available.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EventIdentifications" type="id:EventIdentificationsType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						<html:p>
+							List of event identifiers for the events with which this report is associated.
+						</html:p>
+						<html:p class="note">
+							The list may include both the event identifier assigned by the reporting organisation and
+							event identifiers assigned by other organisations as known to the reporting organisation.
+						</html:p>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Identifications" type="id:IdentificationsType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						List of contact information for the reporting organisation, for any addressed organisations, 
+						and for the contact person for this report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="skip">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional report header information. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:any>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="IdentificationsType">
+		<xsd:sequence>
+			<xsd:element ref="base:PersonContactInfo"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contact information of the contact person for this report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="base:OrganisationContactInfo"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contact information of the reporting organisation, and any addressed organisations, of this report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>	
+	
+	<xsd:complexType name="EventIdentificationsType">
+		<xsd:sequence>
+			<xsd:element name="EventIdentification" type="id:EventIdentificationType"
+				maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Identifier of an event with which this report is associated.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="EventIdentificationType">
+		<xsd:simpleContent>
+			<xsd:extension base="id:EventIdentificationStringType">
+				<xsd:attribute name="Organisation" type="base:OrganisationIdentifierType"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Identifier of the organisation to which the event identifier belongs 
+							(if different from the reporting organisation).
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="AddresseesType">
+		<xsd:sequence>
+			<xsd:element name="Addressee" type="base:OrganisationIdentifierType"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Identifier of an organisation to which this report is addressed.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>			
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ReportingBasesType">
+		<xsd:sequence>
+			<xsd:element name="ReportingBasis" type="id:ReportingBasisType"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en"> 						
+						Descriptor of a reporting requirement under which this report is issued.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="EventIdentificationStringType">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="255"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="ReportContextType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Emergency"/>
+			<xsd:enumeration value="Routine"/>
+			<xsd:enumeration value="Exercise"/>
+			<xsd:enumeration value="Test"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="ReportingBasisType">
+		<xsd:restriction base="xsd:token">
+			<xsd:annotation>
+				<xsd:documentation>
+					<!-- suggested enumerations -->
+					<xsd:enumeration value="Convention on Early Notification of a Nuclear Accident, Article 2"/>
+					<xsd:enumeration value="IAEA Safety Requirement GS-R-2, Notification of &quot;Transnational Emergency&quot;"/>
+					<xsd:enumeration value="EU Council Decision 87/600/EURATOM"/>
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>

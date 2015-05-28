@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- 
+    $Id: Annexes.xsd 7876 2013-03-31 07:46:12Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:annex="http://www.iaea.org/2012/IRIX/Format/Annexes"
+	xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base" 
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+	targetNamespace="http://www.iaea.org/2012/IRIX/Format/Annexes" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd" />
+	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd" />
+
+	<xsd:include schemaLocation="Confidentialities.xsd"/>
+	
+	<xsd:element name="Annexes" type="annex:AnnexesType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<html:p>
+					A report section with annexes included in the report. 
+				</html:p>
+				<html:p>
+					Annexes may be of the following types:
+					<html:ul>
+						<html:li>
+							<em>Annotations</em>, i.e. additional free text information or remarks relating to the content of the report.
+						</html:li>
+						<html:li>
+							<em>Enclosed files</em> with additional relevant information.
+						</html:li>
+						<html:li>
+							<em>Digital signatures</em> for verifying the authenticity and integrity of the report.
+						</html:li>
+					</html:ul>				
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="AnnexesType">
+		<xsd:sequence>
+			<xsd:element name="Annotation" type="annex:AnnotationType" 
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains an annotation, i.e. a free formatted HTML text with 
+						additional information to the report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FileEnclosure" type="annex:FileEnclosureType" 
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains a file attached to the report and associated meta information.
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:element>
+			<xsd:element ref="ds:Signature"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains a digital signature over the report. 
+					</xsd:documentation>
+					<xsd:documentation xml:lang="en">
+						The signature must be an enveloped XML Signature taken over the whole report,
+						optionally excluding any other signatures included.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>					
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="FileEnclosureType">
+		<xsd:sequence>
+			<xsd:element name="Title" type="xsd:token">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Title of the enclosed file.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="InformationCategory" type="annex:InformationCategoryType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Type of information contained in the enclosed file.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InformationCategoryDescription" type="base:ShortStringType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Type of information contained in the enclosed file. (free text)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="AuthorOrganisation" type="base:OrganisationIdentifierType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The organisation that authored the enclosed file. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Confidentiality" type="annex:ConfidentialityType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Confidentiality of the enclosed file.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ValidAt" type="base:DateTimeType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time at which the information contained in the file is/was valid.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Language" type="xsd:language" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Language of the content of the enclosed file (see RFC 3066).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Free text description of the content of the enclosed file.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FileName" type="xsd:token"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						File name (without path information).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FileDateAndTime" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						File date and time.
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:element>
+			<xsd:element name="MimeType" type="xsd:token">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Mime type of enclosed file. The value should be a valid content-type as
+						specified in RFC2045, paragraph 5.1, excluding the "Content-type" string.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FileSize" type="xsd:long">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Size of enclosed file (bytes).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>			
+			<xsd:element name="FileHash" type="annex:FileHashType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						SHA-1 digest value (fingerprint) of enclosed file, 
+						allowing efficient identification of identical copies of the enclosed file.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:any namespace="##other" processContents="skip" minOccurs="0"  maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional meta data associated with the file.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:any>
+			<xsd:element name="EnclosedObject" type="xsd:base64Binary">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Base64 encoded file object.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="AnnotationType">
+		<xsd:sequence>
+			<xsd:element name="Title" type="xsd:token" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The annotation title.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Meta data associated with the annotation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:any>
+			<xsd:element name="Text" type="base:FreeTextType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The annotation body text.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="FileHashType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:hexBinary">
+				<xsd:attribute name="Algorithm" use="required" fixed="SHA-1"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="InformationCategoryType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Event Information"/>
+			<xsd:enumeration value="Installation Status Information"/>
+			<xsd:enumeration value="Release Information"/>
+			<xsd:enumeration value="Meteorological Information"/>
+			<xsd:enumeration value="Measurement Data"/>
+			<xsd:enumeration value="Protective Actions Information"/>
+			<xsd:enumeration value="Response Information"/>
+			<xsd:enumeration value="Public Information"/>
+			<xsd:enumeration value="Public Information - Press Release"/>
+			<xsd:enumeration value="Modelling Results"/>
+			<xsd:enumeration value="Modelling Results - Averted Dose"/>
+			<xsd:enumeration value="Modelling Results - Cloud Arrival Time"/>
+			<xsd:enumeration value="Modelling Results - Contamination"/>
+			<xsd:enumeration value="Modelling Results - Dispersion"/>
+			<xsd:enumeration value="Modelling Results - Dose Rate"/>
+			<xsd:enumeration value="Modelling Results - Projected Dose"/>
+			<xsd:enumeration value="Modelling Results - Plume Trajectory"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>

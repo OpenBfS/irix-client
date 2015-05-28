@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	$Id: EventInformation.xsd 7876 2013-03-31 07:46:12Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:event="http://www.iaea.org/2012/IRIX/Format/EventInformation"
+	xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base"
+	xmlns:loc="http://www.iaea.org/2012/IRIX/Format/Locations" 
+	xmlns:html="http://www.w3.org/1999/xhtml" 
+	targetNamespace="http://www.iaea.org/2012/IRIX/Format/EventInformation"
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+
+	<xsd:include schemaLocation="Nuclides.xsd"/>
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd" />
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Locations" schemaLocation="Locations.xsd" />
+
+	<xsd:element name="EventInformation" type="event:EventInformationType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A report section with structured information about an event, including basic
+				information such as date and time of occurrence, location, object involved etc.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="EventInformationType">
+		<xsd:complexContent>
+			<xsd:extension base="base:InformationBlock">
+				<xsd:sequence>
+					<xsd:element name="TypeOfEvent" type="event:TypeOfEventType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								The type of event.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="TypeOfEventDescription" type="base:ShortStringType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								The type of event. (free text)
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DateAndTimeOfEvent" type="event:DateAndTimeOfEventType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								The date and time of occurrence of the event.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element ref="loc:Location">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								<html:p>
+									Contains information on the location of the event. 
+									For events involving a fixed object (e.g. an installation) 
+									the location can also be provided under ObjectInvolved.
+								</html:p>
+								<html:p class="note">
+									For the structure of this element, see Locations section.
+								</html:p>
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ObjectInvolved" type="event:ObjectInvolvedType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on the object involved in the event (installation, source etc).
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EmergencyClassification" type="event:EmergencyClassificationType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on the emergency class declared at the installation involved, if applicable.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PlantStatus" type="event:PlantStatusType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on the current status of the installation/plant.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="INESClassification" type="event:INESClassificationType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on the INES rating issued for the event.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EventDescription" type="base:FreeTextType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								A summary description / brief status report on the event.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="DateAndTimeOfEventType">
+		<xsd:simpleContent>
+			<xsd:extension base="base:DateTimeType">
+				<xsd:attribute name="IsEstimate" type="base:YesNoType" use="optional">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Optional indicator for whether the specified date and time of the
+							event is only an estimate.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="ObjectInvolvedType">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element name="TypeOfObjectOrActivity" type="event:TypeOfObjectOrActivityType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							The type of object or activity involved.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="TypeOfObjectOrActivityDescription" type="base:ShortStringType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							The type of object or activity involved. (free text) 
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="Name" type="xsd:token">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Name of the object (e.g. installation, source etc) involved.      		
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="loc:Location" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						<html:p>
+							Contains information on the location of the object (e.g. installation, source etc) involved.
+						</html:p>
+						<html:p class="note">
+							For the structure of this element, see Locations section.
+						</html:p>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SourceCharacteristics" type="event:RadioactiveSourcesType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on any radioactive sources involved.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ReactorCharacteristics" type="event:ReactorCharacteristicsType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the reactor involved, if applicable.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about the object (e.g. installation, source etc) involved.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReactorCharacteristicsType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0">
+				<xsd:element name="TypeOfReactor" type="event:TypeOfReactorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							The type of the reactor involved.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="TypeOfReactorDescription" type="base:ShortStringType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							The type of the reactor involved. (free text)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>				
+			</xsd:choice>
+			<xsd:element name="ThermalPower" type="event:PowerUnitType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The thermal power of the reactor (MW).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ElectricalPower" type="event:PowerUnitType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The electrical power of the reactor (MW).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about the type or characteristics of the reactor involved.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="PowerUnitType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:decimal">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="MW" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="RadioactiveSourcesType">
+		<xsd:sequence>
+			<xsd:element name="Source" type="event:RadioactiveSourceType" minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on a radioactive source involved.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="RadioactiveSourceType">
+		<xsd:sequence>
+			<xsd:element name="Sealed" type="base:YesNoUnknownType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Flag indicating whether the source is sealed.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Shielded" type="base:YesNoUnknownType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Flag indicating whether the source is shielded.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Nuclides" type="event:RadioactiveSourceNuclidesType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains a list of nuclides that the source contains, along with
+						their activity. The activity can be given per
+						nuclide or per group of nuclides.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about the radioactive source involved.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="RadioactiveSourceNuclidesType">
+		<xsd:sequence>
+			<xsd:element name="Nuclide" type="event:RadioactiveSourceNuclideType" minOccurs="1"
+				maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the activity of a nuclide / nuclide combination contained in the source.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="RadioactiveSourceNuclideType">
+		<xsd:sequence>
+			<xsd:element ref="event:NuclideInfo">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Nuclide(s) contained in the source.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Activity" type="event:ActivityType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Activity (Bq) of the nuclide contained in the source.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ReferenceDateAndTime" type="xsd:dateTime"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time at which the activity specified is/was valid.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ActivityType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:float">
+				<xsd:attribute name="Unit" type="xsd:token" fixed="Bq"
+					use="required" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="PlantStatusType">
+		<xsd:sequence>
+			<xsd:element name="CoreState" type="event:CoreStateType" 
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the status of the reactor core, if applicable.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SpentFuelState" type="base:FreeTextType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Free text description of the status of spent fuel, if applicable.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TrendInConditions" type="event:TrendType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The trend in the conditions at the plant.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about the current status at the plant.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CoreStateType">
+		<xsd:sequence>
+			<xsd:element name="Criticality" type="event:CriticalityType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information about criticality of the reactor.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SevereDamageToFuel" type="event:SevereDamageToFuelType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on actual or potential severe damage to fuel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about the status of the reactor core.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="SevereDamageToFuelType">
+		<xsd:sequence>
+			<xsd:element name="Occurrence" type="event:SevereDamageToFuelOccurrenceType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether severe damage to fuel has occurred or is likely to occur.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TimeOfOccurrence" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time of actual or projected occurrence of severe damage to fuel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CriticalityType">
+		<xsd:sequence>
+			<xsd:element name="Status" type="event:CriticalityStatusValueType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Status of criticality. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="StoppedAt" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time at which criticality stopped or is projected to stop.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="INESClassificationType">
+		<xsd:sequence>
+			<xsd:element name="INESLevel" type="event:INESValueType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The INES level assigned to the event.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="StatusOfClassification" type="event:INESStatusType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Status of the INES rating: 'Provisional' or 'Final'.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DateAndTimeOfClassification" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The date and time at which the INES rating was issued.		
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BasisForClassification" type="base:FreeTextType" 
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Free text description of the basis/justification of the INES rating.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="EmergencyClassificationType">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element name="EmergencyClass"
+					type="event:EmergencyClassValueType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Emergency class declared (as per IAEA Safety Standard "GS-R-2").
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="EmergencyClassDescription" type="base:ShortStringType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Emergency class declared. (free text)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="DateAndTimeOfDeclaration" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Date and time at which the emergency class was declared.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BasisForDeclaration" type="base:FreeTextType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Free text description of the basis for the declaration of the emergency class.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="TypeOfEventType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Nuclear Installation Event"/>
+			<xsd:enumeration value="Missing Dangerous Source"/>
+			<xsd:enumeration value="Discovered Dangerous Source"/>
+			<xsd:enumeration value="Space Object Re-entry"/>
+			<xsd:enumeration value="Elevated Ambient Radiation Levels"/>
+			<xsd:enumeration value="Contamination in Food / Drinking Water"/>
+			<xsd:enumeration value="Contamination in Commodities"/>
+			<xsd:enumeration value="Severe Overexposure"/>
+			<xsd:enumeration value="Transport Event"/>
+			<xsd:enumeration value="Credible Threat"/>
+			<xsd:enumeration value="Malicious Act"/>
+			<xsd:enumeration value="Other"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="TypeOfObjectOrActivityType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Nuclear Power Plant"/>
+			<xsd:enumeration value="Fuel Fabrication"/>
+			<xsd:enumeration value="Enrichment"/>
+			<xsd:enumeration value="Spent Fuel Storage"/>
+			<xsd:enumeration value="Spent Fuel Transport"/>
+			<xsd:enumeration value="Fuel Reprocessing"/>
+			<xsd:enumeration value="Research Reactor"/>
+			<xsd:enumeration value="Marine Reactor"/>
+			<xsd:enumeration value="Manufacture of Radioisotopes"/>
+			<xsd:enumeration value="Waste Treatment"/>
+			<xsd:enumeration value="Irradiation Facility"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="TypeOfReactorType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="PWR"/>
+			<xsd:enumeration value="BWR"/>
+			<xsd:enumeration value="AGR"/>
+			<xsd:enumeration value="VVER"/>
+			<xsd:enumeration value="RBMK"/>
+			<xsd:enumeration value="Candu"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="SevereDamageToFuelOccurrenceType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Has Not Occurred, and Unlikely to Occur"/>
+			<xsd:enumeration value="Has Not Occurred, but Likely to Occur"/>
+			<xsd:enumeration value="Has Occurred"/>
+			<xsd:enumeration value="Unknown"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="TrendType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Getting Better"/>
+			<xsd:enumeration value="Stable"/>
+			<xsd:enumeration value="Getting Worse"/>
+			<xsd:enumeration value="Unknown"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="CriticalityStatusValueType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Stopped"/>
+			<xsd:enumeration value="Continuing"/>
+			<xsd:enumeration value="Unknown"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="EmergencyClassValueType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="General Emergency"/>
+			<xsd:enumeration value="Site Area Emergency"/>
+			<xsd:enumeration value="Facility Emergency"/>
+			<xsd:enumeration value="Alert"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="INESValueType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="INES-0"/>
+			<xsd:enumeration value="INES-1"/>
+			<xsd:enumeration value="INES-2"/>
+			<xsd:enumeration value="INES-3"/>
+			<xsd:enumeration value="INES-4"/>
+			<xsd:enumeration value="INES-5"/>
+			<xsd:enumeration value="INES-6"/>
+			<xsd:enumeration value="INES-7"/>
+			<xsd:enumeration value="Not Applicable"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="INESStatusType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Provisional" />
+			<xsd:enumeration value="Final" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>

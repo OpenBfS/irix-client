@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: ReleaseInformation.xsd 7876 2013-03-31 07:46:12Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:release="http://www.iaea.org/2012/IRIX/Format/ReleaseInformation" 
+	xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	targetNamespace="http://www.iaea.org/2012/IRIX/Format/ReleaseInformation" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd" />
+
+	<xsd:include schemaLocation="Nuclides.xsd"/>
+	
+	<xsd:element name="Release" type="release:ReleaseType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A report section with structured information about radioactive release, including general information about 
+				the occurrence of a release, and more specific information on actual or projected release phases.				
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="ReleaseType">
+		<xsd:complexContent>
+			<xsd:extension base="base:InformationBlock">
+				<xsd:sequence>
+					<xsd:element name="ReleaseOccurrence" type="release:ReleaseOccurrenceType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains general information on the occurrence of a release, to air, water or both.
+				            </xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ReleaseToAir" type="release:ReleaseToAirType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on specific releases to the atmosphere.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ReleaseToWater" type="release:ReleaseToWaterType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">
+								Contains information on specific releases to water.
+							</xsd:documentation>
+						</xsd:annotation>						
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReleaseOccurrenceType">
+		<xsd:sequence>
+			<xsd:element name="ActualRelease" type="release:ActualReleaseType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains general information on the occurrence of an actual release,
+						either to air, water or both.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FutureRelease" type="release:FutureReleaseType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains general information on the likely occurrence of a future release, 
+						either to air, water or both.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ActualReleaseType">
+		<xsd:sequence>
+			<xsd:element name="Occurrence" type="release:ActualReleaseValueType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Indicates whether an actual release has occurred or not.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Compartment" type="release:CompartmentType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Indicates whether the release is/was to air, water or both.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about actual release.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="FutureReleaseType">
+		<xsd:sequence>
+			<xsd:element name="Occurrence" type="release:FutureReleaseValueType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Indicates whether a future release is likely to occur or not.
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:element>
+			<xsd:element name="Compartment" type="release:CompartmentType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Indicates whether a likely release will be to air, water or both.
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information about projected release.
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReleaseToAirType">
+		<xsd:sequence>
+			<xsd:element name="ReleasePhases" type="release:ReleaseToAirPhasesType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on a release to air.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReleaseToAirPhasesType">
+		<xsd:sequence>
+			<xsd:element name="ReleasePhase" type="release:ReleaseToAirPhaseType"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on a release to air.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReleaseToWaterType">
+		<xsd:sequence>
+			<xsd:element name="ReleasePhases" type="release:ReleaseToWaterPhasesType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on a release to water.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReleaseToWaterPhasesType">
+		<xsd:sequence>
+			<xsd:element name="ReleasePhase" type="release:ReleaseToWaterPhaseType"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on a release to water.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ReleaseToAirPhaseType">
+		<xsd:sequence>
+			<xsd:element name="Occurrence" type="release:ReleasePhaseOccurrenceType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether the release has actually occurred or is projected to occur.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TimeOfRelease" type="release:TimeOfReleaseType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Start and end time of the release (actual or projected).
+            		</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice minOccurs="0">
+				<xsd:element name="ReleaseRoute" type="release:ReleaseRouteType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Release route to atmosphere.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="ReleaseRouteDescription" type="base:ShortStringType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Release route to atmosphere. (free text)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="ReleaseHeight" type="release:ReleaseHeightType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Height of the release.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="HeatEmission" type="release:HeatEmissionType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on emission of heat accompanying the release. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TypeOfRelease" type="release:TypeOfReleaseType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Form of nuclides released.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="NuclideReleases" type="release:NuclideReleasesType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the amount of radioactivity released in the release phase, 
+						provided by nuclide, list or combination of nuclides.
+            		</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RelativeIodineFractions" type="release:RelativeIodineFractionsType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the relative iodine
+						fractions in the release.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ChemicalHealthEffects" type="base:YesNoUnknownType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether the released material 
+						is chemically toxic.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PlumeCharacteristics" type="release:PlumeCharacteristicsType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on actual/observed or projected plume characteristics, 
+						e.g. transport speed and direction.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information relating to this release phase.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ReleaseToWaterPhaseType">
+		<xsd:sequence>
+			<xsd:element name="Occurrence" type="release:ReleasePhaseOccurrenceType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether the release has actually occurred or is projected to occur.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TimeOfRelease" type="release:TimeOfReleaseType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Start and end time of the release (actual or projected).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AffectedWaterBody" type="xsd:token">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Name of water body into which the release occurs.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="NuclideReleases" type="release:NuclideReleasesType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the amount of radioactivity released in the release phase, 
+						provided by nuclide, list or combination of nuclides.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ChemicalHealthEffects" type="base:YesNoUnknownType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether the released material 
+						is chemically toxic.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="base:FreeTextType" 
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional free text information relating to this release phase.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="TimeOfReleaseType">
+		<xsd:sequence>
+			<xsd:element name="StartTime" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Start time of the release (actual or projected).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EndTime" type="base:DateTimeType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						End time of the release (actual or projected).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ReleaseHeightType">
+		<xsd:sequence>
+			<xsd:element name="Base" type="base:LengthType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Base height of the release (m), i.e. 
+						the height above ground level at which the release occurs
+						(commonly referred to as "release height").
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Top" type="base:LengthType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Top height of the release (m), i.e. 
+						maximum height above ground level reached by the plume.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Effective" type="base:LengthType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Effective release height (m), i.e. 
+						the height above the ground at which the plume centre line becomes
+						essentially level and in buoyancy equilibrium with the
+						environment (commonly referred to as "effective release height", 
+						"effective stack height" or "effective plume height").
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="HeatEmissionType">
+		<xsd:sequence>
+			<xsd:element name="SignificantEmissionOfHeat"
+				type="base:YesNoUnknownType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Indicates whether the release is accompanied by a
+						significant emission of heat.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="HeatEmissionRate" type="release:HeatEmissionRateType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Rate of heat emission (MW).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AreaOfHeatEmission" type="release:AreaOfHeatEmissionType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Area of heat emission (m2).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="NuclideReleasesType">
+		<xsd:sequence>
+			<xsd:element name="NuclideRelease" type="release:NuclideReleaseType"
+				minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Contains information on the amount of radioactivity released in the 
+						release phase for a specified
+						nuclide or list or combination of nuclides. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="NuclideReleaseType">
+		<xsd:sequence>
+			<xsd:element ref="release:NuclideInfo">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						A nuclide, a list or a combination of nuclides,
+						specified using a pre-defined value or a free text description.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Activity" type="release:ReleaseAmountType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The amount of activity released (Bq).
+            	</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:sequence>
+				<xsd:element name="MethodOfDetermination" type="release:NuclideReleaseMethodOfDetermination">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Method of determining the amount of activity released.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="MethodOfDeterminationDescription" type="base:ShortStringType"
+					minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							Method of determining the amount of activity released. (free text) 
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>				
+			</xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ReleaseAmountType">
+		<xsd:simpleContent>
+			<xsd:extension base="base:PositiveFloat">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="Bq" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+		
+	<xsd:complexType name="RelativeIodineFractionsType">
+		<xsd:sequence>
+			<xsd:element name="Elementary" type="base:PercentageType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Relative iodine
+						fraction for elementary
+						iodine (%).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Organic" type="base:PercentageType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Relative iodine
+						fraction for organically bound
+						iodine (%).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Aerosol" type="base:PercentageType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Relative iodine
+						fraction for iodine in aerosol
+						form (%).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="HeatEmissionRateType">
+		<xsd:simpleContent>
+			<xsd:extension base="base:nonNegativeFloat">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="MW" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="AreaOfHeatEmissionType">
+		<xsd:simpleContent>
+			<xsd:extension base="base:nonNegativeDecimal">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="m2" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="PlumeCharacteristicsType">
+		<xsd:sequence>
+			<xsd:element name="TransportSpeed" type="release:TransportSpeedType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Transport speed of the plume, near release point (m/s).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransportDirection" type="base:AngleType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Transport direction of the
+						plume, near release point (degrees from North).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="TransportSpeedType">
+		<xsd:simpleContent>
+			<xsd:extension base="base:nonNegativeDecimal">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="m/s" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:simpleType name="ActualReleaseValueType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Has Occurred"/>
+			<xsd:enumeration value="Has Not Occurred"/>
+			<xsd:enumeration value="Unknown"/>
+		</xsd:restriction>
+	</xsd:simpleType>	
+	
+	<xsd:simpleType name="FutureReleaseValueType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Certain Not to Occur"/>
+			<xsd:enumeration value="Unlikely to Occur"/>
+			<xsd:enumeration value="Likely to Occur"/>
+			<xsd:enumeration value="Certain to Occur"/>
+			<xsd:enumeration value="Unknown"/>
+		</xsd:restriction>
+	</xsd:simpleType>	
+	
+	<xsd:simpleType name="CompartmentType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Air"/>
+			<xsd:enumeration value="Water"/>
+			<xsd:enumeration value="Air and Water"/>
+		</xsd:restriction>
+	</xsd:simpleType>	
+	
+	<xsd:simpleType name="ReleasePhaseOccurrenceType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Actual"/>
+			<xsd:enumeration value="Projected"/>
+			<xsd:enumeration value="Projected - Likely to Occur"/>
+			<xsd:enumeration value="Projected - Unlikely to Occur"/>
+			<xsd:enumeration value="Projected - Certain to Occur"/>
+		</xsd:restriction>
+	</xsd:simpleType>	
+	
+	<xsd:simpleType name="ReleaseRouteType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Release from Containment"/>
+			<xsd:enumeration value="Containment By-pass under Dry Conditions"/>
+			<xsd:enumeration value="Containment By-pass under Wet Conditions"/>
+			<xsd:enumeration value="Release from Spent Fuel Pool"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="TypeOfReleaseType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Gaseous"/>
+			<xsd:enumeration value="Particulate"/>
+			<xsd:enumeration value="Gaseous and Particulate"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="NuclideReleaseMethodOfDetermination">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Measurement"/>
+			<xsd:enumeration value="Other"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>

@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: Nuclides.xsd 7876 2013-03-31 07:46:12Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+	
+	<xsd:element name="NuclideInfo" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				This element is defined abstract and as such is replaced in an instance document by a
+				member of its substitionGroup.  The substitutionGroup consists of<html:br/>
+				<html:ul>
+					<html:li>Nuclide : one of a list of nuclides.</html:li>
+					<html:li>NuclideList : a combination of nuclides chosen from the list of nuclides.</html:li>
+					<html:li>NuclideCombination : a list of fixed combinations of nuclides.</html:li>
+					<html:li>NuclideDescription : a free text description of (a combination of) nuclides.</html:li>
+				</html:ul>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:element name="Nuclide" type="NuclideType" substitutionGroup="NuclideInfo">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A nuclide.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:element name="NuclideList" type="NuclideListType" substitutionGroup="NuclideInfo">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A list of nuclides. 
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:element name="NuclideCombination" type="NuclideCombinationType" substitutionGroup="NuclideInfo">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A nuclide combination. 
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:element name="NuclideDescription" substitutionGroup="NuclideInfo">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A nuclide / nuclide combination. (free text)
+			</xsd:documentation>
+		</xsd:annotation>	
+	<xsd:simpleType>
+			<xsd:restriction base="xsd:token">
+				<xsd:maxLength value="255"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+
+	<xsd:simpleType name="NuclideType">
+		<xsd:restriction base="xsd:token">
+   <xsd:enumeration value="Ac-225"/>
+   <xsd:enumeration value="Ac-226"/>
+   <xsd:enumeration value="Ac-227"/>
+   <xsd:enumeration value="Ac-228"/>
+   <xsd:enumeration value="Ag-105"/>
+   <xsd:enumeration value="Ag-108"/>
+   <xsd:enumeration value="Ag-108m"/>
+   <xsd:enumeration value="Ag-110"/>
+   <xsd:enumeration value="Ag-110m"/>
+   <xsd:enumeration value="Ag-111"/>
+   <xsd:enumeration value="Ag-112"/>
+   <xsd:enumeration value="Al-26"/>
+   <xsd:enumeration value="Al-28"/>
+   <xsd:enumeration value="Am-241"/>
+   <xsd:enumeration value="Am-242"/>
+   <xsd:enumeration value="Am-242m"/>
+   <xsd:enumeration value="Am-243"/>
+   <xsd:enumeration value="Am-244"/>
+   <xsd:enumeration value="Am-244m"/>
+   <xsd:enumeration value="Am-245"/>
+   <xsd:enumeration value="Am-246"/>
+   <xsd:enumeration value="Ar-37"/>
+   <xsd:enumeration value="Ar-39"/>
+   <xsd:enumeration value="Ar-41"/>
+   <xsd:enumeration value="As-73"/>
+   <xsd:enumeration value="As-74"/>
+   <xsd:enumeration value="As-76"/>
+   <xsd:enumeration value="As-77"/>
+   <xsd:enumeration value="At-211"/>
+   <xsd:enumeration value="At-217"/>
+   <xsd:enumeration value="At-218"/>
+   <xsd:enumeration value="Au-195"/>
+   <xsd:enumeration value="Au-198"/>
+   <xsd:enumeration value="Au-199"/>
+   <xsd:enumeration value="Ba-131"/>
+   <xsd:enumeration value="Ba-133"/>
+   <xsd:enumeration value="Ba-135m"/>
+   <xsd:enumeration value="Ba-137m"/>
+   <xsd:enumeration value="Ba-140"/>
+   <xsd:enumeration value="Be-10"/>
+   <xsd:enumeration value="Be-7"/>
+   <xsd:enumeration value="Bi-205"/>
+   <xsd:enumeration value="Bi-206"/>
+   <xsd:enumeration value="Bi-207"/>
+   <xsd:enumeration value="Bi-210"/>
+   <xsd:enumeration value="Bi-211"/>
+   <xsd:enumeration value="Bi-212"/>
+   <xsd:enumeration value="Bi-213"/>
+   <xsd:enumeration value="Bi-214"/>
+   <xsd:enumeration value="Bk-249"/>
+   <xsd:enumeration value="Bk-250"/>
+   <xsd:enumeration value="Br-82"/>
+   <xsd:enumeration value="Br-83"/>
+   <xsd:enumeration value="C-14"/>
+   <xsd:enumeration value="Ca-41"/>
+   <xsd:enumeration value="Ca-45"/>
+   <xsd:enumeration value="Ca-47"/>
+   <xsd:enumeration value="Cd-109"/>
+   <xsd:enumeration value="Cd-113"/>
+   <xsd:enumeration value="Cd-113m"/>
+   <xsd:enumeration value="Cd-115"/>
+   <xsd:enumeration value="Cd-115m"/>
+   <xsd:enumeration value="Ce-139"/>
+   <xsd:enumeration value="Ce-141"/>
+   <xsd:enumeration value="Ce-143"/>
+   <xsd:enumeration value="Ce-144"/>
+   <xsd:enumeration value="Cf-249"/>
+   <xsd:enumeration value="Cf-250"/>
+   <xsd:enumeration value="Cf-251"/>
+   <xsd:enumeration value="Cf-252"/>
+   <xsd:enumeration value="Cf-253"/>
+   <xsd:enumeration value="Cf-254"/>
+   <xsd:enumeration value="Cl-36"/>
+   <xsd:enumeration value="Cl-38"/>
+   <xsd:enumeration value="Cm-242"/>
+   <xsd:enumeration value="Cm-243"/>
+   <xsd:enumeration value="Cm-244"/>
+   <xsd:enumeration value="Cm-245"/>
+   <xsd:enumeration value="Cm-246"/>
+   <xsd:enumeration value="Cm-247"/>
+   <xsd:enumeration value="Cm-248"/>
+   <xsd:enumeration value="Cm-249"/>
+   <xsd:enumeration value="Cm-250"/>
+   <xsd:enumeration value="Co-56"/>
+   <xsd:enumeration value="Co-57"/>
+   <xsd:enumeration value="Co-58"/>
+   <xsd:enumeration value="Co-58m"/>
+   <xsd:enumeration value="Co-60"/>
+   <xsd:enumeration value="Cr-51"/>
+   <xsd:enumeration value="Cs-131"/>
+   <xsd:enumeration value="Cs-134"/>
+   <xsd:enumeration value="Cs-134m"/>
+   <xsd:enumeration value="Cs-135"/>
+   <xsd:enumeration value="Cs-136"/>
+   <xsd:enumeration value="Cs-137"/>
+   <xsd:enumeration value="Cs-138"/>
+   <xsd:enumeration value="Cu-62"/>
+   <xsd:enumeration value="Cu-64"/>
+   <xsd:enumeration value="Dy-159"/>
+   <xsd:enumeration value="Dy-165"/>
+   <xsd:enumeration value="Dy-166"/>
+   <xsd:enumeration value="Er-169"/>
+   <xsd:enumeration value="Er-171"/>
+   <xsd:enumeration value="Es-253"/>
+   <xsd:enumeration value="Es-254"/>
+   <xsd:enumeration value="Eu-152"/>
+   <xsd:enumeration value="Eu-152m"/>
+   <xsd:enumeration value="Eu-154"/>
+   <xsd:enumeration value="Eu-155"/>
+   <xsd:enumeration value="Eu-156"/>
+   <xsd:enumeration value="Eu-157"/>
+   <xsd:enumeration value="F-18"/>
+   <xsd:enumeration value="Fe-52"/>
+   <xsd:enumeration value="Fe-55"/>
+   <xsd:enumeration value="Fe-59"/>
+   <xsd:enumeration value="Fe-60"/>
+   <xsd:enumeration value="Fm-254"/>
+   <xsd:enumeration value="Fm-255"/>
+   <xsd:enumeration value="Fm-256"/>
+   <xsd:enumeration value="Fr-221"/>
+   <xsd:enumeration value="Fr-222"/>
+   <xsd:enumeration value="Fr-223"/>
+   <xsd:enumeration value="Ga-67"/>
+   <xsd:enumeration value="Ga-68"/>
+   <xsd:enumeration value="Ga-70"/>
+   <xsd:enumeration value="Ga-72"/>
+   <xsd:enumeration value="Gd-151"/>
+   <xsd:enumeration value="Gd-152"/>
+   <xsd:enumeration value="Gd-153"/>
+   <xsd:enumeration value="Gd-159"/>
+   <xsd:enumeration value="Ge-68"/>
+   <xsd:enumeration value="Ge-71"/>
+   <xsd:enumeration value="Ge-77"/>
+   <xsd:enumeration value="H-3"/>
+   <xsd:enumeration value="Hf-175"/>
+   <xsd:enumeration value="Hf-181"/>
+   <xsd:enumeration value="Hg-197"/>
+   <xsd:enumeration value="Hg-197m"/>
+   <xsd:enumeration value="Hg-203"/>
+   <xsd:enumeration value="Ho-166"/>
+   <xsd:enumeration value="Ho-166m"/>
+   <xsd:enumeration value="I-123"/>
+   <xsd:enumeration value="I-125"/>
+   <xsd:enumeration value="I-126"/>
+   <xsd:enumeration value="I-129"/>
+   <xsd:enumeration value="I-130"/>
+   <xsd:enumeration value="I-131"/>
+   <xsd:enumeration value="I-132"/>
+   <xsd:enumeration value="I-133"/>
+   <xsd:enumeration value="I-134"/>
+   <xsd:enumeration value="I-135"/>
+   <xsd:enumeration value="In-111"/>
+   <xsd:enumeration value="In-113m"/>
+   <xsd:enumeration value="In-114"/>
+   <xsd:enumeration value="In-114m"/>
+   <xsd:enumeration value="In-115"/>
+   <xsd:enumeration value="In-115m"/>
+   <xsd:enumeration value="In-116m"/>
+   <xsd:enumeration value="Ir-190"/>
+   <xsd:enumeration value="Ir-192"/>
+   <xsd:enumeration value="Ir-194"/>
+   <xsd:enumeration value="K-40"/>
+   <xsd:enumeration value="K-42"/>
+   <xsd:enumeration value="K-43"/>
+   <xsd:enumeration value="Kr-81"/>
+   <xsd:enumeration value="Kr-83m"/>
+   <xsd:enumeration value="Kr-85"/>
+   <xsd:enumeration value="Kr-85m"/>
+   <xsd:enumeration value="Kr-87"/>
+   <xsd:enumeration value="Kr-88"/>
+   <xsd:enumeration value="La-140"/>
+   <xsd:enumeration value="La-141"/>
+   <xsd:enumeration value="Lu-176m"/>
+   <xsd:enumeration value="Lu-177"/>
+   <xsd:enumeration value="Mg-28"/>
+   <xsd:enumeration value="Mn-52"/>
+   <xsd:enumeration value="Mn-52m"/>
+   <xsd:enumeration value="Mn-54"/>
+   <xsd:enumeration value="Mn-56"/>
+   <xsd:enumeration value="Mo-93"/>
+   <xsd:enumeration value="Mo-99"/>
+   <xsd:enumeration value="N-13"/>
+   <xsd:enumeration value="Na-22"/>
+   <xsd:enumeration value="Na-24"/>
+   <xsd:enumeration value="Nb-93m"/>
+   <xsd:enumeration value="Nb-94"/>
+   <xsd:enumeration value="Nb-95"/>
+   <xsd:enumeration value="Nb-95m"/>
+   <xsd:enumeration value="Nb-96"/>
+   <xsd:enumeration value="Nb-97"/>
+   <xsd:enumeration value="Nb-97m"/>
+   <xsd:enumeration value="Nd-138"/>
+   <xsd:enumeration value="Nd-139"/>
+   <xsd:enumeration value="Nd-139m"/>
+   <xsd:enumeration value="Nd-147"/>
+   <xsd:enumeration value="Nd-149"/>
+   <xsd:enumeration value="Ni-59"/>
+   <xsd:enumeration value="Ni-63"/>
+   <xsd:enumeration value="Ni-65"/>
+   <xsd:enumeration value="Np-237"/>
+   <xsd:enumeration value="Np-238"/>
+   <xsd:enumeration value="Np-239"/>
+   <xsd:enumeration value="Np-240m"/>
+   <xsd:enumeration value="O-15"/>
+   <xsd:enumeration value="Os-185"/>
+   <xsd:enumeration value="Os-191"/>
+   <xsd:enumeration value="Os-191m"/>
+   <xsd:enumeration value="Os-193"/>
+   <xsd:enumeration value="P-32"/>
+   <xsd:enumeration value="P-33"/>
+   <xsd:enumeration value="Pa-230"/>
+   <xsd:enumeration value="Pa-231"/>
+   <xsd:enumeration value="Pa-233"/>
+   <xsd:enumeration value="Pa-234"/>
+   <xsd:enumeration value="Pa-234m"/>
+   <xsd:enumeration value="Pb-203"/>
+   <xsd:enumeration value="Pb-205"/>
+   <xsd:enumeration value="Pb-209"/>
+   <xsd:enumeration value="Pb-210"/>
+   <xsd:enumeration value="Pb-211"/>
+   <xsd:enumeration value="Pb-212"/>
+   <xsd:enumeration value="Pb-214"/>
+   <xsd:enumeration value="Pd-103"/>
+   <xsd:enumeration value="Pd-107"/>
+   <xsd:enumeration value="Pd-109"/>
+   <xsd:enumeration value="Pm-146"/>
+   <xsd:enumeration value="Pm-147"/>
+   <xsd:enumeration value="Pm-148"/>
+   <xsd:enumeration value="Pm-148m"/>
+   <xsd:enumeration value="Pm-149"/>
+   <xsd:enumeration value="Pm-151"/>
+   <xsd:enumeration value="Po-210"/>
+   <xsd:enumeration value="Po-211"/>
+   <xsd:enumeration value="Po-212"/>
+   <xsd:enumeration value="Po-213"/>
+   <xsd:enumeration value="Po-214"/>
+   <xsd:enumeration value="Po-215"/>
+   <xsd:enumeration value="Po-216"/>
+   <xsd:enumeration value="Po-218"/>
+   <xsd:enumeration value="Pr-138"/>
+   <xsd:enumeration value="Pr-139"/>
+   <xsd:enumeration value="Pr-142"/>
+   <xsd:enumeration value="Pr-143"/>
+   <xsd:enumeration value="Pr-144"/>
+   <xsd:enumeration value="Pr-144m"/>
+   <xsd:enumeration value="Pr-145"/>
+   <xsd:enumeration value="Pt-191"/>
+   <xsd:enumeration value="Pt-193"/>
+   <xsd:enumeration value="Pt-193m"/>
+   <xsd:enumeration value="Pt-195m"/>
+   <xsd:enumeration value="Pt-197"/>
+   <xsd:enumeration value="Pt-197m"/>
+   <xsd:enumeration value="Pu-238"/>
+   <xsd:enumeration value="Pu-239"/>
+   <xsd:enumeration value="Pu-240"/>
+   <xsd:enumeration value="Pu-241"/>
+   <xsd:enumeration value="Pu-242"/>
+   <xsd:enumeration value="Pu-243"/>
+   <xsd:enumeration value="Pu-244"/>
+   <xsd:enumeration value="Pu-246"/>
+   <xsd:enumeration value="Ra-222"/>
+   <xsd:enumeration value="Ra-223"/>
+   <xsd:enumeration value="Ra-224"/>
+   <xsd:enumeration value="Ra-225"/>
+   <xsd:enumeration value="Ra-226"/>
+   <xsd:enumeration value="Ra-228"/>
+   <xsd:enumeration value="Rb-82"/>
+   <xsd:enumeration value="Rb-84"/>
+   <xsd:enumeration value="Rb-86"/>
+   <xsd:enumeration value="Rb-87"/>
+   <xsd:enumeration value="Rb-88"/>
+   <xsd:enumeration value="Rb-89"/>
+   <xsd:enumeration value="Re-184"/>
+   <xsd:enumeration value="Re-186"/>
+   <xsd:enumeration value="Re-187"/>
+   <xsd:enumeration value="Re-188"/>
+   <xsd:enumeration value="Rh-100"/>
+   <xsd:enumeration value="Rh-101"/>
+   <xsd:enumeration value="Rh-101m"/>
+   <xsd:enumeration value="Rh-102"/>
+   <xsd:enumeration value="Rh-102m"/>
+   <xsd:enumeration value="Rh-103m"/>
+   <xsd:enumeration value="Rh-105"/>
+   <xsd:enumeration value="Rh-106"/>
+   <xsd:enumeration value="Rh-106m"/>
+   <xsd:enumeration value="Rh-99"/>
+   <xsd:enumeration value="Rn-218"/>
+   <xsd:enumeration value="Rn-219"/>
+   <xsd:enumeration value="Rn-220"/>
+   <xsd:enumeration value="Rn-222"/>
+   <xsd:enumeration value="Ru-103"/>
+   <xsd:enumeration value="Ru-105"/>
+   <xsd:enumeration value="Ru-106"/>
+   <xsd:enumeration value="Ru-97"/>
+   <xsd:enumeration value="S-35"/>
+   <xsd:enumeration value="Sb-122"/>
+   <xsd:enumeration value="Sb-124"/>
+   <xsd:enumeration value="Sb-125"/>
+   <xsd:enumeration value="Sb-126"/>
+   <xsd:enumeration value="Sb-126m"/>
+   <xsd:enumeration value="Sb-127"/>
+   <xsd:enumeration value="Sb-128"/>
+   <xsd:enumeration value="Sb-129"/>
+   <xsd:enumeration value="Sc-44"/>
+   <xsd:enumeration value="Sc-46"/>
+   <xsd:enumeration value="Sc-47"/>
+   <xsd:enumeration value="Sc-48"/>
+   <xsd:enumeration value="Se-75"/>
+   <xsd:enumeration value="Se-79"/>
+   <xsd:enumeration value="Si-31"/>
+   <xsd:enumeration value="Si-32"/>
+   <xsd:enumeration value="Sm-146"/>
+   <xsd:enumeration value="Sm-147"/>
+   <xsd:enumeration value="Sm-151"/>
+   <xsd:enumeration value="Sm-153"/>
+   <xsd:enumeration value="Sn-113"/>
+   <xsd:enumeration value="Sn-119m"/>
+   <xsd:enumeration value="Sn-121"/>
+   <xsd:enumeration value="Sn-121m"/>
+   <xsd:enumeration value="Sn-123"/>
+   <xsd:enumeration value="Sn-123m"/>
+   <xsd:enumeration value="Sn-125"/>
+   <xsd:enumeration value="Sn-126"/>
+   <xsd:enumeration value="Sr-82"/>
+   <xsd:enumeration value="Sr-85"/>
+   <xsd:enumeration value="Sr-89"/>
+   <xsd:enumeration value="Sr-90"/>
+   <xsd:enumeration value="Sr-91"/>
+   <xsd:enumeration value="Sr-92"/>
+   <xsd:enumeration value="T-3x"/>
+   <xsd:enumeration value="Ta-182"/>
+   <xsd:enumeration value="Tb-160"/>
+   <xsd:enumeration value="Tb-161"/>
+   <xsd:enumeration value="Tc-96"/>
+   <xsd:enumeration value="Tc-97"/>
+   <xsd:enumeration value="Tc-97m"/>
+   <xsd:enumeration value="Tc-98"/>
+   <xsd:enumeration value="Tc-99"/>
+   <xsd:enumeration value="Tc-99m"/>
+   <xsd:enumeration value="Te-121"/>
+   <xsd:enumeration value="Te-121m"/>
+   <xsd:enumeration value="Te-123"/>
+   <xsd:enumeration value="Te-123m"/>
+   <xsd:enumeration value="Te-125m"/>
+   <xsd:enumeration value="Te-127"/>
+   <xsd:enumeration value="Te-127m"/>
+   <xsd:enumeration value="Te-129"/>
+   <xsd:enumeration value="Te-129m"/>
+   <xsd:enumeration value="Te-131"/>
+   <xsd:enumeration value="Te-131m"/>
+   <xsd:enumeration value="Te-132"/>
+   <xsd:enumeration value="Te-133"/>
+   <xsd:enumeration value="Te-133m"/>
+   <xsd:enumeration value="Te-134"/>
+   <xsd:enumeration value="Th-226"/>
+   <xsd:enumeration value="Th-227"/>
+   <xsd:enumeration value="Th-228"/>
+   <xsd:enumeration value="Th-229"/>
+   <xsd:enumeration value="Th-230"/>
+   <xsd:enumeration value="Th-231"/>
+   <xsd:enumeration value="Th-232"/>
+   <xsd:enumeration value="Th-234"/>
+   <xsd:enumeration value="Ti-44"/>
+   <xsd:enumeration value="Tl-200"/>
+   <xsd:enumeration value="Tl-201"/>
+   <xsd:enumeration value="Tl-202"/>
+   <xsd:enumeration value="Tl-204"/>
+   <xsd:enumeration value="Tl-207"/>
+   <xsd:enumeration value="Tl-208"/>
+   <xsd:enumeration value="Tl-209"/>
+   <xsd:enumeration value="Tm-167"/>
+   <xsd:enumeration value="Tm-170"/>
+   <xsd:enumeration value="Tm-171"/>
+   <xsd:enumeration value="TO-3x"/>
+   <xsd:enumeration value="U-230"/>
+   <xsd:enumeration value="U-232"/>
+   <xsd:enumeration value="U-233"/>
+   <xsd:enumeration value="U-234"/>
+   <xsd:enumeration value="U-235"/>
+   <xsd:enumeration value="U-236"/>
+   <xsd:enumeration value="U-237"/>
+   <xsd:enumeration value="U-238"/>
+   <xsd:enumeration value="U-240"/>
+   <xsd:enumeration value="V-48"/>
+   <xsd:enumeration value="V-49"/>
+   <xsd:enumeration value="W-181"/>
+   <xsd:enumeration value="W-185"/>
+   <xsd:enumeration value="W-187"/>
+   <xsd:enumeration value="W-188"/>
+   <xsd:enumeration value="Xe-131m"/>
+   <xsd:enumeration value="Xe-133"/>
+   <xsd:enumeration value="Xe-133m"/>
+   <xsd:enumeration value="Xe-135"/>
+   <xsd:enumeration value="Xe-135m"/>
+   <xsd:enumeration value="Xe-137"/>
+   <xsd:enumeration value="Xe-138"/>
+   <xsd:enumeration value="Y-88"/>
+   <xsd:enumeration value="Y-90"/>
+   <xsd:enumeration value="Y-91"/>
+   <xsd:enumeration value="Y-91m"/>
+   <xsd:enumeration value="Y-92"/>
+   <xsd:enumeration value="Y-93"/>
+   <xsd:enumeration value="Yb-169"/>
+   <xsd:enumeration value="Yb-175"/>
+   <xsd:enumeration value="Zn-65"/>
+   <xsd:enumeration value="Zn-69"/>
+   <xsd:enumeration value="Zr-93"/>
+   <xsd:enumeration value="Zr-95"/>
+   <xsd:enumeration value="Zr-97"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="NuclideListType">
+		<xsd:list itemType="NuclideType"/>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="NuclideCombinationType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="T-Alpha"/>
+			<xsd:enumeration value="T-Beta"/>
+			<xsd:enumeration value="T-Gamma"/>
+			<xsd:enumeration value="R-Beta"/>
+			<xsd:enumeration value="T-Ca"/>
+			<xsd:enumeration value="T-K"/>
+			<xsd:enumeration value="T-Na"/>
+			<xsd:enumeration value="T-U"/>
+			<xsd:enumeration value="Sr+Rare"/>
+			<xsd:enumeration value="I-131(G)"/>
+			<xsd:enumeration value="I-131(P)"/>
+			<xsd:enumeration value="I-131(P+G)"/>
+			<xsd:enumeration value="Cs(134/137)"/>
+		<xsd:enumeration value="Sr(89/90)"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

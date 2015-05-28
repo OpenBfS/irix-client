@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    $Id: MediaInformation.xsd 7876 2013-03-31 07:46:12Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:media="http://www.iaea.org/2012/IRIX/Format/MediaInformation"
+    xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    targetNamespace="http://www.iaea.org/2012/IRIX/Format/MediaInformation" 
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd"/>
+
+	<xsd:element name="MediaInformation" type="media:MediaInformationType">
+	    <xsd:annotation>
+	        <xsd:documentation xml:lang="en">
+	            A report section with information relating to media and public communications.
+	        </xsd:documentation>
+	    </xsd:annotation>
+	</xsd:element>
+
+    <xsd:complexType name="MediaInformationType">
+        <xsd:complexContent>
+            <xsd:extension base="base:InformationBlock">
+                <xsd:sequence>
+                    <xsd:element name="PublicInformationContacts" type="media:PublicInformationContactsType" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Contains contact information that may be used for coordination 
+                                of press releases and public communication.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="PublicWebsiteURL" type="xsd:anyURI" minOccurs="0">
+                    	<xsd:annotation>
+                    		<xsd:documentation xml:lang="en">
+                    			Web address of public web site where press releases and public information is made available.
+                    		</xsd:documentation>
+                    	</xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="PublicInformationContactsType">
+        <xsd:sequence>
+            <xsd:element ref="base:PersonContactInfo" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Contains contact details of a person responsible for coordination
+                        of press releases and public communication.
+                    </xsd:documentation>
+                </xsd:annotation>                                    
+            </xsd:element>
+            <xsd:element ref="base:OrganisationContactInfo" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Contains contact details of the organisation with 
+                        which the contact person(s) listed are affiliated.
+                    </xsd:documentation>
+                </xsd:annotation>                                    
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+</xsd:schema>

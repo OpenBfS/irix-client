@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $Id: ConsequenceInformation.xsd 7881 2013-03-31 20:54:14Z $
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cons="http://www.iaea.org/2012/IRIX/Format/ConsequenceInformation"
+    xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base"
+    xmlns:html="http://www.w3.org/1999/xhtml" 
+    targetNamespace="http://www.iaea.org/2012/IRIX/Format/ConsequenceInformation"
+    elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+    
+    <xsd:import namespace="http://www.iaea.org/2012/IRIX/Format/Base" schemaLocation="Base.xsd" />
+    
+    <xsd:element name="Consequences" type="cons:ConsequencesType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                A report section with structured and free text information on consequences of an event, including 
+                information on areas affected, number of casualties, and issues relating to health, 
+                environment and foodstuffs.                
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    
+    <xsd:complexType name="ConsequencesType">
+        <xsd:complexContent>
+            <xsd:extension base="base:InformationBlock">
+                <xsd:sequence>
+                    <xsd:element name="HealthIssues" type="base:FreeTextType"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Free text description of any health issues caused by an event.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="EnvironmentalIssues" type="base:FreeTextType"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Free text description of any environmental issues caused by an event.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="FoodstuffIssues" type="base:FreeTextType"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Free text description of any foodstuff related issues caused by an event.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="OtherIssues" type="base:FreeTextType"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Free text description of issues (other than health, environmental and 
+                                foodstuff related issues) caused by an event.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="AreasAffected" type="cons:AreasAffectedType"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Contains a list of areas that are affected, or likely to be affected, along
+                                with a description of the (radiological) effect. 
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="NumbersOfCasualties" type="cons:NumbersOfCasualtiesType" 
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">
+                                Contains information on the numbers of casualties (exposed, hospitalised, wounded
+                                or dead) in an event. The numbers may be tabulated and broken down by type 
+                                of group of affected people (e.g. public, emergency services).
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AreasAffectedType">
+        <xsd:sequence>
+            <xsd:element name="AreaAffected" type="cons:AreaAffectedType"
+                minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Contains information about an area that is affected, or likely to be affected.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AreaAffectedType">
+        <xsd:sequence>
+            <xsd:element name="Occurrence" type="cons:AffectedAreaOccurrenceType"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Indicates whether the information describes actual effects or is a projection.
+                    </xsd:documentation>                    
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Area" type="cons:AreaType">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Contains information on the area which is affected.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Effect" type="cons:EffectType">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Contains information of the effect affecting the area.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AreaType">
+        <xsd:sequence>
+            <xsd:element name="Description" type="base:FreeTextType">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        A free text description of the area.                                    
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EffectType">
+        <xsd:sequence>
+            <xsd:element name="TypeOfEffect" type="cons:EffectTypeCodeType" 
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        The type of effect. 
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Free text description of the effect.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>                        
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="NumbersOfCasualtiesType">
+        <xsd:sequence>
+            <xsd:element name="NumberOfCasualties" type="cons:NumberOfCasualtiesType" 
+                minOccurs="1" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        Contains information on a number of casualties.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NumberOfCasualtiesType">
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="CasualtyType" type="cons:CasualtyTypeType">
+                    <xsd:annotation>
+                        <xsd:documentation xml:lang="en">
+                            The type of casualty for which a number is provided.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="CasualtyTypeDescription" type="base:ShortStringType">
+                    <xsd:annotation>
+                        <xsd:documentation xml:lang="en">
+                            The type of casualty for which a number is provided. (free text)
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="MemberOfGroup" type="cons:CasualtiesGroupType">
+                    <xsd:annotation>
+                        <xsd:documentation xml:lang="en">
+                            The type of group of people for which the number is provided. 
+                            If the element is omitted, the provided number is understood 
+                            to be the total number, irrespective of group.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="MemberOfGroupDescription" type="base:ShortStringType">
+                    <xsd:annotation>
+                        <xsd:documentation xml:lang="en">
+                            The type of group of people for which the number is provided. (free text)
+                        </xsd:documentation>
+                    </xsd:annotation>				
+                </xsd:element>				
+            </xsd:choice>
+            <xsd:element name="Number" type="xsd:nonNegativeInteger">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        The number of casualties in the indicated type, either the total number, 
+                        or the sub-total for the group specified.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>			
+            <xsd:sequence minOccurs="0">
+                <xsd:element name="MethodOfDetermination" type="cons:CasualtiesMethodOfDeterminationType">
+                    <xsd:annotation>
+                        <xsd:documentation xml:lang="en">
+                            Method used for determining the number of casualties.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="MethodOfDeterminationDescription" type="base:ShortStringType"
+                    minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation xml:lang="en">
+                            Method used for determining the number of casualties. (free text)
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="EffectTypeCodeType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Contamination"/>
+            <xsd:enumeration value="Elevated Radiation Levels"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="AffectedAreaOccurrenceType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Actual"/>
+            <xsd:enumeration value="Actual - Confirmed"/>
+            <xsd:enumeration value="Actual - Not Confirmed"/>
+            <xsd:enumeration value="Projected"/>
+            <xsd:enumeration value="Projected - Unlikely to Occur"/>
+            <xsd:enumeration value="Projected - Likely to Occur"/>
+            <xsd:enumeration value="Projected - Certain to Occur"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CasualtyTypeType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Exposed"/>
+            <xsd:enumeration value="Hospitalised"/>
+            <xsd:enumeration value="Wounded"/>
+            <xsd:enumeration value="Dead"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CasualtiesGroupType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Public"/>
+            <xsd:enumeration value="Emergency Services"/>
+            <xsd:enumeration value="Unknown"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CasualtiesMethodOfDeterminationType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Count"/>
+            <xsd:enumeration value="Estimation"/>
+            <xsd:enumeration value="Other"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+</xsd:schema>

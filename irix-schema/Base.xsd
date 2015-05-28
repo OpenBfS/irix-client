@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: Base.xsd 7876 2013-03-31 07:46:12Z $ 
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:base="http://www.iaea.org/2012/IRIX/Format/Base" 
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	targetNamespace="http://www.iaea.org/2012/IRIX/Format/Base" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<xsd:element name="OrganisationContactInfo" type="base:OrganisationContactType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				Name and contact details of an organisation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:element name="PersonContactInfo" type="base:PersonContactType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				Name and contact details of a person.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:complexType name="InformationBlock">
+		<xsd:attribute name="ValidAt" type="base:DateTimeType"
+			use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Date and time at which the information contained in
+					this report section was valid.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:simpleType name="DateTimeType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A date and time in a prescribed format. Note that the time
+				zone is
+				required and set to Z (UTC).
+				<html:ul>
+					<html:li>Four digits for the year (\d{4})</html:li>
+					<html:li>Two digits for the month</html:li>
+					<html:li>Two digits for the day</html:li>
+					<html:li>A time seperator 'T'</html:li>
+					<html:li>Two digits for the 24-hour, so 7 AM is written as '07' and
+						7 PM is written as '19'
+					</html:li>
+					<html:li>Two digits for the minutes</html:li>
+					<html:li>Two digits for the seconds</html:li>
+					<html:li>A 'Z' specifying UTC time</html:li>
+				</html:ul>
+				Example: 2010-04-12T12:56:23Z for April 12th, 2010 at 12:56:23h UTC.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:dateTime">
+			<xsd:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="PositiveFloat">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A positive float,
+				not
+				including zero. The definition is based on
+				the definition of type
+				float. See
+				http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#float" for the
+					definition of schema float.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:float">
+			<xsd:minExclusive value="0" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="nonNegativeFloat">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A positive float,
+				including zero. The definition is based on
+				the definition of type
+				float.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:float">
+			<xsd:minInclusive value="0" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="Decimal">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A decimal as defined at
+				http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#decimal
+				restricted to two fraction digits and a total of five digits.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:fractionDigits value="2" />
+			<xsd:totalDigits value="5" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="PositiveDecimal">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				Based on
+				xsd:decimal,
+				this value space is
+				restricted to positive decimals, not including
+				zero.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:minExclusive value="0" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="nonNegativeDecimal">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				Based on
+				xsd:decimal,
+				this value space is restricted to positive decimals,
+				including zero.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:minInclusive value="0" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="PercentageValueType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A percentage value
+				ranging from 0 till 100 (both included). This type
+				is
+				used to build
+				the base:PercentageType. This type should not be used in
+				a XML
+				instance document.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="base:Decimal">
+			<xsd:minInclusive value="0" />
+			<xsd:maxInclusive value="100" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="PercentageType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A percentage ranging from 0 till 100 (both included). This is the
+				type used in IRIX
+				instance documentents. This type has a fixed,
+				required attribute with value
+				'%'.
+				<html:br />
+				Example:
+				<Humidity Unit="%">77.3</Humidity>
+				.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="base:PercentageValueType">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="%" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="LengthType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				A type used to define
+				length-based types, such as distance. The
+				type defines a non negative
+				float (including zero) with a required
+				fixed SI unit of 'metre'.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="base:nonNegativeDecimal">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="m" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="AngleValueType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				This type defines the
+				content of the AngleType. It defines the range
+				of angles from zero
+				degrees (included) to 360 degrees (excluded, use
+				zero).
+				This type is
+				not used in XML instance documents.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="base:Decimal">
+			<xsd:minInclusive value="0" />
+			<xsd:maxInclusive value="360" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="AngleType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				The definition of an
+				angle counting from North clockwise. The
+				definition is based on
+				AngleValueType. The AngleType is used to define type that occur in
+				IRIX instance
+				documents. This type has a required attribute 'Unit'
+				with fixed
+				value 'DegreesFromNorth'.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="base:AngleValueType">
+				<xsd:attribute name="Unit" type="xsd:token" use="required"
+					fixed="DegreesFromNorth" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="FreeTextType" mixed="true">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<html:p>
+					A base element with which free formatted text can be included in the
+					report. The
+					text should be formatted as XHTML. The contents of these
+					elements are
+					<html:em>
+						not
+					</html:em>
+					validated by a validating parser.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0"
+				maxOccurs="unbounded" processContents="skip" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="ShortStringType">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="255"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="YesNoType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Yes"/>
+			<xsd:enumeration value="No"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="YesNoUnknownType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Yes"/>
+			<xsd:enumeration value="No"/>
+			<xsd:enumeration value="Unknown"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="UUIDType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<html:p>
+					The UUID is defined as a 32 hexadecimal digit, displayed in
+					5 groups separated by hypens
+					in the form 8-4-4-4-12.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:length value="36" />
+			<xsd:pattern
+				value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[8-9a-bA-B][0-9a-fA-F]{3}-[0-9a-fA-F]{12}" />
+		</xsd:restriction>
+	</xsd:simpleType>	
+	
+	<xsd:simpleType name="OrganisationIdentifierType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				To uniquely identify an organisation, a person etc, the domain name
+				system rules are used. Following the OASIS EDXL standard. If used as
+				an
+				OrganisationID the element should follow
+				<html:i>RFC 1035, "Domain Names, implementation and
+					specification"
+				</html:i>
+				:
+				<html:p />
+				domain ::= subdomain | " "
+				<html:br />
+				subdomain ::= label | subdomain "." label
+				<html:br />
+				label ::= letter [ [ ldh-str ] let-dig ]
+				<html:br />
+				ldh-str ::= let-dig-hyp | let-dig-hyp
+				<html:br />
+				ldh-str let-dig-hyp ::= let-dig | "-"
+				let-dig ::= letter | digit
+				<html:br />
+				letter ::= any one
+				of the 52 alphabetic characters A through Z in
+				upper case and a
+				through z in lower
+				case
+				<html:br />
+				digit ::= any one of the ten digits 0 through 9
+				<html:br />
+				<html:p />
+				The official domain name may be
+				extended by prepending text, e.g. of
+				departments within an organisation. As
+				an
+				example, several
+				laboratories within the Dutch RIVM (rivm.nl) can extend the
+				official
+				existing domain name with their name: cev.rivm.nl or
+				lso.rivm.nl
+				giving
+				non-existing domain names.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern value="[a-zA-Z][\.\-a-zA-Z0-9]*[a-zA-Z0-9]" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="PersonIdentifierType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				This is an extension of the
+				base:OrganisationIdentifierType.
+				<html:br/>
+				Example: j.smith@iaea.org
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern
+				value="[a-zA-Z][\.\-a-zA-Z0-9]*@[a-zA-Z][\.\-a-zA-Z0-9]*[a-zA-Z0-9]" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="CountryType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				The 2-alpha ISO code of
+				a country. 
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern value="[A-Z]{2}" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="CountryOrgType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				The 2-alpha ISO code of
+				a country. The type also defines the
+				value '00' which should be used for
+				international
+				organisations where a country code is not applicable.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern value="[A-Z]{2}" />
+			<xsd:pattern value="00" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="TelecomNumberType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				The phone or faxnumber is written as an international number, thus
+				including the country dial code. The
+				number must start with '+'.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern value="\+\d*" />
+			<xsd:maxLength value="14" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:complexType name="OrganisationContactType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Data structure for providing contact details of an organisation.
+					</xsd:documentation>
+				</xsd:annotation>				
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="xsd:token">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The name of the organisation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrganisationID" type="base:OrganisationIdentifierType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The identificiation string of the organisation. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Country" type="base:CountryOrgType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The country to which the organisation belongs.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="WebAddress" type="xsd:anyURI"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Address to the public website of the organisation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Address" type="base:AddressType"
+				minOccurs="0" maxOccurs="2">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Visiting and/or postal address of the organisation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:group ref="base:ContactGroupType" minOccurs="0"/>
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional contact information.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="PersonContactType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				Data structure for providing contact details of a person.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="xsd:token">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Name of person/contact.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="UserID" type="base:PersonIdentifierType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						An identifier of the person. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Position" type="xsd:token" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						The position or function of the person in his/her organisation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrganisationID" type="base:OrganisationIdentifierType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						A reference to the identifier of the organisation 
+						to which the person belongs. The contact details of the organisation
+						may or may not be included in the report.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:group ref="base:ContactGroupType" />
+			<xsd:element name="Description" type="base:FreeTextType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Additional contact information.						
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:group name="ContactGroupType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				Elements for specifying contact details of a person or organisation.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="PhoneNumber" type="base:TelecomNumberType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Phone number of the contact.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FaxNumber" type="base:TelecomNumberType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Fax number of the contact.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EmailAddress" type="xsd:token"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Email address of the contact.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	
+	<xsd:complexType name="AddressType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Data structure for address information.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Postbox" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Postbox number.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Street" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Street address.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PostalCode" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Postal code / ZIP.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Municipality" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Municipality name.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Country" type="base:CountryType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Country.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Type" type="base:AddressTypeType"
+			use="required">
+			<xsd:annotation>
+				<xsd:documentation xml:lang="en">
+					Indicates the type of the address (visiting or mailing address). 
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="AddressTypeType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="Visiting Address" />
+			<xsd:enumeration value="Postal Address" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+
+</xsd:schema>
