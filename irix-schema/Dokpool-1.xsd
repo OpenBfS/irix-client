@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.bfs.de/IRIX/Extensions/Dokpool" elementFormDefault="qualified" version="1.0" xml:lang="en">
+<xs:element name="DokpoolMeta">
+<xs:complexType>
+<xs:sequence>
+
+<xs:element name="Purpose" type="xs:string">
+
+</xs:element>
+<xs:element name="DokpoolContentType" type="xs:string">
+
+</xs:element>
+<xs:element default="false" name="IsElan" type="xs:boolean">
+
+</xs:element>
+<xs:element default="true" name="IsDoksys" type="xs:boolean">
+
+</xs:element>
+<xs:element default="false" name="IsRodos" type="xs:boolean">
+
+</xs:element>
+<xs:element default="false" name="IsRei" type="xs:boolean">
+
+</xs:element>
+<xs:element name="NetworkOperator" type="xs:string">
+
+</xs:element>
+<xs:element name="SampleTypeId" type="xs:string">
+
+</xs:element>
+<xs:element name="SampleType" type="xs:string">
+
+</xs:element>
+<xs:element name="Dom" type="xs:string">
+
+</xs:element>
+<xs:element name="DataType" type="xs:string">
+
+</xs:element>
+<xs:element name="LegalBase" type="xs:string">
+
+</xs:element>
+<xs:element name="MeasuringProgram" type="xs:string">
+
+</xs:element>
+<xs:element name="Status" type="xs:string">
+
+</xs:element>
+<xs:element name="SamplingBegin" type="xs:date">
+
+</xs:element>
+<xs:element name="SamplingEnd" type="xs:date">
+
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema>

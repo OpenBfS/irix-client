@@ -35,6 +35,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.dom.DOMResult;
 
 import org.apache.log4j.Logger;
 
@@ -47,10 +48,16 @@ import org.iaea._2012.irix.format.annexes.AnnexesType;
 import org.iaea._2012.irix.format.annexes.AnnotationType;
 import org.iaea._2012.irix.format.annexes.FileEnclosureType;
 import org.iaea._2012.irix.format.annexes.FileHashType;
+import org.iaea._2012.irix.format.base.FreeTextType;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Document;
+
+import de.bfs.irix.extensions.dokpool.DokpoolMeta;
 
 public class IRIXClient extends HttpServlet
 {
@@ -61,6 +68,30 @@ public class IRIXClient extends HttpServlet
 
     /** The name of the json object containing the irix information. */
     private static final String IRIX_DATA_KEY = "irix";
+
+    /** The name of the json object containing the DokpoolMeta information. */
+    private static final String DOKPOOL_DATA_KEY = "DokpoolMeta";
+
+    /** The fields to set in the DokpoolMeta object.
+     *
+     * SamplingBegin and SamplingEnd are handled wether or not they
+     * are part of this list.
+     **/
+    private static final String[] DOKPOOL_FIELDS = new String[] {
+        "DokpoolContentType",
+        "IsElan",
+        "IsDoksys",
+        "IsRodos",
+        "IsRei",
+        "NetworkOperator",
+        "SampleTypeId",
+        "SampleType",
+        "Dom",
+        "DataType",
+        "LegalBase",
+        "MeasuringProgram",
+        "Status"
+    };
 
     private ObjectFactory mObjFactory;
 
@@ -113,21 +144,67 @@ public class IRIXClient extends HttpServlet
         IdentificationsType identifications = new IdentificationsType();
         identification.setIdentifications(identifications);
 
-        // TODO setPersonContactInfo and organizationcontactinfo
+        // setPersonContactInfo and organizationcontactinfo ?
         identification.setReportContext(ReportContextType.fromValue(
                 idObj.getString("ReportContext")));
         report.setIdentification(identification);
         AnnexesType annex = new AnnexesType();
         report.setAnnexes(annex);
 
-        // Add an annoation
-        //AnnotationType annotation = new AnnotationType();
-        //annotation.setText("Some text here.");
-        //annotation.setTitle("The title of this annotation");
-        //annex.getAnnotation().add(annotation);
-
-
         return report;
+    }
+
+    /** Add an annotation to the Report containting the DokpoolMeta data fields.
+     *
+     * @param report The report to add the annoation to.
+     * @param jsonObject The full jsonObject of the request.
+     **/
+    protected void addAnnotation(JSONObject jsonObject, ReportType report)
+        throws JSONException {
+        AnnotationType annotation = new AnnotationType();
+        FreeTextType freeText = new FreeTextType();
+        // freeText should probably get some content.
+        annotation.setText(freeText);
+        JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
+        annotation.setTitle(irixObj.getString("Title"));
+
+        JSONObject metaObj = irixObj.getJSONObject(DOKPOOL_DATA_KEY);
+
+        DokpoolMeta meta = new DokpoolMeta();
+        for (String field: DOKPOOL_FIELDS) {
+            java.lang.reflect.Method method;
+            String methodName = "set" + field;
+            String value = metaObj.getString(field);
+            try {
+                if (field.startsWith("Is")) {
+                    method = meta.getClass().getMethod(methodName, boolean.class);
+                    method.invoke(meta, value.toLowerCase().equals("true"));
+                } else {
+                    method = meta.getClass().getMethod(methodName, String.class);
+                    method.invoke(meta, value);
+                }
+            } catch (Exception e) {
+                log.error(e.getClass().getName() +
+                        " exception while trying to access " + methodName +
+                        " on DokpoolMeta object.");
+            }
+        }
+
+        DOMResult res = new DOMResult();
+        Element ele = null;
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(DokpoolMeta.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            jaxbMarshaller.marshal(meta, res);
+            ele = ((Document)res.getNode()).getDocumentElement();
+        } catch (JAXBException e) {
+            log.error("Failed marshall DokpoolMeta object.: "+ e.toString());
+        }
+
+        annotation.getAny().add(ele);
+        report.getAnnexes().getAnnotation().add(annotation);
     }
 
     /** Helper method to print all request parameters into the trace log for debugging. */
@@ -243,8 +320,9 @@ public class IRIXClient extends HttpServlet
         ReportType report = null;
         try {
             report = prepareReport(jsonObject);
+            addAnnotation(jsonObject, report);
         } catch (JSONException e) {
-            writeError("Failed to IRIX information: "+ e.getMessage(), response);
+            writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
             return;
         }
 
@@ -268,6 +346,7 @@ public class IRIXClient extends HttpServlet
             JAXBContext jaxbContext = JAXBContext.newInstance(ReportType.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             jaxbMarshaller.marshal(mObjFactory.createReport(report), response.getOutputStream());
             response.setContentType("application/xml");
         } catch (JAXBException e) {
