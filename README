@@ -1,0 +1,12 @@
+Configure the print-url of a mapfish-print service in the web.xml
+of the application.
+
+You can find an example request under examples/irix-test.json that
+should illustrate the structure of the request.
+
+This request should be posted to the IRIXClient servlet.
+
+E.g.:
+
+    curl -i -H "Content-Type: application/json" -X POST --data \
+        @examples/irix-test.json http://localhost:8080/irix-client/IRIXClient
