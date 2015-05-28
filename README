@@ -8,5 +8,5 @@ This request should be posted to the IRIXClient servlet.
 
 E.g.:
 
-    curl -i -H "Content-Type: application/json" -X POST --data \
+    curl -i -H "Content-Type: application/json; charset=utf-8" -X POST --data \
         @examples/irix-test.json http://localhost:8080/irix-client/IRIXClient
