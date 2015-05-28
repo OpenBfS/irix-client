@@ -9,6 +9,10 @@
      <servlet>
          <servlet-name>IRIXClient</servlet-name>
          <servlet-class>de.intevation.irix.IRIXClient</servlet-class>
+         <init-param>
+             <param-name>print-url</param-name>
+             <param-value>http://localhost:8080/print-servlet-3.3-SNAPSHOT/print/rodos_test/buildreport.pdf</param-value>
+         </init-param>
      </servlet>
 
      <servlet-mapping>
