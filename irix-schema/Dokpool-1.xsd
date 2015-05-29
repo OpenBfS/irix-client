@@ -45,10 +45,10 @@
 <xs:element name="Status" type="xs:string">
 
 </xs:element>
-<xs:element name="SamplingBegin" type="xs:date">
+<xs:element name="SamplingBegin" type="xs:dateTime">
 
 </xs:element>
-<xs:element name="SamplingEnd" type="xs:date">
+<xs:element name="SamplingEnd" type="xs:dateTime">
 
 </xs:element>
 </xs:sequence>

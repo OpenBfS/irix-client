@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.GregorianCalendar;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -35,6 +36,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.dom.DOMResult;
 
 import org.apache.log4j.Logger;
@@ -154,6 +156,24 @@ public class IRIXClient extends HttpServlet
         return report;
     }
 
+    /** Parses an XML Calendar string into an XMLGregorianCalendar object.
+     *
+     * @param str An  ISO 8601 DateTime like: 2015-05-28T15:35:54.168+02:00
+     */
+    protected XMLGregorianCalendar xmlCalendarFromString(String str) {
+        try {
+            Calendar cal = DatatypeConverter.parseDateTime(str);
+            GregorianCalendar c = new GregorianCalendar();
+            c.setTime(cal.getTime());
+            XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+            return date;
+        } catch (DatatypeConfigurationException e) {
+            log.debug("Failed parse Date value '" + str + "' :" + e.getMessage());
+        }
+        return null;
+    }
+
+
     /** Add an annotation to the Report containting the DokpoolMeta data fields.
      *
      * @param report The report to add the annoation to.
@@ -189,6 +209,10 @@ public class IRIXClient extends HttpServlet
                         " on DokpoolMeta object.");
             }
         }
+
+        // Handle the datetime values
+        meta.setSamplingBegin(xmlCalendarFromString(metaObj.getString("SamplingBegin")));
+        meta.setSamplingEnd(xmlCalendarFromString(metaObj.getString("SamplingEnd")));
 
         DOMResult res = new DOMResult();
         Element ele = null;
