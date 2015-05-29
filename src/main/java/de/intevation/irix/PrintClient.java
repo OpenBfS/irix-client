@@ -23,14 +23,14 @@ import org.apache.commons.httpclient.HttpClient;
 public class PrintClient
 {
     private static Logger log = Logger.getLogger(PrintClient.class);
-    /** Obtains the PDF to attach to the Report from mapfish-print service.
+    /** Obtains a Report from mapfish-print service.
      *
      * @param print-url The url to send the request to.
      * @param json The json spec for the print request.
      *
-     * @return: byte[] with the pdf report. null on error.
+     * @return: byte[] with the report. null on error.
      */
-    public static byte[] getPDF(String printUrl, String json)
+    public static byte[] getReport(String printUrl, String json)
         throws IOException {
         HttpClient client = new HttpClient(
                 new MultiThreadedHttpConnectionManager());

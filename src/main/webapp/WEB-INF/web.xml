@@ -11,7 +11,23 @@
          <servlet-class>de.intevation.irix.IRIXClient</servlet-class>
          <init-param>
              <param-name>print-url</param-name>
-             <param-value>http://localhost:8080/print-servlet-3.3-SNAPSHOT/print/rodos_test/buildreport.pdf</param-value>
+             <!-- Base URL of the mapfish-print service -->
+             <param-value>http://localhost:8080/print-servlet-3.3-SNAPSHOT/print/</param-value>
+         </init-param>
+         <init-param>
+             <!-- Relative URL of the PDF Print Service -->
+             <param-name>pdf-service-url</param-name>
+             <param-value>rodos_test/buildreport.pdf</param-value>
+         </init-param>
+         <init-param>
+             <!-- Relative URL of the Map only PNG Print Service -->
+             <param-name>map-png-service-url</param-name>
+             <param-value>rodos_test/buildreport.png</param-value>
+         </init-param>
+         <init-param>
+             <!-- Relative URL of the Legend only PNG Print Service -->
+             <param-name>legend-png-service-url</param-name>
+             <param-value>rodos_test/buildreport.png</param-value>
          </init-param>
      </servlet>
 

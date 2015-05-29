@@ -97,15 +97,35 @@ public class IRIXClient extends HttpServlet
 
     private ObjectFactory mObjFactory;
 
-    protected String mPrintUrl;
+    protected String mPDFUrl;
+    protected String mMapUrl;
+    protected String mLegendUrl;
 
     public void init() throws ServletException {
         mObjFactory = new ObjectFactory();
-        mPrintUrl = getInitParameter("print-url");
+        String baseUrl = getInitParameter("print-url");
 
-        if (mPrintUrl == null) {
+        if (baseUrl == null) {
             throw new ServletException("Missing 'print-url' as init-param in web.xml");
         }
+
+        String pdfUrl = getInitParameter("pdf-service-url");
+        if (pdfUrl == null) {
+            throw new ServletException("Missing 'pdf-service-url' as init-param in web.xml");
+        }
+        mPDFUrl = baseUrl + pdfUrl;
+
+        String mapUrl = getInitParameter("map-png-service-url");
+        if (mapUrl == null) {
+            throw new ServletException("Missing 'map-png-service-url' as init-param in web.xml");
+        }
+        mMapUrl = baseUrl + mapUrl;
+
+        String legendUrl = getInitParameter("legend-png-service-url");
+        if (legendUrl == null) {
+            throw new ServletException("Missing 'legend-png-service-url' as init-param in web.xml");
+        }
+        mLegendUrl = baseUrl + legendUrl;
     }
 
     /** Helper method to obtain the current datetime as XMLGregorianCalendar.*/
@@ -301,14 +321,23 @@ public class IRIXClient extends HttpServlet
         return;
     }
 
-    /** Attach a pdf as Annex on a ReportType object */
-    public void attachPDF(String title, byte[] pdf, ReportType report) {
+    /** Attach a file as Annex on a ReportType object.
+     *
+     * @param title The title of the FileEnclosure.
+     * @param data Binary content of the file.
+     * @param report Report to attach the file to.
+     * @param mimeType The mime type of that file.
+     * @param fileName The filename to set.
+     */
+
+    public void attachFile(String title, byte[] data, ReportType report,
+                           String mimeType, String fileName) {
 
         // Hashsum, algo should probably be configurable.
         FileHashType hash = new FileHashType();
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-            byte[] sha1sum = sha1.digest(pdf);
+            byte[] sha1sum = sha1.digest(data);
             hash.setValue(sha1sum);
             hash.setAlgorithm("SHA-1");
         } catch (NoSuchAlgorithmException e) {
@@ -318,11 +347,36 @@ public class IRIXClient extends HttpServlet
         // Add the acutal file
         FileEnclosureType file = new FileEnclosureType();
         file.setTitle(title);
-        file.setMimeType("application/pdf");
-        file.setFileSize(pdf.length);
+        file.setMimeType(mimeType);
+        file.setFileSize(data.length);
         file.setFileHash(hash);
-        file.setEnclosedObject(pdf);
+        file.setFileName(fileName);
+        file.setEnclosedObject(data);
         report.getAnnexes().getFileEnclosure().add(file);
+    }
+
+    /** Helper method to print / attach the requested documents.
+     *
+     * @param specs A list of the json print specs.
+     * @param report The report to attach the data to.
+     */
+    public void handlePrintSpecs(List<JSONObject> specs, ReportType report)
+        throws JSONException, IOException {
+        for (JSONObject spec: specs) {
+            String title = null;
+            title = spec.getJSONObject("attributes").getString("title");
+
+            byte[] content = PrintClient.getReport(mPDFUrl, spec.toString());
+            attachFile(title, content, report, "application/pdf", title + ".pdf");
+
+            // map without legend
+            content = PrintClient.getReport(mMapUrl, spec.toString());
+            attachFile(title + " Map", content, report, "image/png", title + " Map.png");
+
+            // legend without map
+            content = PrintClient.getReport(mLegendUrl, spec.toString());
+            attachFile(title + " Legend", content, report, "image/png", title + " Legend.png");
+        }
     }
 
     public void doPost(HttpServletRequest request,
@@ -345,25 +399,10 @@ public class IRIXClient extends HttpServlet
         try {
             report = prepareReport(jsonObject);
             addAnnotation(jsonObject, report);
+            handlePrintSpecs(printSpecs, report);
         } catch (JSONException e) {
             writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
             return;
-        }
-
-        for (JSONObject spec: printSpecs) {
-            byte[] pdfContent = PrintClient.getPDF(mPrintUrl, spec.toString());
-            String title = null;
-            try {
-                title = spec.getJSONObject("attributes").getString("title");
-            } catch (JSONException e) {
-                writeError("Failed to parse print sepc: "+ e.getMessage(), response);
-            }
-
-            if (pdfContent == null) {
-                writeError("Failed to print requested spec: ", response);
-                return;
-            }
-            attachPDF(title, pdfContent, report);
         }
 
         try {
