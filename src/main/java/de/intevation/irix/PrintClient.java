@@ -36,7 +36,7 @@ public class PrintClient
                 new MultiThreadedHttpConnectionManager());
         PostMethod post = new PostMethod(printUrl);
         post.setRequestBody(json);
-        post.addRequestHeader("Content-Type", "application/json");
+        post.addRequestHeader("Content-Type", "application/json;  charset=UTF-8");
         int result = client.executeMethod(post);
         InputStream in = post.getResponseBodyAsStream();
         byte [] retval = null;
