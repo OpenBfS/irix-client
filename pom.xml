@@ -55,7 +55,7 @@
                 <configuration>
                     <sources>
                         <source>irix-schema/IRIX.xsd</source>
-                        <source>irix-schema/Dokpool-1.xsd</source>
+                        <source>irix-schema/Dokpool-2.xsd</source>
                     </sources>
                 </configuration>
             </plugin>
