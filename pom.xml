@@ -24,7 +24,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -57,7 +56,56 @@
                         <source>irix-schema/IRIX.xsd</source>
                         <source>irix-schema/Dokpool-2.xsd</source>
                     </sources>
+                    <extension>true</extension>
+                    <useDependenciesAsEpisodes>true</useDependenciesAsEpisodes>
                 </configuration>
+            </plugin>
+            <plugin>
+              <!-- Due to a bug the following does not work to avoid duplicated
+                   generation of the IRIX scheme bindings.
+                   https://github.com/highsource/maven-jaxb2-plugin/issues/41
+              -->
+              <artifactId>exec-maven-plugin</artifactId>
+              <groupId>org.codehaus.mojo</groupId>
+              <executions>
+                <execution>
+                  <id>Fix use of episode file</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                    <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                      <executable>xsltproc</executable>
+                      <arguments>
+                          <argument>-o</argument>
+                          <argument>${project.build.directory}/generated-sources/jaxb/META-INF/sun-jaxb-fixed.episode</argument>
+                          <argument>${basedir}/irix-schema/episode-transform.xsl</argument>
+                          <argument>${project.build.directory}/generated-sources/jaxb/META-INF/sun-jaxb.episode</argument>
+                      </arguments>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlUrls>
+                                <wsdlUrl>http://localhost:8080/irix-webservice/upload-report?wsdl</wsdlUrl>
+                            </wsdlUrls>
+                            <xjcArgs>
+                                <xjcArg>-b</xjcArg>
+                                <xjcArg>${project.build.directory}/generated-sources/jaxb/META-INF/sun-jaxb-fixed.episode</xjcArg>
+                            </xjcArgs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
