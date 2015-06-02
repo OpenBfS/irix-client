@@ -32,6 +32,9 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import de.intevation.irixservice.UploadReportService;
+import de.intevation.irixservice.UploadReportInterface;
+
 public class IRIXClient extends HttpServlet
 {
     private static Logger log = Logger.getLogger(IRIXClient.class);
@@ -144,6 +147,17 @@ public class IRIXClient extends HttpServlet
         }
     }
 
+    /** Sends a report to the UploadReport service configured during buildtime.
+     *
+     * @param report The report to send. */
+    void sendReportToService(ReportType report) {
+        UploadReportService service = new UploadReportService();
+        UploadReportInterface irixservice = service.getUploadReportPort();
+        log.debug("Sending report.");
+        irixservice.uploadReport(report);
+        log.debug("Report successfully sent.");
+    }
+
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
         throws ServletException, IOException  {
@@ -169,6 +183,8 @@ public class IRIXClient extends HttpServlet
             writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
             return;
         }
+
+        sendReportToService(report);
 
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ReportType.class);

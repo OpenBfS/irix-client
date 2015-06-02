@@ -10,3 +10,5 @@ E.g.:
 
     curl -H "Content-Type: application/json; charset=utf-8" -X POST --data \
         @examples/irix-test.json http://localhost:8080/irix-client/IRIXClient
+
+The WSDL URL of the irix-webservice needs to be configured in the pom.xml
