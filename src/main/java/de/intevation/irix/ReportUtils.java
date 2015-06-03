@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.iaea._2012.irix.format.ReportType;
 import org.iaea._2012.irix.format.ObjectFactory;
 import org.iaea._2012.irix.format.base.OrganisationContactType;
+import org.iaea._2012.irix.format.base.PersonContactType;
 import org.iaea._2012.irix.format.identification.IdentificationType;
 import org.iaea._2012.irix.format.identification.IdentificationsType;
 import org.iaea._2012.irix.format.identification.ReportContextType;
@@ -131,17 +132,26 @@ public class ReportUtils
      * This is currently a basic version that adds a single
      * OrganisationContact element.
      *
+     * @param identifications element to which the identifications should be added.
      * @param obj the json object to take the information from.
-     * @param identification the element to which the identifications should be added.
      */
-    public static void handleIdentifications(IdentificationType id, JSONObject obj) throws JSONException {
-        IdentificationsType identifications = new IdentificationsType();
+    public static void addOrganization(IdentificationsType identifications, JSONObject obj) throws JSONException {
         OrganisationContactType orgContact = new OrganisationContactType();
         orgContact.setName(obj.getString("Name"));
         orgContact.setOrganisationID(obj.getString("OrganisationID"));
         orgContact.setCountry(obj.getString("Country"));
         identifications.getOrganisationContactInfo().add(orgContact);
-        id.setIdentifications(identifications);
+    }
+
+    /** Add a username to a report as PersonContactInfo.
+     *
+     * @param identifications identification sobject to modifiy.
+     * @param username The username of the user.
+     */
+    public static void addUser(IdentificationsType identifications, String user) {
+        PersonContactType person = new PersonContactType();
+        person.setName(user);
+        identifications.getPersonContactInfo().add(person);
     }
 
     /** Prepare the IRIX report to take the PDF attachments.
@@ -156,7 +166,8 @@ public class ReportUtils
         ReportType report = new ObjectFactory().createReportType();
         report.setVersion(SCHEMA_VERSION);
 
-        JSONObject idObj = jsonObject.getJSONObject(IRIX_DATA_KEY).getJSONObject("Identification");
+        JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
+        JSONObject idObj = irixObj.getJSONObject("Identification");
 
         // Setup identification
         IdentificationType identification = new IdentificationType();
@@ -168,7 +179,11 @@ public class ReportUtils
         identification.setReportUUID(UUID.randomUUID().toString());
 
         // Setup identifications in identification
-        handleIdentifications(identification, idObj.getJSONObject("OrganisationContact"));
+        IdentificationsType identifications = new IdentificationsType();
+        identification.setIdentifications(identifications);
+        addOrganization(identifications, idObj.getJSONObject("OrganisationContact"));
+
+        addUser(identifications, irixObj.getString("User"));
 
         // setPersonContactInfo and organizationcontactinfo ?
         identification.setReportContext(ReportContextType.fromValue(

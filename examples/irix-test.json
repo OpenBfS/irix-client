@@ -2,6 +2,7 @@
     "request-type": "upload/respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
+        "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",
             "ReportContext": "Test",
