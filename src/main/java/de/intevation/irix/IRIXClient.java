@@ -43,6 +43,10 @@ public class IRIXClient extends HttpServlet
     /** The name of the json array containing the print descriptions. */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
 
+    private static final String REQUEST_TYPE_UPLOAD = "upload";
+    private static final String REQUEST_TYPE_RESPOND = "respond";
+    private static final String REQUEST_TYPE_UPLOAD_AND_RESPOND = "upload/respond";
+
     protected String mPDFUrl;
     protected String mMapUrl;
     protected String mLegendUrl;
@@ -180,6 +184,22 @@ public class IRIXClient extends HttpServlet
             return;
         }
 
+        String requestType = null;
+        try {
+            requestType = jsonObject.getString("request-type");
+        } catch (JSONException e) {
+            writeError("Failed to parse request-type: "+ e.getMessage(), response);
+            return;
+        }
+        requestType = requestType.toLowerCase();
+
+        if (!requestType.equals(REQUEST_TYPE_UPLOAD) &&
+            !requestType.equals(REQUEST_TYPE_RESPOND) &&
+            !requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
+            writeError("Unknown request-type: " + requestType, response);
+            return;
+        }
+
         ReportType report = null;
         try {
             report = ReportUtils.prepareReport(jsonObject);
@@ -190,19 +210,25 @@ public class IRIXClient extends HttpServlet
             return;
         }
 
-        sendReportToService(report);
-
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ReportType.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            jaxbMarshaller.marshal(new ObjectFactory().createReport(report), response.getOutputStream());
-            response.setContentType("application/xml");
-        } catch (JAXBException e) {
-            writeError("Failed to print requested spec." + e.toString(), response);
+        if (requestType.equals(REQUEST_TYPE_UPLOAD) ||
+            requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
+            sendReportToService(report);
         }
-        response.getOutputStream().flush();
+
+        if (requestType.equals(REQUEST_TYPE_RESPOND) ||
+            requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
+            try {
+                JAXBContext jaxbContext = JAXBContext.newInstance(ReportType.class);
+                Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+                jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+                jaxbMarshaller.marshal(new ObjectFactory().createReport(report), response.getOutputStream());
+                response.setContentType("application/xml");
+            } catch (JAXBException e) {
+                writeError("Failed to print requested spec." + e.toString(), response);
+            }
+            response.getOutputStream().flush();
+        }
     }
 
     public void doGet(HttpServletRequest request,
