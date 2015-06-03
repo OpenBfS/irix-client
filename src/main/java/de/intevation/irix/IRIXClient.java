@@ -34,6 +34,7 @@ import org.json.JSONException;
 
 import de.intevation.irixservice.UploadReportService;
 import de.intevation.irixservice.UploadReportInterface;
+import de.intevation.irixservice.UploadReportException_Exception;
 
 public class IRIXClient extends HttpServlet
 {
@@ -150,11 +151,16 @@ public class IRIXClient extends HttpServlet
     /** Sends a report to the UploadReport service configured during buildtime.
      *
      * @param report The report to send. */
-    void sendReportToService(ReportType report) {
+    void sendReportToService(ReportType report)
+        throws ServletException {
         UploadReportService service = new UploadReportService();
         UploadReportInterface irixservice = service.getUploadReportPort();
         log.debug("Sending report.");
-        irixservice.uploadReport(report);
+        try {
+            irixservice.uploadReport(report);
+        } catch (UploadReportException_Exception e) {
+            throw new ServletException("Failed to send report to IRIX service.", e);
+        }
         log.debug("Report successfully sent.");
     }
 
