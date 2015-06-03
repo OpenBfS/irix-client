@@ -2,11 +2,17 @@
     "irix": {
         "Title": "IRIX ☢ Test request",
         "Identification": {
-            "OrganisationReporting": "Dummy Value",
+            "OrganisationReporting": "irix.test.de",
             "ReportContext": "Test",
             "SequenceNumber": "42",
+            "OrganisationContact": {
+                "Name": "TestOrg",
+                "OrganisationID": "irix.test.de",
+                "Country": "DE"
+            }
         },
         "DokpoolMeta": {
+            "Purpose": "Standard-Info",
             "DokpoolContentType": "eventinformation",
             "IsElan": "true",
             "IsDoksys": "false",
