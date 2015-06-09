@@ -53,9 +53,9 @@ public class PrintClient
                 in.close();
             }
         }
-        if (result < 200 || result >= 300) {
-            log.debug("Error during print.");
-            return null;
+        if (result < 200 || result >= 300 ||
+            post.getStatusCode() < 200 || post.getStatusCode() >= 300) {
+            throw new IOException("Communication with print service '" + printUrl + "' failed.");
         }
         return retval;
     }
