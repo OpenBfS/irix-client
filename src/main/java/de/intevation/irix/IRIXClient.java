@@ -50,31 +50,43 @@ public class IRIXClient extends HttpServlet
     protected String mPDFUrl;
     protected String mMapUrl;
     protected String mLegendUrl;
+    protected String mMapSuffix;
+    protected String mLegendSuffix;
 
     public void init() throws ServletException {
         String baseUrl = getInitParameter("print-url");
 
         if (baseUrl == null) {
-            throw new ServletException("Missing 'print-url' as init-param in web.xml");
+            throw new ServletException("Missing 'print-url' parameter");
         }
 
         String pdfUrl = getInitParameter("pdf-service-url");
         if (pdfUrl == null) {
-            throw new ServletException("Missing 'pdf-service-url' as init-param in web.xml");
+            throw new ServletException("Missing 'pdf-service-url' parameter");
         }
         mPDFUrl = baseUrl + pdfUrl;
 
         String mapUrl = getInitParameter("map-png-service-url");
         if (mapUrl == null) {
-            throw new ServletException("Missing 'map-png-service-url' as init-param in web.xml");
+            throw new ServletException("Missing 'map-png-service-url' parameter");
         }
         mMapUrl = baseUrl + mapUrl;
 
         String legendUrl = getInitParameter("legend-png-service-url");
         if (legendUrl == null) {
-            throw new ServletException("Missing 'legend-png-service-url' as init-param in web.xml");
+            throw new ServletException("Missing 'legend-png-service-url' parameter");
         }
         mLegendUrl = baseUrl + legendUrl;
+
+        mLegendSuffix = getInitParameter("legend-layout-suffix");
+        if (mLegendSuffix == null) {
+            throw new ServletException("Missing 'legend-layout-suffix' parameter.");
+        }
+
+        mMapSuffix = getInitParameter("map-layout-suffix");
+        if (mMapSuffix == null) {
+            throw new ServletException("Missing 'map-layout-suffix' parameter.");
+        }
     }
 
     /** Parse the content of the request into a json object. */
@@ -142,11 +154,15 @@ public class IRIXClient extends HttpServlet
             byte[] content = PrintClient.getReport(mPDFUrl, spec.toString());
             ReportUtils.attachFile(title, content, report, "application/pdf", title + ".pdf");
 
+            String baseLayout = spec.getString("layout");
+
             // map without legend
+            spec.put("layout", baseLayout + mMapSuffix);
             content = PrintClient.getReport(mMapUrl, spec.toString());
             ReportUtils.attachFile(title + " Map", content, report, "image/png", title + " Map.png");
 
             // legend without map
+            spec.put("layout", baseLayout + mLegendSuffix);
             content = PrintClient.getReport(mLegendUrl, spec.toString());
             ReportUtils.attachFile(title + " Legend", content, report, "image/png", title + " Legend.png");
         }

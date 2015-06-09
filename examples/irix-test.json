@@ -34,7 +34,7 @@
     },
     "mapfish-print": [
     {
-        "layout": "A4 landscape",
+        "layout": "rodosTest",
         "outputFormat": "pdf",
         "attributes": {
             "map_attribution": "© Bundesamt für Strahlenschutz",
@@ -88,7 +88,7 @@
         }
     },
     {
-        "layout": "A4 landscape",
+        "layout": "rodosTest",
         "outputFormat": "pdf",
         "attributes": {
             "map_attribution": "© Bundesamt für Strahlenschutz",

@@ -29,6 +29,16 @@
              <param-name>legend-png-service-url</param-name>
              <param-value>rodos_test/buildreport.png</param-value>
          </init-param>
+         <init-param>
+             <!-- Suffix to add to the layout for map only output -->
+             <param-name>map-layout-suffix</param-name>
+             <param-value>_map</param-value>
+         </init-param>
+         <init-param>
+             <!-- Suffix to add to the layout for legend only output -->
+             <param-name>legend-layout-suffix</param-name>
+             <param-value></param-value>
+         </init-param>
      </servlet>
 
      <servlet-mapping>
