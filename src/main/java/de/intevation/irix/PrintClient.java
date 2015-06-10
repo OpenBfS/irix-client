@@ -17,12 +17,17 @@ import java.io.ByteArrayOutputStream;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.params.HttpParams;
 
 /** Utility class to handle interaction with the mapfish-print service. */
 
 public class PrintClient
 {
     private static Logger log = Logger.getLogger(PrintClient.class);
+
+    private static int CONNECTION_TIMEOUT = 5000;
+
     /** Obtains a Report from mapfish-print service.
      *
      * @param print-url The url to send the request to.
@@ -32,8 +37,10 @@ public class PrintClient
      */
     public static byte[] getReport(String printUrl, String json)
         throws IOException {
-        HttpClient client = new HttpClient(
-                new MultiThreadedHttpConnectionManager());
+
+        HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
+
         PostMethod post = new PostMethod(printUrl);
         post.setRequestBody(json);
         post.addRequestHeader("Content-Type", "application/json;  charset=UTF-8");
