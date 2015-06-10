@@ -37,7 +37,7 @@
          <init-param>
              <!-- Suffix to add to the layout for legend only output -->
              <param-name>legend-layout-suffix</param-name>
-             <param-value></param-value>
+             <param-value>_legend</param-value>
          </init-param>
      </servlet>
 
