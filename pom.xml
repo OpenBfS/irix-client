@@ -40,25 +40,40 @@
         <finalName>irix-client</finalName>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.1</version>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.12.3</version>
                 <executions>
                     <execution>
-                        <id>xjc</id>
                         <goals>
-                            <goal>xjc</goal>
+                            <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <sources>
-                        <source>irix-schema/IRIX.xsd</source>
-                        <source>irix-schema/Dokpool-2.xsd</source>
-                    </sources>
-                    <extension>true</extension>
-                    <useDependenciesAsEpisodes>true</useDependenciesAsEpisodes>
+                    <schemaDirectory>${basedir}/src/main/webapp/WEB-INF/irix-schema</schemaDirectory>
+                    <schemaIncludes>
+                        <include>IRIX.xsd</include>
+                        <include>Dokpool-2.xsd</include>
+                    </schemaIncludes>
+                    <bindingDirectory>src/main/xjb</bindingDirectory>
+                    <bindingIncludes>
+                        <include>bindings.xml</include>
+                    </bindingIncludes>
+                    <args>
+                        <arg>-extension</arg>
+                        <arg>-Xnamespace-prefix</arg>
+                    </args>
+                    <verbose>false</verbose>
                 </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
+                        <artifactId>jaxb2-namespace-prefix</artifactId>
+                        <version>1.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
               <!-- Due to a bug the following does not work to avoid duplicated
@@ -78,9 +93,9 @@
                       <executable>xsltproc</executable>
                       <arguments>
                           <argument>-o</argument>
-                          <argument>${project.build.directory}/generated-sources/jaxb/META-INF/sun-jaxb-fixed.episode</argument>
-                          <argument>${basedir}/irix-schema/episode-transform.xsl</argument>
-                          <argument>${project.build.directory}/generated-sources/jaxb/META-INF/sun-jaxb.episode</argument>
+                          <argument>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb-fixed.episode</argument>
+                          <argument>${basedir}/src/main/webapp/WEB-INF/irix-schema/episode-transform.xsl</argument>
+                          <argument>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb.episode</argument>
                       </arguments>
                   </configuration>
                 </execution>
@@ -101,7 +116,7 @@
                             </wsdlUrls>
                             <xjcArgs>
                                 <xjcArg>-b</xjcArg>
-                                <xjcArg>${project.build.directory}/generated-sources/jaxb/META-INF/sun-jaxb-fixed.episode</xjcArg>
+                                <xjcArg>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb-fixed.episode</xjcArg>
                             </xjcArgs>
                         </configuration>
                     </execution>
