@@ -62,7 +62,13 @@ public class PrintClient
         }
         if (result < 200 || result >= 300 ||
             post.getStatusCode() < 200 || post.getStatusCode() >= 300) {
-            throw new IOException("Communication with print service '" + printUrl + "' failed.");
+            String errMsg = "Communication with print service '" + printUrl + "' failed.";
+            if (retval != null) {
+                errMsg += "\nServer response was: '" + new String(retval) + "'";
+            } else {
+                errMsg += "\nNo response from print service.";
+            }
+            throw new IOException(errMsg);
         }
         return retval;
     }
