@@ -22,6 +22,11 @@ import java.security.NoSuchAlgorithmException;
 
 import de.intevation.irix.ReportUtils;
 
+import org.xml.sax.SAXException;
+
+import java.io.File;
+
+import javax.xml.bind.JAXBException;
 public class ReportUtilsTest
 {
 
@@ -81,6 +86,43 @@ public class ReportUtilsTest
     }
 
     @Test
+    public void testDokpoolValidationOk() throws JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-2.xsd");
+        JSONObject json = new JSONObject(request);
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
+
+    /* TODO: Activate this one the schema makes it impossible to set wrong values.
+    @Test(expected=JAXBException.class)
+    public void testDokpoolValidationFail() throws JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-2.xsd");
+        JSONObject json = new JSONObject(request);
+        // This should not be valid
+        json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("DokpoolContentType", "foo bar");
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
+    */
+
+    @Test
+    public void testValidationOk() throws JSONException, SAXException, JAXBException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/IRIX.xsd");
+        JSONObject json = new JSONObject(request);
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.marshallReport(report, new java.io.ByteArrayOutputStream() ,schemaFile);
+    }
+
+    @Test(expected=JAXBException.class)
+    public void testValidationFail() throws JSONException, SAXException, JAXBException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/IRIX.xsd");
+        JSONObject json = new JSONObject(request);
+        json.getJSONObject("irix").getJSONObject("Identification").put("OrganisationReporting", "in valid");
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.marshallReport(report, new java.io.ByteArrayOutputStream() ,schemaFile);
+    }
+
+    @Test
     public void testUserName() {
         JSONObject json = new JSONObject(request);
         ReportType report = ReportUtils.prepareReport(json);
@@ -97,21 +139,21 @@ public class ReportUtilsTest
     }
 
     @Test
-    public void testAnnotation() {
+    public void testAnnotation() throws SAXException {
         JSONObject json = new JSONObject(request);
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report);
+        ReportUtils.addAnnotation(json, report, null);
         Assert.assertEquals(report.getAnnexes().getAnnotation().get(0).getTitle(),
         json.getJSONObject("irix").getString("Title"));
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testDateFormat() {
+    public void testDateFormat() throws SAXException {
         JSONObject json = new JSONObject(request);
         ReportType report = ReportUtils.prepareReport(json);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("SamplingBegin",
                "2015-15-28T15:35:54.168+02:00");
-        ReportUtils.addAnnotation(json, report);
+        ReportUtils.addAnnotation(json, report, null);
     }
 
     @Test

@@ -18,6 +18,10 @@ import java.util.UUID;
 import java.util.TimeZone;
 import java.math.BigInteger;
 
+import java.io.OutputStream;
+
+import java.io.File;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -28,6 +32,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.dom.DOMResult;
+
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
+
+import org.xml.sax.SAXException;
 
 import org.apache.log4j.Logger;
 
@@ -210,9 +220,14 @@ public class ReportUtils
      *
      * @param report The report to add the annoation to.
      * @param jsonObject The full jsonObject of the request.
+     * @param schemaFile Optional. Schema to validate against.
+     *
+     * @throws JSONException If the JSONObject does not match expectations.
+     * @throws SAXException In case there is a problem with the schema.
      **/
-    public static void addAnnotation(JSONObject jsonObject, ReportType report)
-        throws JSONException {
+    public static void addAnnotation(JSONObject jsonObject, ReportType report,
+            File schemaFile)
+        throws JSONException, SAXException {
         AnnotationType annotation = new AnnotationType();
         FreeTextType freeText = new FreeTextType();
         // freeText should probably get some content.
@@ -253,6 +268,12 @@ public class ReportUtils
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            if (schemaFile != null) {
+                SchemaFactory schemaFactory = SchemaFactory.newInstance(
+                        XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                Schema schema = schemaFactory.newSchema(schemaFile);
+                jaxbMarshaller.setSchema(schema);
+            }
             jaxbMarshaller.marshal(meta, res);
             ele = ((Document)res.getNode()).getDocumentElement();
         } catch (JAXBException e) {
@@ -294,5 +315,31 @@ public class ReportUtils
         file.setFileName(fileName);
         file.setEnclosedObject(data);
         report.getAnnexes().getFileEnclosure().add(file);
+    }
+
+    /** Validate and Marshall a report object for an output stream.
+     *
+     * @param report The report to marshall.
+     * @param out The output stream.
+     * @param irixSchema The schema to validate against. Or null.
+     * @throws javax.xml.bind.JAXBException In case of errors.
+     * @throws org.xml.sax.SAXException In case there is a problem with the schema.
+     */
+    public static void marshallReport(ReportType report, OutputStream out, File irixSchema)
+        throws JAXBException, SAXException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(
+                ReportType.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+        if (irixSchema != null) {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(
+                    XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(irixSchema);
+            jaxbMarshaller.setSchema(schema);
+        }
+
+        jaxbMarshaller.marshal(new ObjectFactory().createReport(report), out);
     }
 };

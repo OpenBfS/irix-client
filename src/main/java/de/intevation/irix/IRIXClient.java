@@ -10,8 +10,10 @@ package de.intevation.irix;
 
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.File;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -19,14 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
 
 import org.iaea._2012.irix.format.ReportType;
-import org.iaea._2012.irix.format.ObjectFactory;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -35,6 +34,8 @@ import org.json.JSONException;
 import de.intevation.irixservice.UploadReportService;
 import de.intevation.irixservice.UploadReportInterface;
 import de.intevation.irixservice.UploadReportException_Exception;
+
+import org.xml.sax.SAXException;
 
 public class IRIXClient extends HttpServlet
 {
@@ -46,6 +47,19 @@ public class IRIXClient extends HttpServlet
     private static final String REQUEST_TYPE_UPLOAD = "upload";
     private static final String REQUEST_TYPE_RESPOND = "respond";
     private static final String REQUEST_TYPE_UPLOAD_AND_RESPOND = "upload/respond";
+
+    /** Path to the irixSchema xsd file. */
+    private static final String IRIX_SCHEMA_LOC =
+        "/WEB-INF/irix-schema/IRIX.xsd";
+
+    /** Path to the Dokpool extension xsd file. */
+    private static final String DOKPOOL_SCHEMA_LOC =
+        "/WEB-INF/irix-schema/Dokpool-2.xsd";
+
+    /** The IRIX XSD-schema file. */
+    public File irixSchemaFile;
+    /** The Dokpool XSD-schema file. */
+    public File dokpoolSchemaFile;
 
     protected String mPDFUrl;
     protected String mMapUrl;
@@ -87,6 +101,11 @@ public class IRIXClient extends HttpServlet
         if (mMapSuffix == null) {
             throw new ServletException("Missing 'map-layout-suffix' parameter.");
         }
+
+        ServletContext sc = getServletContext();
+
+        irixSchemaFile = new File(sc.getRealPath(IRIX_SCHEMA_LOC));
+        dokpoolSchemaFile = new File(sc.getRealPath(DOKPOOL_SCHEMA_LOC));
     }
 
     /** Parse the content of the request into a json object. */
@@ -219,11 +238,13 @@ public class IRIXClient extends HttpServlet
         ReportType report = null;
         try {
             report = ReportUtils.prepareReport(jsonObject);
-            ReportUtils.addAnnotation(jsonObject, report);
+            ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
             handlePrintSpecs(printSpecs, report);
         } catch (JSONException e) {
             writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
             return;
+        } catch (SAXException e) {
+            throw new ServletException("Failed to parse schema.", e);
         }
 
         if (requestType.equals(REQUEST_TYPE_UPLOAD) ||
@@ -234,15 +255,13 @@ public class IRIXClient extends HttpServlet
         if (requestType.equals(REQUEST_TYPE_RESPOND) ||
             requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
             try {
-                JAXBContext jaxbContext = JAXBContext.newInstance(ReportType.class);
-                Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-                jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-                jaxbMarshaller.marshal(new ObjectFactory().createReport(report), response.getOutputStream());
-                response.setContentType("application/xml");
+                ReportUtils.marshallReport(report, response.getOutputStream(), irixSchemaFile);
             } catch (JAXBException e) {
                 writeError("Failed to print requested spec." + e.toString(), response);
+            } catch (SAXException e) {
+                throw new ServletException("Failed to parse schema.", e);
             }
+            response.setContentType("application/xml");
             response.getOutputStream().flush();
         }
     }
@@ -250,8 +269,5 @@ public class IRIXClient extends HttpServlet
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws ServletException, IOException  {
-    }
-
-    public void destroy() {
     }
 }
