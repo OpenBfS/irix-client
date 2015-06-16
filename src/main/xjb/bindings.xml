@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<jxb:bindings version="1.0"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
+              http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
+    <!-- Raise theEnumMemberSizeCap limit -->
+    <jxb:globalBindings typesafeEnumMaxMembers="1000"/>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/IRIX.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="irix" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/ReportIdentification.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.identification" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="id" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/EventInformation.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.eventinformation" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="event" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/ReleaseInformation.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.releaseinformation" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="release" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/Meteorology.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.meteorology" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="meteo" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/ConsequenceInformation.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.consequenceinformation" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="cons" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/ResponseActions.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.responseactions" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="resp" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/Measurements.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.measurements" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="meas" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/MedicalInformation.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.medicalinformation" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="medical" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/MediaInformation.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.mediainformation" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="media" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/Locations.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.locations" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="loc" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/Requests.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.requests" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="req" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/Annexes.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.annexes" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="annex" />
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../webapp/WEB-INF/irix-schema/Base.xsd">
+        <jxb:schemaBindings>
+            <jxb:package name="org.iaea._2012.irix.format.base" />
+        </jxb:schemaBindings>
+        <jxb:bindings>
+            <namespace:prefix name="base" />
+        </jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>
+
