@@ -239,6 +239,7 @@ public class ReportUtils
         JSONObject metaObj = irixObj.getJSONObject(DOKPOOL_DATA_KEY);
 
         DokpoolMeta meta = new DokpoolMeta();
+        boolean hasType = false;
         for (String field: DOKPOOL_FIELDS) {
             java.lang.reflect.Method method;
             String methodName = "set" + field;
@@ -248,8 +249,10 @@ public class ReportUtils
             String value = metaObj.getString(field);
             try {
                 if (field.startsWith("Is")) {
-                    method = meta.getClass().getMethod(methodName, boolean.class);
-                    method.invoke(meta, value.toLowerCase().equals("true"));
+                    method = meta.getClass().getMethod(methodName, Boolean.class);
+                    boolean bValue = value.toLowerCase().equals("true");
+                    method.invoke(meta, bValue);
+                    hasType = bValue || hasType;
                 } else {
                     method = meta.getClass().getMethod(methodName, String.class);
                     method.invoke(meta, value);
@@ -259,6 +262,17 @@ public class ReportUtils
                         " exception while trying to access " + methodName +
                         " on DokpoolMeta object.");
             }
+        }
+
+        if (!hasType) {
+            // Faked JAXBException as we can't write these restrictions in
+            // Schema 1.0
+            throw new JAXBException("At least one of the fields, IsElan, " +
+                                    "IsDoksys, IsRodos, IsRei needs to be true");
+        }
+        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue() &&
+                (meta.getNetworkOperator() == null || meta.getNetworkOperator().isEmpty())) {
+            throw new JAXBException("Doksys documents need to have a Network Operator set.");
         }
 
         // Handle the datetime values

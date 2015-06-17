@@ -85,7 +85,7 @@ public class ReportUtilsTest
         "        }," +
         "        \"DokpoolMeta\": {" +
         "            \"DokpoolContentType\": \"eventinformation\"," +
-        "            \"IsElan\": \"true\"," +
+        "            \"IsRei\": \"true\"," +
         "            \"SampleTypeId\": \"L5\"," +
         "            \"SampleType\": \"L5 - Niederschlag\"," +
         "            \"Dom\": \"Gamma-Spektrometrie\"," +
@@ -131,6 +131,25 @@ public class ReportUtilsTest
         ReportUtils.addAnnotation(json, report, schemaFile);
     }
 
+    @Test(expected=JAXBException.class)
+    public void testDokpoolValidationFailType() throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+        JSONObject json = new JSONObject(dokpoolMinimal);
+        json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("IsRei", "false");
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
+
+    @Test(expected=JAXBException.class)
+    public void testDokpoolValidationFailNetworkOp() throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+        JSONObject json = new JSONObject(dokpoolMinimal);
+        json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("IsRei", "false");
+        json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("IsDoksys", "true");
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
+
     @Test
     public void testSuggestedValues() throws JAXBException, JSONException, SAXException {
         File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
@@ -142,10 +161,14 @@ public class ReportUtilsTest
 
     @Test
     public void testDokpoolMinimal() throws JAXBException, JSONException, SAXException {
+        try {
         File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(dokpoolMinimal);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
+        }catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Test
