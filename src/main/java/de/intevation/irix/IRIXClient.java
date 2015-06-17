@@ -57,48 +57,28 @@ public class IRIXClient extends HttpServlet
         "/WEB-INF/irix-schema/Dokpool-3.xsd";
 
     /** The IRIX XSD-schema file. */
-    public File irixSchemaFile;
+    protected File irixSchemaFile;
     /** The Dokpool XSD-schema file. */
-    public File dokpoolSchemaFile;
+    protected File dokpoolSchemaFile;
 
-    protected String mPDFUrl;
-    protected String mMapUrl;
-    protected String mLegendUrl;
-    protected String mMapSuffix;
-    protected String mLegendSuffix;
+    protected String mapSuffix;
+    protected String legendSuffix;
+    protected String baseUrl;
 
     public void init() throws ServletException {
-        String baseUrl = getInitParameter("print-url");
+        baseUrl = getInitParameter("print-url");
 
         if (baseUrl == null) {
             throw new ServletException("Missing 'print-url' parameter");
         }
 
-        String pdfUrl = getInitParameter("pdf-service-url");
-        if (pdfUrl == null) {
-            throw new ServletException("Missing 'pdf-service-url' parameter");
-        }
-        mPDFUrl = baseUrl + pdfUrl;
-
-        String mapUrl = getInitParameter("map-png-service-url");
-        if (mapUrl == null) {
-            throw new ServletException("Missing 'map-png-service-url' parameter");
-        }
-        mMapUrl = baseUrl + mapUrl;
-
-        String legendUrl = getInitParameter("legend-png-service-url");
-        if (legendUrl == null) {
-            throw new ServletException("Missing 'legend-png-service-url' parameter");
-        }
-        mLegendUrl = baseUrl + legendUrl;
-
-        mLegendSuffix = getInitParameter("legend-layout-suffix");
-        if (mLegendSuffix == null) {
+        legendSuffix = getInitParameter("legend-layout-suffix");
+        if (legendSuffix == null) {
             throw new ServletException("Missing 'legend-layout-suffix' parameter.");
         }
 
-        mMapSuffix = getInitParameter("map-layout-suffix");
-        if (mMapSuffix == null) {
+        mapSuffix = getInitParameter("map-layout-suffix");
+        if (mapSuffix == null) {
             throw new ServletException("Missing 'map-layout-suffix' parameter.");
         }
 
@@ -163,26 +143,28 @@ public class IRIXClient extends HttpServlet
      *
      * @param specs A list of the json print specs.
      * @param report The report to attach the data to.
+     * @param printApp The printApp to use
      */
-    public void handlePrintSpecs(List<JSONObject> specs, ReportType report)
+    public void handlePrintSpecs(List<JSONObject> specs, ReportType report, String printApp)
         throws JSONException, IOException {
+        String printUrl = baseUrl + "/" + printApp + "/buildreport";
         for (JSONObject spec: specs) {
             String title = null;
             title = spec.getJSONObject("attributes").getString("title");
 
-            byte[] content = PrintClient.getReport(mPDFUrl, spec.toString());
+            byte[] content = PrintClient.getReport(printUrl + ".pdf", spec.toString());
             ReportUtils.attachFile(title, content, report, "application/pdf", title + ".pdf");
 
             String baseLayout = spec.getString("layout");
 
             // map without legend
-            spec.put("layout", baseLayout + mMapSuffix);
-            content = PrintClient.getReport(mMapUrl, spec.toString());
+            spec.put("layout", baseLayout + mapSuffix);
+            content = PrintClient.getReport(printUrl + ".png", spec.toString());
             ReportUtils.attachFile(title + " Map", content, report, "image/png", title + " Map.png");
 
             // legend without map
-            spec.put("layout", baseLayout + mLegendSuffix);
-            content = PrintClient.getReport(mLegendUrl, spec.toString());
+            spec.put("layout", baseLayout + legendSuffix);
+            content = PrintClient.getReport(printUrl + ".png", spec.toString());
             ReportUtils.attachFile(title + " Legend", content, report, "image/png", title + " Legend.png");
         }
     }
@@ -239,12 +221,14 @@ public class IRIXClient extends HttpServlet
         try {
             report = ReportUtils.prepareReport(jsonObject);
             ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            handlePrintSpecs(printSpecs, report);
+            handlePrintSpecs(printSpecs, report, jsonObject.getString("printapp"));
         } catch (JSONException e) {
             writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
             return;
         } catch (SAXException e) {
             throw new ServletException("Failed to parse schema.", e);
+        } catch (JAXBException e) {
+            throw new ServletException("Invalid request.", e);
         }
 
         if (requestType.equals(REQUEST_TYPE_UPLOAD) ||
@@ -257,7 +241,7 @@ public class IRIXClient extends HttpServlet
             try {
                 ReportUtils.marshallReport(report, response.getOutputStream(), irixSchemaFile);
             } catch (JAXBException e) {
-                writeError("Failed to print requested spec." + e.toString(), response);
+                throw new ServletException("Invalid request.", e);
             } catch (SAXException e) {
                 throw new ServletException("Failed to parse schema.", e);
             }

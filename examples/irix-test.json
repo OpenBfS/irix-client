@@ -1,4 +1,5 @@
 {
+    "printapp": "rodos_test",
     "request-type": "upload/respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
