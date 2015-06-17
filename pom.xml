@@ -54,7 +54,7 @@
                     <schemaDirectory>${basedir}/src/main/webapp/WEB-INF/irix-schema</schemaDirectory>
                     <schemaIncludes>
                         <include>IRIX.xsd</include>
-                        <include>Dokpool-2.xsd</include>
+                        <include>Dokpool-3.xsd</include>
                     </schemaIncludes>
                     <bindingDirectory>src/main/xjb</bindingDirectory>
                     <bindingIncludes>

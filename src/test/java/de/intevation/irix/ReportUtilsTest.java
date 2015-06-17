@@ -67,6 +67,35 @@ public class ReportUtilsTest
         "    }" +
         "}";
 
+    private static final String dokpoolMinimal=
+        "{" +
+        "    \"request-type\": \"upload/respond\"," +
+        "    \"irix\": {" +
+        "        \"Title\": \"IRIX Test request\"," +
+        "        \"User\": \"Testuser\"," +
+        "        \"Identification\": {" +
+        "            \"OrganisationReporting\": \"irix.test.de\"," +
+        "            \"ReportContext\": \"Test\"," +
+        "            \"SequenceNumber\": \"42\"," +
+        "            \"OrganisationContact\": {" +
+        "                \"Name\": \"TestOrg\"," +
+        "                \"OrganisationID\": \"irix.test.de\"," +
+        "                \"Country\": \"DE\"" +
+        "            }" +
+        "        }," +
+        "        \"DokpoolMeta\": {" +
+        "            \"DokpoolContentType\": \"eventinformation\"," +
+        "            \"IsElan\": \"true\"," +
+        "            \"SampleTypeId\": \"L5\"," +
+        "            \"SampleType\": \"L5 - Niederschlag\"," +
+        "            \"Dom\": \"Gamma-Spektrometrie\"," +
+        "            \"SamplingBegin\": \"2015-05-28T15:35:54.168+02:00\"," +
+        "            \"SamplingEnd\":\"2015-05-28T15:52:52.128+02:00\"" +
+        "        }" +
+        "    }" +
+        "}";
+
+
     @Test
     public void testOrganisationReporting() throws JSONException {
         JSONObject json = new JSONObject(request);
@@ -86,24 +115,38 @@ public class ReportUtilsTest
     }
 
     @Test
-    public void testDokpoolValidationOk() throws JSONException, SAXException {
-        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-2.xsd");
+    public void testDokpoolValidationOk() throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(request);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
     }
 
-    /* TODO: Activate this one the schema makes it impossible to set wrong values.
     @Test(expected=JAXBException.class)
-    public void testDokpoolValidationFail() throws JSONException, SAXException {
-        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-2.xsd");
+    public void testDokpoolValidationFail() throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(request);
-        // This should not be valid
         json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("DokpoolContentType", "foo bar");
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
     }
-    */
+
+    @Test
+    public void testSuggestedValues() throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+        JSONObject json = new JSONObject(request);
+        json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("Dom", "divination");
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
+
+    @Test
+    public void testDokpoolMinimal() throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+        JSONObject json = new JSONObject(dokpoolMinimal);
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
 
     @Test
     public void testValidationOk() throws JSONException, SAXException, JAXBException {
@@ -139,7 +182,7 @@ public class ReportUtilsTest
     }
 
     @Test
-    public void testAnnotation() throws SAXException {
+    public void testAnnotation() throws SAXException, JAXBException {
         JSONObject json = new JSONObject(request);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, null);
@@ -148,7 +191,7 @@ public class ReportUtilsTest
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testDateFormat() throws SAXException {
+    public void testDateFormat() throws SAXException, JAXBException {
         JSONObject json = new JSONObject(request);
         ReportType report = ReportUtils.prepareReport(json);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta").put("SamplingBegin",

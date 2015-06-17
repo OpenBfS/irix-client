@@ -54,7 +54,7 @@ public class IRIXClient extends HttpServlet
 
     /** Path to the Dokpool extension xsd file. */
     private static final String DOKPOOL_SCHEMA_LOC =
-        "/WEB-INF/irix-schema/Dokpool-2.xsd";
+        "/WEB-INF/irix-schema/Dokpool-3.xsd";
 
     /** The IRIX XSD-schema file. */
     public File irixSchemaFile;

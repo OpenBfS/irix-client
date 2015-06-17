@@ -224,10 +224,11 @@ public class ReportUtils
      *
      * @throws JSONException If the JSONObject does not match expectations.
      * @throws SAXException In case there is a problem with the schema.
+     * @throws JAXBException Validation failed or something else went wrong.
      **/
     public static void addAnnotation(JSONObject jsonObject, ReportType report,
             File schemaFile)
-        throws JSONException, SAXException {
+        throws JSONException, SAXException, JAXBException {
         AnnotationType annotation = new AnnotationType();
         FreeTextType freeText = new FreeTextType();
         // freeText should probably get some content.
@@ -241,6 +242,9 @@ public class ReportUtils
         for (String field: DOKPOOL_FIELDS) {
             java.lang.reflect.Method method;
             String methodName = "set" + field;
+            if (!metaObj.has(field)) {
+                continue;
+            }
             String value = metaObj.getString(field);
             try {
                 if (field.startsWith("Is")) {
@@ -263,22 +267,18 @@ public class ReportUtils
 
         DOMResult res = new DOMResult();
         Element ele = null;
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(DokpoolMeta.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            if (schemaFile != null) {
-                SchemaFactory schemaFactory = SchemaFactory.newInstance(
-                        XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                Schema schema = schemaFactory.newSchema(schemaFile);
-                jaxbMarshaller.setSchema(schema);
-            }
-            jaxbMarshaller.marshal(meta, res);
-            ele = ((Document)res.getNode()).getDocumentElement();
-        } catch (JAXBException e) {
-            log.error("Failed marshall DokpoolMeta object.: "+ e.toString());
+        JAXBContext jaxbContext = JAXBContext.newInstance(DokpoolMeta.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        if (schemaFile != null) {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(
+                    XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(schemaFile);
+            jaxbMarshaller.setSchema(schema);
         }
+        jaxbMarshaller.marshal(meta, res);
+        ele = ((Document)res.getNode()).getDocumentElement();
 
         annotation.getAny().add(ele);
         report.getAnnexes().getAnnotation().add(annotation);
