@@ -144,35 +144,43 @@ public class IRIXClient extends HttpServlet
      * @param specs A list of the json print specs.
      * @param report The report to attach the data to.
      * @param printApp The printApp to use
+     * @param title The tile for the Annex
      */
-    public void handlePrintSpecs(List<JSONObject> specs, ReportType report, String printApp)
+    protected void handlePrintSpecs(List<JSONObject> specs, ReportType report, String printApp,
+                                    String title)
         throws JSONException, IOException {
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
+        int i = 1;
+        String suffix = "";
         for (JSONObject spec: specs) {
-            String title = null;
-            title = spec.getJSONObject("attributes").getString("title");
+            if (specs.size() > 1) {
+                suffix = " " + Integer.toString(i++);
+            }
 
             byte[] content = PrintClient.getReport(printUrl + ".pdf", spec.toString());
-            ReportUtils.attachFile(title, content, report, "application/pdf", title + ".pdf");
+            ReportUtils.attachFile(title + suffix, content, report, "application/pdf",
+                    title + suffix + ".pdf");
 
             String baseLayout = spec.getString("layout");
 
             // map without legend
             spec.put("layout", baseLayout + mapSuffix);
             content = PrintClient.getReport(printUrl + ".png", spec.toString());
-            ReportUtils.attachFile(title + " Map", content, report, "image/png", title + " Map.png");
+            ReportUtils.attachFile(title + " Map" + suffix, content, report, "image/png",
+                    title + " Map" + suffix + ".png");
 
             // legend without map
             spec.put("layout", baseLayout + legendSuffix);
             content = PrintClient.getReport(printUrl + ".png", spec.toString());
-            ReportUtils.attachFile(title + " Legend", content, report, "image/png", title + " Legend.png");
+            ReportUtils.attachFile(title + " Legend" + suffix, content, report, "image/png",
+                    title + " Legend" + suffix + ".png");
         }
     }
 
     /** Sends a report to the UploadReport service configured during buildtime.
      *
      * @param report The report to send. */
-    void sendReportToService(ReportType report)
+    protected void sendReportToService(ReportType report)
         throws ServletException {
         UploadReportService service = new UploadReportService();
         UploadReportInterface irixservice = service.getUploadReportPort();
@@ -221,7 +229,8 @@ public class IRIXClient extends HttpServlet
         try {
             report = ReportUtils.prepareReport(jsonObject);
             ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            handlePrintSpecs(printSpecs, report, jsonObject.getString("printapp"));
+            handlePrintSpecs(printSpecs, report, jsonObject.getString("printapp"),
+                             jsonObject.getJSONObject("irix").getString("Title"));
         } catch (JSONException e) {
             writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
             return;
