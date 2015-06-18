@@ -14,8 +14,9 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
+import java.net.HttpURLConnection;
+
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -63,7 +64,7 @@ public class PrintClient {
             setDefaultRequestConfig(config).build();
 
         HttpEntity entity = new StringEntity(json,
-                ContentType.create("application/json", Charset.forName("UTF-8")));
+            ContentType.create("application/json", Charset.forName("UTF-8")));
 
         HttpPost post = new HttpPost(printUrl);
         post.setEntity(entity);
@@ -78,7 +79,7 @@ public class PrintClient {
             if (in != null) {
                 try {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    byte [] buf = new byte[4096];
+                    byte [] buf = new byte[BYTE_ARRAY_SIZE];
                     int r;
                     while ((r = in.read(buf)) >= 0) {
                         out.write(buf, 0, r);
@@ -93,8 +94,10 @@ public class PrintClient {
             resp.close();
         }
 
-        if (status.getStatusCode() < 200 || status.getStatusCode() >= 300) {
-            String errMsg = "Communication with print service '" + printUrl + "' failed.";
+        if (status.getStatusCode() < HttpURLConnection.HTTP_OK
+            || status.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+            String errMsg = "Communication with print service '"
+                + printUrl + "' failed.";
             if (retval != null) {
                 errMsg += "\nServer response was: '"
                     + new String(retval) + "'";
