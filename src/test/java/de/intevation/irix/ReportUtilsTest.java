@@ -16,6 +16,7 @@ import org.json.JSONException;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Before;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +26,11 @@ import de.intevation.irix.ReportUtils;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
 
 import javax.xml.bind.JAXBException;
 public class ReportUtilsTest
@@ -95,6 +101,15 @@ public class ReportUtilsTest
         "    }" +
         "}";
 
+    @Before
+    public void setupLogging() {
+        ConsoleAppender console = new ConsoleAppender(); //create appender
+        String PATTERN = "[%p|%C{1}] %m%n";
+        console.setLayout(new PatternLayout(PATTERN));
+        console.setThreshold(Level.ERROR); // Change here for testing ;-)
+        console.activateOptions();
+        Logger.getRootLogger().addAppender(console);
+    }
 
     @Test
     public void testOrganisationReporting() throws JSONException {
