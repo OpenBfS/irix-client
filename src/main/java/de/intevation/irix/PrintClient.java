@@ -14,11 +14,19 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
-import java.net.HttpURLConnection;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.HttpEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.StatusLine;
+import org.apache.http.util.EntityUtils;
 
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.HttpClient;
+import java.nio.charset.Charset;
 
 /** Utility class to handle interaction with the mapfish-print service. */
 
@@ -43,37 +51,45 @@ public class PrintClient {
     public static byte[] getReport(String printUrl, String json)
         throws IOException {
 
-        HttpClient client =
-            new HttpClient(new MultiThreadedHttpConnectionManager());
-        client.getHttpConnectionManager().getParams()
-            .setConnectionTimeout(CONNECTION_TIMEOUT);
+        RequestConfig config = RequestConfig.custom().
+            setConnectTimeout(CONNECTION_TIMEOUT).build();
 
-        PostMethod post = new PostMethod(printUrl);
-        post.setRequestBody(json);
-        post.addRequestHeader("Content-Type",
-            "application/json;  charset=UTF-8");
-        int result = client.executeMethod(post);
-        InputStream in = post.getResponseBodyAsStream();
+        CloseableHttpClient client = HttpClients.custom().
+            setDefaultRequestConfig(config).build();
+
+        HttpEntity entity = new StringEntity(json,
+                ContentType.create("application/json", Charset.forName("UTF-8")));
+
+        HttpPost post = new HttpPost(printUrl);
+        post.setEntity(entity);
+        CloseableHttpResponse resp = client.execute(post);
+
+        StatusLine status = resp.getStatusLine();
+
         byte [] retval = null;
-        if (in != null) {
-            try {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte [] buf = new byte[BYTE_ARRAY_SIZE];
-                int r;
-                while ((r = in.read(buf)) >= 0) {
-                    out.write(buf, 0, r);
+        try {
+            HttpEntity respEnt = resp.getEntity();
+            InputStream in = respEnt.getContent();
+            if (in != null) {
+                try {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    byte [] buf = new byte[4096];
+                    int r;
+                    while ((r = in.read(buf)) >= 0) {
+                        out.write(buf, 0, r);
+                    }
+                    retval = out.toByteArray();
+                } finally {
+                    in.close();
+                    EntityUtils.consume(respEnt);
                 }
-                retval = out.toByteArray();
-            } finally {
-                in.close();
             }
+        } finally {
+            resp.close();
         }
-        if (result < HttpURLConnection.HTTP_OK
-            || result >= HttpURLConnection.HTTP_MULT_CHOICE
-            || post.getStatusCode() < HttpURLConnection.HTTP_OK
-            || post.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
-            String errMsg = "Communication with print service '"
-                + printUrl + "' failed.";
+
+        if (status.getStatusCode() < 200 || status.getStatusCode() >= 300) {
+            String errMsg = "Communication with print service '" + printUrl + "' failed.";
             if (retval != null) {
                 errMsg += "\nServer response was: '"
                     + new String(retval) + "'";
