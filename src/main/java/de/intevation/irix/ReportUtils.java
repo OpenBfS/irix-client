@@ -68,7 +68,7 @@ import de.bfs.irix.extensions.dokpool.DokpoolMeta;
  * IRIX document scheme and the Dokpool extension.
  * The helper methods are directly tied to the IRIXClient
  * JSON input format. */
-public class ReportUtils {
+public final class ReportUtils {
     private static Logger log = Logger.getLogger(ReportUtils.class);
 
     /** The name of the json object containing the irix information. */
