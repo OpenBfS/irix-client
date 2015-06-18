@@ -161,14 +161,10 @@ public class ReportUtilsTest
 
     @Test
     public void testDokpoolMinimal() throws JAXBException, JSONException, SAXException {
-        try {
         File schemaFile = new File("src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(dokpoolMinimal);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
-        }catch (Exception e) {
-            System.out.println(e);
-        }
     }
 
     @Test
