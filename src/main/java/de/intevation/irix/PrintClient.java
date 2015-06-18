@@ -29,6 +29,10 @@ public class PrintClient {
 
     private static final int BYTE_ARRAY_SIZE = 4096;
 
+    private PrintClient() {
+        // hidden constructor to avoid instantiation.
+    }
+
     /** Obtains a Report from mapfish-print service.
      *
      * @param print-url The url to send the request to.

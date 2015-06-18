@@ -102,6 +102,10 @@ public class ReportUtils {
         "Purpose"
     };
 
+    private ReportUtils() {
+        // hidden constructor to avoid instantiation.
+    }
+
     /** Create a XMLGregorianCalendar from a GregorianCalendar object.
      *
      * This method is necessary to fulfil the date spec of the
