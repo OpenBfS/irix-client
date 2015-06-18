@@ -19,7 +19,8 @@ public class BaseServletContextListener implements ServletContextListener {
 
     public static final String LOG4J_PROPERTIES = "IRIXCLIENT_LOG4J_PROPERIES";
 
-    public static final Logger log = Logger.getLogger(BaseServletContextListener.class);
+    public static Logger log =
+        Logger.getLogger(BaseServletContextListener.class);
 
     @Override
     public void  contextInitialized(ServletContextEvent sce) {

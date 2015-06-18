@@ -37,8 +37,7 @@ import de.intevation.irixservice.UploadReportException_Exception;
 
 import org.xml.sax.SAXException;
 
-public class IRIXClient extends HttpServlet
-{
+public class IRIXClient extends HttpServlet {
     private static Logger log = Logger.getLogger(IRIXClient.class);
 
     /** The name of the json array containing the print descriptions. */
@@ -46,7 +45,7 @@ public class IRIXClient extends HttpServlet
 
     private static final String REQUEST_TYPE_UPLOAD = "upload";
     private static final String REQUEST_TYPE_RESPOND = "respond";
-    private static final String REQUEST_TYPE_UPLOAD_AND_RESPOND = "upload/respond";
+    private static final String REQUEST_TYPE_UPLOAD_RESPOND = "upload/respond";
 
     /** Path to the irixSchema xsd file. */
     private static final String IRIX_SCHEMA_LOC =
@@ -74,12 +73,14 @@ public class IRIXClient extends HttpServlet
 
         legendSuffix = getInitParameter("legend-layout-suffix");
         if (legendSuffix == null) {
-            throw new ServletException("Missing 'legend-layout-suffix' parameter.");
+            throw new ServletException(
+                "Missing 'legend-layout-suffix' parameter.");
         }
 
         mapSuffix = getInitParameter("map-layout-suffix");
         if (mapSuffix == null) {
-            throw new ServletException("Missing 'map-layout-suffix' parameter.");
+            throw new ServletException(
+                "Missing 'map-layout-suffix' parameter.");
         }
 
         ServletContext sc = getServletContext();
@@ -117,7 +118,8 @@ public class IRIXClient extends HttpServlet
     protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
         List <JSONObject> retval = new ArrayList<JSONObject>();
         try {
-            JSONArray mapfishPrintList = jsonObject.getJSONArray(PRINT_JOB_LIST_KEY);
+            JSONArray mapfishPrintList =
+                jsonObject.getJSONArray(PRINT_JOB_LIST_KEY);
             for (int i = 0; i < mapfishPrintList.length(); i++) {
                 JSONObject jobDesc = mapfishPrintList.getJSONObject(i);
                 retval.add(jobDesc);
@@ -132,7 +134,7 @@ public class IRIXClient extends HttpServlet
     public void writeError(String msg, HttpServletResponse response)
         throws IOException {
         response.setContentType("text/html");
-        response.setStatus(500);
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getOutputStream().print(msg);
         log.debug("Sending error: " + msg);
         response.getOutputStream().flush();
@@ -146,8 +148,8 @@ public class IRIXClient extends HttpServlet
      * @param printApp The printApp to use
      * @param title The tile for the Annex
      */
-    protected void handlePrintSpecs(List<JSONObject> specs, ReportType report, String printApp,
-                                    String title)
+    protected void handlePrintSpecs(List<JSONObject> specs,
+        ReportType report, String printApp, String title)
         throws JSONException, IOException {
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
         int i = 1;
@@ -157,23 +159,26 @@ public class IRIXClient extends HttpServlet
                 suffix = " " + Integer.toString(i++);
             }
 
-            byte[] content = PrintClient.getReport(printUrl + ".pdf", spec.toString());
-            ReportUtils.attachFile(title + suffix, content, report, "application/pdf",
-                    title + suffix + ".pdf");
+            byte[] content = PrintClient.getReport(printUrl + ".pdf",
+                spec.toString());
+            ReportUtils.attachFile(title + suffix, content, report,
+                "application/pdf", title + suffix + ".pdf");
 
             String baseLayout = spec.getString("layout");
 
             // map without legend
             spec.put("layout", baseLayout + mapSuffix);
-            content = PrintClient.getReport(printUrl + ".png", spec.toString());
-            ReportUtils.attachFile(title + " Map" + suffix, content, report, "image/png",
-                    title + " Map" + suffix + ".png");
+            content = PrintClient.getReport(printUrl + ".png",
+                spec.toString());
+            ReportUtils.attachFile(title + " Map" + suffix, content, report,
+                "image/png", title + " Map" + suffix + ".png");
 
             // legend without map
             spec.put("layout", baseLayout + legendSuffix);
-            content = PrintClient.getReport(printUrl + ".png", spec.toString());
-            ReportUtils.attachFile(title + " Legend" + suffix, content, report, "image/png",
-                    title + " Legend" + suffix + ".png");
+            content = PrintClient.getReport(printUrl + ".png",
+                spec.toString());
+            ReportUtils.attachFile(title + " Legend" + suffix, content, report,
+                "image/png", title + " Legend" + suffix + ".png");
         }
     }
 
@@ -188,7 +193,8 @@ public class IRIXClient extends HttpServlet
         try {
             irixservice.uploadReport(report);
         } catch (UploadReportException_Exception e) {
-            throw new ServletException("Failed to send report to IRIX service.", e);
+            throw new ServletException(
+                "Failed to send report to IRIX service.", e);
         }
         log.debug("Report successfully sent.");
     }
@@ -205,7 +211,8 @@ public class IRIXClient extends HttpServlet
 
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
         if (printSpecs.isEmpty()) {
-            writeError("Could not extract any print specs from request", response);
+            writeError("Could not extract any print specs from request",
+                response);
             return;
         }
 
@@ -213,14 +220,15 @@ public class IRIXClient extends HttpServlet
         try {
             requestType = jsonObject.getString("request-type");
         } catch (JSONException e) {
-            writeError("Failed to parse request-type: "+ e.getMessage(), response);
+            writeError("Failed to parse request-type: " + e.getMessage(),
+                response);
             return;
         }
         requestType = requestType.toLowerCase();
 
-        if (!requestType.equals(REQUEST_TYPE_UPLOAD) &&
-            !requestType.equals(REQUEST_TYPE_RESPOND) &&
-            !requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
+        if (!requestType.equals(REQUEST_TYPE_UPLOAD)
+            && !requestType.equals(REQUEST_TYPE_RESPOND)
+            && !requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
             writeError("Unknown request-type: " + requestType, response);
             return;
         }
@@ -229,10 +237,12 @@ public class IRIXClient extends HttpServlet
         try {
             report = ReportUtils.prepareReport(jsonObject);
             ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            handlePrintSpecs(printSpecs, report, jsonObject.getString("printapp"),
-                             jsonObject.getJSONObject("irix").getString("Title"));
+            handlePrintSpecs(printSpecs, report,
+                jsonObject.getString("printapp"),
+                jsonObject.getJSONObject("irix").getString("Title"));
         } catch (JSONException e) {
-            writeError("Failed to parse IRIX information: "+ e.getMessage(), response);
+            writeError("Failed to parse IRIX information: " + e.getMessage(),
+                response);
             return;
         } catch (SAXException e) {
             throw new ServletException("Failed to parse schema.", e);
@@ -240,15 +250,16 @@ public class IRIXClient extends HttpServlet
             throw new ServletException("Invalid request.", e);
         }
 
-        if (requestType.equals(REQUEST_TYPE_UPLOAD) ||
-            requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
+        if (requestType.equals(REQUEST_TYPE_UPLOAD)
+            || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
             sendReportToService(report);
         }
 
-        if (requestType.equals(REQUEST_TYPE_RESPOND) ||
-            requestType.equals(REQUEST_TYPE_UPLOAD_AND_RESPOND)) {
+        if (requestType.equals(REQUEST_TYPE_RESPOND)
+            || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
             try {
-                ReportUtils.marshallReport(report, response.getOutputStream(), irixSchemaFile);
+                ReportUtils.marshallReport(report, response.getOutputStream(),
+                    irixSchemaFile);
             } catch (JAXBException e) {
                 throw new ServletException("Invalid request.", e);
             } catch (SAXException e) {

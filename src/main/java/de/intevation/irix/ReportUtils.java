@@ -68,8 +68,7 @@ import de.bfs.irix.extensions.dokpool.DokpoolMeta;
  * IRIX document scheme and the Dokpool extension.
  * The helper methods are directly tied to the IRIXClient
  * JSON input format. */
-public class ReportUtils
-{
+public class ReportUtils {
     private static Logger log = Logger.getLogger(ReportUtils.class);
 
     /** The name of the json object containing the irix information. */
@@ -111,7 +110,8 @@ public class ReportUtils
      * @param cal The Gregorian calendar.
      * @return An XMLGregorianCalendar with msces set to undefined.
      */
-    protected static XMLGregorianCalendar createXMLCalFromGregCal(GregorianCalendar cal) {
+    protected static XMLGregorianCalendar createXMLCalFromGregCal(
+        GregorianCalendar cal) {
         cal.setTimeZone(TimeZone.getTimeZone("utc"));
         try {
             XMLGregorianCalendar date = DatatypeFactory.newInstance().
@@ -142,10 +142,12 @@ public class ReportUtils
      * This is currently a basic version that adds a single
      * OrganisationContact element.
      *
-     * @param identifications element to which the identifications should be added.
+     * @param identifications element to which the identifications should
+     * be added.
      * @param obj the json object to take the information from.
      */
-    public static void addOrganization(IdentificationsType identifications, JSONObject obj) throws JSONException {
+    public static void addOrganization(IdentificationsType identifications,
+        JSONObject obj) throws JSONException {
         OrganisationContactType orgContact = new OrganisationContactType();
         orgContact.setName(obj.getString("Name"));
         orgContact.setOrganisationID(obj.getString("OrganisationID"));
@@ -158,7 +160,8 @@ public class ReportUtils
      * @param identifications identification sobject to modifiy.
      * @param username The username of the user.
      */
-    public static void addUser(IdentificationsType identifications, String user) {
+    public static void addUser(IdentificationsType identifications,
+        String user) {
         PersonContactType person = new PersonContactType();
         person.setName(user);
         identifications.getPersonContactInfo().add(person);
@@ -181,17 +184,20 @@ public class ReportUtils
 
         // Setup identification
         IdentificationType identification = new IdentificationType();
-        identification.setOrganisationReporting(idObj.getString("OrganisationReporting"));
+        identification.setOrganisationReporting(
+            idObj.getString("OrganisationReporting"));
         identification.setDateAndTimeOfCreation(getXMLGregorianNow());
         if (idObj.has("SequenceNumber")) {
-            identification.setSequenceNumber(new BigInteger(idObj.getString("SequenceNumber")));
+            identification.setSequenceNumber(
+                new BigInteger(idObj.getString("SequenceNumber")));
         }
         identification.setReportUUID(UUID.randomUUID().toString());
 
         // Setup identifications in identification
         IdentificationsType identifications = new IdentificationsType();
         identification.setIdentifications(identifications);
-        addOrganization(identifications, idObj.getJSONObject("OrganisationContact"));
+        addOrganization(identifications,
+            idObj.getJSONObject("OrganisationContact"));
 
         addUser(identifications, irixObj.getString("User"));
 
@@ -216,7 +222,7 @@ public class ReportUtils
         return createXMLCalFromGregCal(c);
     }
 
-    /** Add an annotation to the Report containting the DokpoolMeta data fields.
+    /** Add an annotation to the Report containing the DokpoolMeta data fields.
      *
      * @param report The report to add the annoation to.
      * @param jsonObject The full jsonObject of the request.
@@ -249,35 +255,41 @@ public class ReportUtils
             String value = metaObj.getString(field);
             try {
                 if (field.startsWith("Is")) {
-                    method = meta.getClass().getMethod(methodName, Boolean.class);
+                    method = meta.getClass().getMethod(methodName,
+                        Boolean.class);
                     boolean bValue = value.toLowerCase().equals("true");
                     method.invoke(meta, bValue);
                     hasType = bValue || hasType;
                 } else {
-                    method = meta.getClass().getMethod(methodName, String.class);
+                    method = meta.getClass().getMethod(methodName,
+                        String.class);
                     method.invoke(meta, value);
                 }
             } catch (Exception e) {
-                log.error(e.getClass().getName() +
-                        " exception while trying to access " + methodName +
-                        " on DokpoolMeta object.");
+                log.error(e.getClass().getName()
+                    + " exception while trying to access " + methodName
+                    + " on DokpoolMeta object.");
             }
         }
 
         if (!hasType) {
             // Faked JAXBException as we can't write these restrictions in
             // Schema 1.0
-            throw new JAXBException("At least one of the fields, IsElan, " +
-                                    "IsDoksys, IsRodos, IsRei needs to be true");
+            throw new JAXBException("At least one of the fields, IsElan, "
+                + "IsDoksys, IsRodos, IsRei needs to be true");
         }
-        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue() &&
-                (meta.getNetworkOperator() == null || meta.getNetworkOperator().isEmpty())) {
-            throw new JAXBException("Doksys documents need to have a Network Operator set.");
+        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()
+            && (meta.getNetworkOperator() == null
+                || meta.getNetworkOperator().isEmpty())) {
+            throw new JAXBException(
+                "Doksys documents need to have a Network Operator set.");
         }
 
         // Handle the datetime values
-        meta.setSamplingBegin(xmlCalendarFromString(metaObj.getString("SamplingBegin")));
-        meta.setSamplingEnd(xmlCalendarFromString(metaObj.getString("SamplingEnd")));
+        meta.setSamplingBegin(
+            xmlCalendarFromString(metaObj.getString("SamplingBegin")));
+        meta.setSamplingEnd(
+            xmlCalendarFromString(metaObj.getString("SamplingEnd")));
 
         DOMResult res = new DOMResult();
         Element ele = null;
@@ -292,7 +304,7 @@ public class ReportUtils
             jaxbMarshaller.setSchema(schema);
         }
         jaxbMarshaller.marshal(meta, res);
-        ele = ((Document)res.getNode()).getDocumentElement();
+        ele = ((Document) res.getNode()).getDocumentElement();
 
         annotation.getAny().add(ele);
         report.getAnnexes().getAnnotation().add(annotation);
@@ -306,9 +318,13 @@ public class ReportUtils
      * @param mimeType The mime type of that file.
      * @param fileName The filename to set.
      */
-    public static void attachFile(String title, byte[] data, ReportType report,
-                                  String mimeType, String fileName) {
-
+    public static void attachFile(
+        String title,
+        byte[] data,
+        ReportType report,
+        String mimeType,
+        String fileName
+    ) {
         // Hashsum, algo should probably be configurable.
         FileHashType hash = new FileHashType();
         try {
@@ -337,9 +353,11 @@ public class ReportUtils
      * @param out The output stream.
      * @param irixSchema The schema to validate against. Or null.
      * @throws javax.xml.bind.JAXBException In case of errors.
-     * @throws org.xml.sax.SAXException In case there is a problem with the schema.
+     * @throws org.xml.sax.SAXException In case there is a problem with
+     * the schema.
      */
-    public static void marshallReport(ReportType report, OutputStream out, File irixSchema)
+    public static void marshallReport(ReportType report, OutputStream out,
+        File irixSchema)
         throws JAXBException, SAXException {
         JAXBContext jaxbContext = JAXBContext.newInstance(
                 ReportType.class);

@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
+import java.net.HttpURLConnection;
+
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.HttpClient;
@@ -22,11 +24,12 @@ import org.apache.commons.httpclient.params.HttpParams;
 
 /** Utility class to handle interaction with the mapfish-print service. */
 
-public class PrintClient
-{
+public class PrintClient {
     private static Logger log = Logger.getLogger(PrintClient.class);
 
-    private static int CONNECTION_TIMEOUT = 5000;
+    private static final int CONNECTION_TIMEOUT = 5000;
+
+    private static final int BYTE_ARRAY_SIZE = 4096;
 
     /** Obtains a Report from mapfish-print service.
      *
@@ -38,19 +41,22 @@ public class PrintClient
     public static byte[] getReport(String printUrl, String json)
         throws IOException {
 
-        HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
+        HttpClient client =
+            new HttpClient(new MultiThreadedHttpConnectionManager());
+        client.getHttpConnectionManager().getParams()
+            .setConnectionTimeout(CONNECTION_TIMEOUT);
 
         PostMethod post = new PostMethod(printUrl);
         post.setRequestBody(json);
-        post.addRequestHeader("Content-Type", "application/json;  charset=UTF-8");
+        post.addRequestHeader("Content-Type",
+            "application/json;  charset=UTF-8");
         int result = client.executeMethod(post);
         InputStream in = post.getResponseBodyAsStream();
         byte [] retval = null;
         if (in != null) {
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte [] buf = new byte[4096];
+                byte [] buf = new byte[BYTE_ARRAY_SIZE];
                 int r;
                 while ((r = in.read(buf)) >= 0) {
                     out.write(buf, 0, r);
@@ -60,11 +66,15 @@ public class PrintClient
                 in.close();
             }
         }
-        if (result < 200 || result >= 300 ||
-            post.getStatusCode() < 200 || post.getStatusCode() >= 300) {
-            String errMsg = "Communication with print service '" + printUrl + "' failed.";
+        if (result < HttpURLConnection.HTTP_OK
+            || result >= HttpURLConnection.HTTP_MULT_CHOICE
+            || post.getStatusCode() < HttpURLConnection.HTTP_OK
+            || post.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+            String errMsg = "Communication with print service '"
+                + printUrl + "' failed.";
             if (retval != null) {
-                errMsg += "\nServer response was: '" + new String(retval) + "'";
+                errMsg += "\nServer response was: '"
+                    + new String(retval) + "'";
             } else {
                 errMsg += "\nNo response from print service.";
             }
