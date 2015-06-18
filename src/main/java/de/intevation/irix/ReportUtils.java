@@ -62,12 +62,14 @@ import org.w3c.dom.Document;
 
 import de.bfs.irix.extensions.dokpool.DokpoolMeta;
 
-/** Static helper methods to work with an IRIX Report.
+/**
+ * Static helper methods to work with an IRIX Report.
  *
  * This class provides helper methods to work with the
  * IRIX document scheme and the Dokpool extension.
- * The helper methods are directly tied to the IRIXClient
- * JSON input format. */
+ * The helper methods are directly tied to the IRIXClient JSON input format.
+ *
+ */
 public final class ReportUtils {
     private static Logger log = Logger.getLogger(ReportUtils.class);
 
@@ -106,7 +108,8 @@ public final class ReportUtils {
         // hidden constructor to avoid instantiation.
     }
 
-    /** Create a XMLGregorianCalendar from a GregorianCalendar object.
+    /**
+     * Create a XMLGregorianCalendar from a GregorianCalendar object.
      *
      * This method is necessary to fulfil the date spec of the
      * IRIX Schema.
@@ -134,14 +137,19 @@ public final class ReportUtils {
         }
     }
 
-    /** Helper method to obtain the current datetime as XMLGregorianCalendar.*/
+    /**
+     * Helper method to obtain the current datetime as XMLGregorianCalendar.
+     *
+     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
+     */
     public static XMLGregorianCalendar getXMLGregorianNow() {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(new Date(System.currentTimeMillis()));
         return createXMLCalFromGregCal(c);
     }
 
-    /** Handle the contents of the identifications element.
+    /**
+     * Handle the contents of the identifications element.
      *
      * This is currently a basic version that adds a single
      * OrganisationContact element.
@@ -149,6 +157,8 @@ public final class ReportUtils {
      * @param identifications element to which the identifications should
      * be added.
      * @param obj the json object to take the information from.
+     *
+     * @throws org.json.JSONException if values are missing in {@code obj}.
      */
     public static void addOrganization(IdentificationsType identifications,
         JSONObject obj) throws JSONException {
@@ -159,10 +169,11 @@ public final class ReportUtils {
         identifications.getOrganisationContactInfo().add(orgContact);
     }
 
-    /** Add a username to a report as PersonContactInfo.
+    /**
+     * Add a username to a report as PersonContactInfo.
      *
-     * @param identifications identification sobject to modifiy.
-     * @param username The username of the user.
+     * @param identifications IdentificationsType object to modifiy.
+     * @param user username to be added.
      */
     public static void addUser(IdentificationsType identifications,
         String user) {
@@ -171,18 +182,21 @@ public final class ReportUtils {
         identifications.getPersonContactInfo().add(person);
     }
 
-    /** Prepare the IRIX report to take the PDF attachments.
+    /**
+     * Prepare the IRIX report to take the PDF attachments.
      *
      * The irix information is taken from the Object specified
      * by the IRIX_DATA_KEY name.
      *
      * @param jsonObject The full jsonObject of the request.
+     * @return the IRIX report as
+     * {@link org.iaea._2012.irix.format.ReportType}.
+     * @throws org.json.JSONException in case a key is missing or invalid.
      */
     public static ReportType prepareReport(JSONObject jsonObject)
         throws JSONException {
         ReportType report = new ObjectFactory().createReportType();
         report.setVersion(SCHEMA_VERSION);
-
         JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
         JSONObject idObj = irixObj.getJSONObject("Identification");
 
@@ -215,9 +229,11 @@ public final class ReportUtils {
         return report;
     }
 
-    /** Parses an XML Calendar string into an XMLGregorianCalendar object.
+    /**
+     * Parses an XML Calendar string into an XMLGregorianCalendar object.
      *
      * @param str An  ISO 8601 DateTime like: 2015-05-28T15:35:54.168+02:00
+     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
      */
     public static XMLGregorianCalendar xmlCalendarFromString(String str) {
         Calendar cal = DatatypeConverter.parseDateTime(str);
@@ -226,16 +242,19 @@ public final class ReportUtils {
         return createXMLCalFromGregCal(c);
     }
 
-    /** Add an annotation to the Report containing the DokpoolMeta data fields.
+    /**
+     * Add an annotation to the Report containing the DokpoolMeta data fields.
      *
      * @param report The report to add the annoation to.
      * @param jsonObject The full jsonObject of the request.
      * @param schemaFile Optional. Schema to validate against.
-     *
-     * @throws JSONException If the JSONObject does not match expectations.
-     * @throws SAXException In case there is a problem with the schema.
-     * @throws JAXBException Validation failed or something else went wrong.
-     **/
+     * @throws org.json.JSONException If the JSONObject does not match
+     * expectations.
+     * @throws org.xml.sax.SAXException In case there is a problem with
+     * the schema.
+     * @throws javax.xml.bind.JAXBException if validation failed or something
+     * else went wrong.
+     */
     public static void addAnnotation(JSONObject jsonObject, ReportType report,
             File schemaFile)
         throws JSONException, SAXException, JAXBException {
@@ -314,7 +333,8 @@ public final class ReportUtils {
         report.getAnnexes().getAnnotation().add(annotation);
     }
 
-    /** Attach a file as Annex on a ReportType object.
+    /**
+     * Attach a file as Annex on a ReportType object.
      *
      * @param title The title of the FileEnclosure.
      * @param data Binary content of the file.
@@ -351,14 +371,16 @@ public final class ReportUtils {
         report.getAnnexes().getFileEnclosure().add(file);
     }
 
-    /** Validate and Marshall a report object for an output stream.
+    /**
+     * Validate and Marshall a report object for an output stream.
      *
      * @param report The report to marshall.
      * @param out The output stream.
      * @param irixSchema The schema to validate against. Or null.
-     * @throws javax.xml.bind.JAXBException In case of errors.
-     * @throws org.xml.sax.SAXException In case there is a problem with
-     * the schema.
+     * @throws javax.xml.bind.JAXBException if an error was
+     * encountered while creating the JAXBContext
+     * @throws org.xml.sax.SAXException in case of errors during
+     * parsing of the schema.
      */
     public static void marshallReport(ReportType report, OutputStream out,
         File irixSchema)

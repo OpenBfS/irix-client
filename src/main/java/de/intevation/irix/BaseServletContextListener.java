@@ -15,13 +15,16 @@ import javax.servlet.ServletContextListener;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+/**
+ * Listener class for the IRIX-Client to be configured in web.xml.
+ *
+ */
 public class BaseServletContextListener implements ServletContextListener {
 
-    public static final String LOG4J_PROPERTIES = "IRIXCLIENT_LOG4J_PROPERIES";
-
-    public static Logger log =
+    private static Logger log =
         Logger.getLogger(BaseServletContextListener.class);
 
+    /** {@inheritDoc} */
     @Override
     public void  contextInitialized(ServletContextEvent sce) {
         ServletContext sc = sce.getServletContext();
@@ -29,21 +32,18 @@ public class BaseServletContextListener implements ServletContextListener {
         this.initLogging(sc);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
     private void initLogging(ServletContext sc) {
-        String log4jProperties = System.getenv(LOG4J_PROPERTIES);
+        String file = sc.getInitParameter("log4j-properties");
 
-        if (log4jProperties == null || log4jProperties.length() == 0) {
-            String file = sc.getInitParameter("log4j-properties");
-
-            if (file != null && file.length() > 0) {
-                log4jProperties = sc.getRealPath(file);
-            }
+        if (file != null && file.length() > 0) {
+            String log4jProperties = sc.getRealPath(file);
+            PropertyConfigurator.configure(log4jProperties);
+            log.debug("Logging initalized");
         }
-        PropertyConfigurator.configure(log4jProperties);
-        log.debug("Logging initalized");
     }
 }

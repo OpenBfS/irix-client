@@ -37,6 +37,12 @@ import de.intevation.irixservice.UploadReportException_Exception;
 
 import org.xml.sax.SAXException;
 
+/**
+ * Servlet implementation for the IRIX-Client.
+ *
+ * Process client requests and handle resulting IRIX-reports.
+ *
+ */
 public class IRIXClient extends HttpServlet {
     private static Logger log = Logger.getLogger(IRIXClient.class);
 
@@ -60,10 +66,21 @@ public class IRIXClient extends HttpServlet {
     /** The Dokpool XSD-schema file. */
     protected File dokpoolSchemaFile;
 
+    /** Append to mapfish-print layout name to identify map layout. */
     protected String mapSuffix;
+    /** Append to mapfish-print layout name to identify legend layout. */
     protected String legendSuffix;
+    /** Base URL of mapfish-print service. */
     protected String baseUrl;
 
+    /**
+     * Get configuration parameters from web.xml and initialize servlet
+     * context.
+     *
+     * @throws javax.servlet.ServletException if a configuration
+     * parameter is missing.
+     */
+    @Override
     public void init() throws ServletException {
         baseUrl = getInitParameter("print-url");
 
@@ -89,7 +106,13 @@ public class IRIXClient extends HttpServlet {
         dokpoolSchemaFile = new File(sc.getRealPath(DOKPOOL_SCHEMA_LOC));
     }
 
-    /** Parse the content of the request into a json object. */
+    /**
+     * Parse the content of the request into a json object.
+     *
+     * @param request the request.
+     * @return a {@link org.json.JSONObject} object with the content of the
+     * request.
+     */
     protected JSONObject parseRequest(HttpServletRequest request) {
         StringBuffer buffer = new StringBuffer();
         String line = null;
@@ -114,7 +137,14 @@ public class IRIXClient extends HttpServlet {
         return retval;
     }
 
-    /** Obtain all the print specs in the JSON reques . */
+    /**
+     * Obtain all the print specs in the JSON request.
+     *
+     * @param jsonObject a {@link org.json.JSONObject} object with the content
+     * of the request.
+     * @return a {@link java.util.List} of JSON objects, each containing one
+     * print spec.
+     */
     protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
         List <JSONObject> retval = new ArrayList<JSONObject>();
         try {
@@ -130,7 +160,15 @@ public class IRIXClient extends HttpServlet {
         return retval;
     }
 
-    /** Wrapper to wirte an error message as response. */
+    /**
+     * Wrapper to write an error message as response.
+     *
+     * @param msg the error message.
+     * @param response the javax.servlet.http.HttpServletResponse
+     * to be used for returning the error.
+     *
+     * @throws IOException if such occured on the output stream.
+     */
     public void writeError(String msg, HttpServletResponse response)
         throws IOException {
         response.setContentType("text/html");
@@ -141,16 +179,19 @@ public class IRIXClient extends HttpServlet {
         return;
     }
 
-    /** Helper method to print / attach the requested documents.
+    /**
+     * Helper method to print / attach the requested documents.
      *
      * @param specs A list of the json print specs.
      * @param report The report to attach the data to.
      * @param printApp The printApp to use
-     * @param title The tile for the Annex
+     * @param title The title for the Annex
+     *
+     * @throws IOException if a requested document could not be printed.
      */
     protected void handlePrintSpecs(List<JSONObject> specs,
         ReportType report, String printApp, String title)
-        throws JSONException, IOException {
+        throws IOException {
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
         int i = 1;
         String suffix = "";
@@ -182,9 +223,12 @@ public class IRIXClient extends HttpServlet {
         }
     }
 
-    /** Sends a report to the UploadReport service configured during buildtime.
+    /**
+     * Sends a report to the UploadReport service configured during buildtime.
      *
-     * @param report The report to send. */
+     * @param report The report to send.
+     * @throws javax.servlet.ServletException if uploading failed.
+     */
     protected void sendReportToService(ReportType report)
         throws ServletException {
         UploadReportService service = new UploadReportService();
@@ -199,9 +243,24 @@ public class IRIXClient extends HttpServlet {
         log.debug("Report successfully sent.");
     }
 
+    /**
+     * Handle POST request.
+     *
+     * Parse request and generate according IRIX report for response.
+     *
+     * @param request object that contains the request the client has made
+     * of the servlet
+     * @param response object that contains the response the servlet sends
+     * to the client
+     *
+     * @throws ServletException in case of errors with schema.
+     * @throws IOException if the request is invalid.
+     *
+     */
+    @Override
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
-        throws ServletException, IOException  {
+        throws ServletException, IOException {
 
         JSONObject jsonObject = parseRequest(request);
         if (jsonObject == null) {
@@ -270,6 +329,8 @@ public class IRIXClient extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws ServletException, IOException  {

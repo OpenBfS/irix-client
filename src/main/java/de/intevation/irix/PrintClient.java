@@ -28,8 +28,10 @@ import org.apache.http.util.EntityUtils;
 
 import java.nio.charset.Charset;
 
-/** Utility class to handle interaction with the mapfish-print service. */
-
+/**
+ * Utility class to handle interaction with the mapfish-print service.
+ *
+ */
 public class PrintClient {
     private static Logger log = Logger.getLogger(PrintClient.class);
 
@@ -41,12 +43,15 @@ public class PrintClient {
         // hidden constructor to avoid instantiation.
     }
 
-    /** Obtains a Report from mapfish-print service.
+    /**
+     * Obtains a Report from mapfish-print service.
      *
-     * @param print-url The url to send the request to.
+     * @param printUrl The url to send the request to.
      * @param json The json spec for the print request.
      *
-     * @return: byte[] with the report. null on error.
+     * @return byte[] with the report. null on error.
+     *
+     * @throws IOException if communication with print service failed.
      */
     public static byte[] getReport(String printUrl, String json)
         throws IOException {
