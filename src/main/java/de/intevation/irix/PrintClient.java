@@ -19,8 +19,6 @@ import java.net.HttpURLConnection;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.params.HttpParams;
 
 /** Utility class to handle interaction with the mapfish-print service. */
 
