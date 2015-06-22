@@ -161,20 +161,19 @@ public class IRIXClient extends HttpServlet {
     }
 
     /**
-     * Wrapper to write an error message as response.
+     * Wrapper to forward a print error response.
      *
-     * @param msg the error message.
+     * @param err the PrintException.
      * @param response the javax.servlet.http.HttpServletResponse
      * to be used for returning the error.
      *
      * @throws IOException if such occured on the output stream.
      */
-    public void writeError(String msg, HttpServletResponse response)
+    public void writePrintError(PrintException err, HttpServletResponse response)
         throws IOException {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getOutputStream().print(msg);
-        log.debug("Sending error: " + msg);
+        response.getOutputStream().print(err.getMessage());
         response.getOutputStream().flush();
         return;
     }
@@ -187,11 +186,13 @@ public class IRIXClient extends HttpServlet {
      * @param printApp The printApp to use
      * @param title The title for the Annex
      *
-     * @throws IOException if a requested document could not be printed.
+     * @throws IOException if a requested document could not be printed
+     *                     because of Connection problems.
+     * @throws PrintException it the print service returned an error.
      */
     protected void handlePrintSpecs(List<JSONObject> specs,
         ReportType report, String printApp, String title)
-        throws IOException {
+        throws IOException, PrintException {
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
         int i = 1;
         String suffix = "";
@@ -264,32 +265,26 @@ public class IRIXClient extends HttpServlet {
 
         JSONObject jsonObject = parseRequest(request);
         if (jsonObject == null) {
-            writeError("Could not read jsonObject from request", response);
-            return;
+            throw new ServletException("Could not read jsonObject from request");
         }
 
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
         if (printSpecs.isEmpty()) {
-            writeError("Could not extract any print specs from request",
-                response);
-            return;
+            throw new ServletException("Could not extract any print specs from request");
         }
 
         String requestType = null;
         try {
             requestType = jsonObject.getString("request-type");
         } catch (JSONException e) {
-            writeError("Failed to parse request-type: " + e.getMessage(),
-                response);
-            return;
+            throw new ServletException("Failed to parse request-type: ", e);
         }
         requestType = requestType.toLowerCase();
 
         if (!requestType.equals(REQUEST_TYPE_UPLOAD)
             && !requestType.equals(REQUEST_TYPE_RESPOND)
             && !requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
-            writeError("Unknown request-type: " + requestType, response);
-            return;
+            throw new ServletException("Unknown request-type: " + requestType);
         }
 
         ReportType report = null;
@@ -300,13 +295,14 @@ public class IRIXClient extends HttpServlet {
                 jsonObject.getString("printapp"),
                 jsonObject.getJSONObject("irix").getString("Title"));
         } catch (JSONException e) {
-            writeError("Failed to parse IRIX information: " + e.getMessage(),
-                response);
-            return;
+            throw new ServletException("Failed to parse IRIX information: ", e);
         } catch (SAXException e) {
             throw new ServletException("Failed to parse schema.", e);
         } catch (JAXBException e) {
             throw new ServletException("Invalid request.", e);
+        } catch (PrintException e) {
+            writePrintError(e, response);
+            return;
         }
 
         if (requestType.equals(REQUEST_TYPE_UPLOAD)

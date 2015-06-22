@@ -9,6 +9,7 @@
 package de.intevation.test.irix;
 
 import de.intevation.irix.PrintClient;
+import de.intevation.irix.PrintException;
 
 import java.io.IOException;
 
@@ -31,8 +32,12 @@ public class PrintClientTest {
         Logger.getRootLogger().addAppender(console);
     }
 
-    @Test(expected = IOException.class)
-    public void testNoConnection() throws IOException {
-        PrintClient.getReport("http://192.0.2.0/foo", "");
+    @Test(expected=IOException.class, timeout=1500)
+    public void testNoConnection() throws IOException, PrintException {
+        // This is less trivial then it appears, HTTPClient changed
+        // the way in which the timeout is configured 3 times since
+        // Version 3.1. If the timeout is not set correctly the
+        // connection will be stalled indefinetly.
+        PrintClient.getReport("http://192.0.2.0/foo", "", 500);
     }
 }

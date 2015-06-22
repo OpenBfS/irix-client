@@ -55,10 +55,23 @@ public class PrintClient {
      * @throws IOException if communication with print service failed.
      */
     public static byte[] getReport(String printUrl, String json)
-        throws IOException {
+        throws IOException, PrintException {
+        return getReport(printUrl, json, CONNECTION_TIMEOUT);
+    }
+
+    /** Obtains a Report from mapfish-print service.
+     *
+     * @param print-url The url to send the request to.
+     * @param json The json spec for the print request.
+     * @param timeout the timeout for the httpconnection.
+     *
+     * @return: byte[] with the report. null on error.
+     */
+    public static byte[] getReport(String printUrl, String json, int timeout)
+        throws IOException, PrintException {
 
         RequestConfig config = RequestConfig.custom().
-            setConnectTimeout(CONNECTION_TIMEOUT).build();
+            setConnectTimeout(timeout).build();
 
         CloseableHttpClient client = HttpClients.custom().
             setDefaultRequestConfig(config).build();
@@ -96,15 +109,12 @@ public class PrintClient {
 
         if (status.getStatusCode() < HttpURLConnection.HTTP_OK
             || status.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
-            String errMsg = "Communication with print service '"
-                + printUrl + "' failed.";
             if (retval != null) {
-                errMsg += "\nServer response was: '"
-                    + new String(retval) + "'";
+                throw new PrintException(new String(retval));
             } else {
-                errMsg += "\nNo response from print service.";
+                throw new PrintException("Communication with print service '" + printUrl + "' failed." +
+                                         "\nNo response from print service.");
             }
-            throw new IOException(errMsg);
         }
         return retval;
     }
