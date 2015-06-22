@@ -169,7 +169,8 @@ public class IRIXClient extends HttpServlet {
      *
      * @throws IOException if such occured on the output stream.
      */
-    public void writePrintError(PrintException err, HttpServletResponse response)
+    public void writePrintError(PrintException err,
+                                HttpServletResponse response)
         throws IOException {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -265,12 +266,14 @@ public class IRIXClient extends HttpServlet {
 
         JSONObject jsonObject = parseRequest(request);
         if (jsonObject == null) {
-            throw new ServletException("Could not read jsonObject from request");
+            throw new ServletException(
+                    "Could not read jsonObject from request.");
         }
 
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
         if (printSpecs.isEmpty()) {
-            throw new ServletException("Could not extract any print specs from request");
+            throw new ServletException(
+                    "Could not extract any print specs from request.");
         }
 
         String requestType = null;

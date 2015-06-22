@@ -50,9 +50,10 @@ public class PrintClient {
      * @param printUrl The url to send the request to.
      * @param json The json spec for the print request.
      *
-     * @return byte[] with the report. null on error.
+     * @return byte[] with the report.
      *
      * @throws IOException if communication with print service failed.
+     * @throws PrintException if the print job failed.
      */
     public static byte[] getReport(String printUrl, String json)
         throws IOException, PrintException {
@@ -61,11 +62,14 @@ public class PrintClient {
 
     /** Obtains a Report from mapfish-print service.
      *
-     * @param print-url The url to send the request to.
+     * @param printUrl The url to send the request to.
      * @param json The json spec for the print request.
      * @param timeout the timeout for the httpconnection.
      *
-     * @return: byte[] with the report. null on error.
+     * @return byte[] with the report.
+     *
+     * @throws IOException if communication with print service failed.
+     * @throws PrintException if the print job failed.
      */
     public static byte[] getReport(String printUrl, String json, int timeout)
         throws IOException, PrintException {
@@ -112,8 +116,9 @@ public class PrintClient {
             if (retval != null) {
                 throw new PrintException(new String(retval));
             } else {
-                throw new PrintException("Communication with print service '" + printUrl + "' failed." +
-                                         "\nNo response from print service.");
+                throw new PrintException("Communication with print service '"
+                                         + printUrl + "' failed."
+                                         + "\nNo response from print service.");
             }
         }
         return retval;
