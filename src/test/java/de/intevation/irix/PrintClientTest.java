@@ -18,22 +18,20 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 
 import org.junit.Test;
-import org.junit.Assert;
 import org.junit.Before;
 
-public class PrintClientTest
-{
+public class PrintClientTest {
     @Before
     public void setupLogging() {
         ConsoleAppender console = new ConsoleAppender(); //create appender
-        String PATTERN = "[%p|%C{1}] %m%n";
-        console.setLayout(new PatternLayout(PATTERN));
+        String pattern = "[%p|%C{1}] %m%n";
+        console.setLayout(new PatternLayout(pattern));
         console.setThreshold(Level.ERROR); // Change here for testing ;-)
         console.activateOptions();
         Logger.getRootLogger().addAppender(console);
     }
 
-    @Test(expected=IOException.class)
+    @Test(expected = IOException.class)
     public void testNoConnection() throws IOException {
         PrintClient.getReport("http://192.0.2.0/foo", "");
     }
