@@ -258,11 +258,17 @@ public final class ReportUtils {
     public static void addAnnotation(JSONObject jsonObject, ReportType report,
             File schemaFile)
         throws JSONException, SAXException, JAXBException {
+        JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
+
+        if (!irixObj.has(DOKPOOL_DATA_KEY)) {
+            return;
+        }
+
+        // prepare annoation
         AnnotationType annotation = new AnnotationType();
         FreeTextType freeText = new FreeTextType();
         // freeText should probably get some content.
         annotation.setText(freeText);
-        JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
         annotation.setTitle(irixObj.getString("Title"));
 
         JSONObject metaObj = irixObj.getJSONObject(DOKPOOL_DATA_KEY);

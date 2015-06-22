@@ -132,6 +132,17 @@ public class ReportUtilsTest {
     }
 
     @Test
+    public void testNoDokpool()
+        throws JAXBException, JSONException, SAXException {
+        File schemaFile = new File(
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+        JSONObject json = new JSONObject(REQUEST);
+        json.getJSONObject("irix").remove("DokpoolMeta");
+        ReportType report = ReportUtils.prepareReport(json);
+        ReportUtils.addAnnotation(json, report, schemaFile);
+    }
+
+    @Test
     public void testDokpoolValidationOk()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
