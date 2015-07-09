@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import javax.xml.bind.JAXBException;
 
@@ -72,6 +74,8 @@ public class IRIXClient extends HttpServlet {
     protected String legendSuffix;
     /** Base URL of mapfish-print service. */
     protected String baseUrl;
+    /** URL of irix-webservice upload service. */
+    protected URL irixServiceUrl;
 
     /**
      * Get configuration parameters from web.xml and initialize servlet
@@ -98,6 +102,18 @@ public class IRIXClient extends HttpServlet {
         if (mapSuffix == null) {
             throw new ServletException(
                 "Missing 'map-layout-suffix' parameter.");
+        }
+
+        String irixServiceStr = getInitParameter("irix-webservice-url");
+        if (irixServiceStr == null) {
+            throw new ServletException(
+                "Missing 'irix-webservice-url' parameter.");
+        }
+        try {
+            irixServiceUrl = new URL(irixServiceStr);
+        } catch (MalformedURLException e) {
+            throw new ServletException(
+                "Bad configuration value for: irix-webservice-url", e);
         }
 
         ServletContext sc = getServletContext();
@@ -226,14 +242,14 @@ public class IRIXClient extends HttpServlet {
     }
 
     /**
-     * Sends a report to the UploadReport service configured during buildtime.
+     * Sends a report to the configured UploadReport service.
      *
      * @param report The report to send.
      * @throws javax.servlet.ServletException if uploading failed.
      */
     protected void sendReportToService(ReportType report)
         throws ServletException {
-        UploadReportService service = new UploadReportService();
+        UploadReportService service = new UploadReportService(irixServiceUrl);
         UploadReportInterface irixservice = service.getUploadReportPort();
         log.debug("Sending report.");
         try {

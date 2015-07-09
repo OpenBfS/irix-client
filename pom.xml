@@ -111,9 +111,8 @@
                             <goal>wsimport</goal>
                         </goals>
                         <configuration>
-                            <wsdlUrls>
-                                <wsdlUrl>http://localhost:8080/irix-webservice/upload-report?wsdl</wsdlUrl>
-                            </wsdlUrls>
+                            <wsdlDirectory>src/main/webapp/META-INF/</wsdlDirectory>
+                            <wsdlLocation>upload-report-v1.wsdl</wsdlLocation>
                             <xjcArgs>
                                 <xjcArg>-b</xjcArg>
                                 <xjcArg>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb-fixed.episode</xjcArg>
