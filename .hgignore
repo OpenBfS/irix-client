@@ -1,2 +1,4 @@
 syntax: regexp
 target      # maven output
+.iml
+.idea
