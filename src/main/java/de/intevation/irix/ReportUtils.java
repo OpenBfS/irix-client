@@ -8,6 +8,8 @@
 
 package de.intevation.irix;
 
+import java.lang.reflect.Method;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -276,21 +278,20 @@ public final class ReportUtils {
         DokpoolMeta meta = new DokpoolMeta();
         boolean hasType = false;
         for (String field: DOKPOOL_FIELDS) {
-            java.lang.reflect.Method method;
-            String methodName = "set" + field;
             if (!metaObj.has(field)) {
                 continue;
             }
+            String methodName = "set" + field;
             String value = metaObj.getString(field);
             try {
                 if (field.startsWith("Is")) {
-                    method = meta.getClass().getMethod(methodName,
+                    Method method = meta.getClass().getMethod(methodName,
                         Boolean.class);
                     boolean bValue = value.toLowerCase().equals("true");
                     method.invoke(meta, bValue);
                     hasType = bValue || hasType;
                 } else {
-                    method = meta.getClass().getMethod(methodName,
+                    Method method = meta.getClass().getMethod(methodName,
                         String.class);
                     method.invoke(meta, value);
                 }
