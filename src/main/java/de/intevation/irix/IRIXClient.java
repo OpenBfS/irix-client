@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.iaea._2012.irix.format.ReportType;
 
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -130,27 +131,12 @@ public class IRIXClient extends HttpServlet {
      * request.
      */
     protected JSONObject parseRequest(HttpServletRequest request) {
-        StringBuffer buffer = new StringBuffer();
-        String line = null;
         try {
-            BufferedReader reader = request.getReader();
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line);
-            }
+            return new JSONObject(new JSONTokener(request.getReader()));
         } catch (IOException e) {
-            log.warn("Failed to read response: " + e.getMessage());
-            return null;
-        }
-
-        String json = buffer.toString();
-        JSONObject retval = null;
-        try {
-            retval = new JSONObject(json);
-        } catch (JSONException e) {
             log.warn("Request did not contain valid json: " + e.getMessage());
-            return null;
         }
-        return retval;
+        return null;
     }
 
     /**
