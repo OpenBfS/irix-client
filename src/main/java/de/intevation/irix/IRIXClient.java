@@ -9,7 +9,6 @@
 package de.intevation.irix;
 
 import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.File;
 
 import javax.servlet.ServletException;
