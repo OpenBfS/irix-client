@@ -82,12 +82,14 @@ public final class ReportUtils {
     /** This is according to current documentation the fixed value.*/
     private static final String SCHEMA_VERSION = "1.0";
 
+    /** Helper class to describe modifications
+     *  to the IRIX DokpoolMeta element. */
     private abstract static class DokpoolMetaModifier {
 
         protected String fieldname;
 
-        public  DokpoolMetaModifier(String fieldname) {
-            this.fieldname = fieldname;
+        public DokpoolMetaModifier(String fname) {
+            fieldname = fname;
         }
 
         public boolean modify(DokpoolMeta dpm, JSONObject meta) {
@@ -96,7 +98,7 @@ public final class ReportUtils {
             }
             return false;
         }
-        abstract protected boolean change(DokpoolMeta dpm, JSONObject meta);
+        protected abstract boolean change(DokpoolMeta dpm, JSONObject meta);
     }
 
     /** The fields to set in the DokpoolMeta object.
