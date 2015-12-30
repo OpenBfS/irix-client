@@ -211,25 +211,6 @@ public final class ReportUtils {
         }
     };
 
-     /*
-    private static final String[] DOKPOOL_FIELDS = new String[] {
-        "DokpoolContentType",
-        "IsElan",
-        "IsDoksys",
-        "IsRodos",
-        "IsRei",
-        "NetworkOperator",
-        "SampleTypeId",
-        "SampleType",
-        "Dom",
-        "DataType",
-        "LegalBase",
-        "MeasuringProgram",
-        "Status",
-        "Purpose"
-    };
-    */
-
     private ReportUtils() {
         // hidden constructor to avoid instantiation.
     }
