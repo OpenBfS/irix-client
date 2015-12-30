@@ -17,10 +17,10 @@
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
             "DokpoolContentType": "eventinformation",
-            "IsElan": "true",
-            "IsDoksys": "false",
-            "IsRodos": "false",
-            "IsRei": "false",
+            "IsElan": true,
+            "IsDoksys": false,
+            "IsRodos": false,
+            "IsRei": false,
             "NetworkOperator": "U - BFS (ABI)",
             "SampleTypeId": "L5",
             "SampleType": "L5 - Niederschlag",
@@ -59,13 +59,13 @@
                     "imageFormat": "image/png",
 
                     "customParams": {
-                        "TRANSPARENT": "true"
+                        "TRANSPARENT": true
                     }
                 }
                 ]
             },
 
-            "is_exercise": "true",
+            "is_exercise": true,
             "title": "Dokument1: Ein Ortsdosisleistungstest mit Bundeswasserstraßen",
 
             "legend": {
@@ -113,13 +113,13 @@
                     "imageFormat": "image/png",
 
                     "customParams": {
-                        "TRANSPARENT": "true"
+                        "TRANSPARENT": true
                     }
                 }
                 ]
             },
 
-            "is_exercise": "true",
+            "is_exercise": true,
             "title": "Dokument2: Ein Ortsdosisleistungstest mit Bundeswasserstraßen",
 
             "legend": {

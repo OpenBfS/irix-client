@@ -8,8 +8,6 @@
 
 package de.intevation.irix;
 
-import java.lang.reflect.Method;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -84,11 +82,136 @@ public final class ReportUtils {
     /** This is according to current documentation the fixed value.*/
     private static final String SCHEMA_VERSION = "1.0";
 
+    private abstract static class DokpoolMetaModifier {
+
+        protected String fieldname;
+
+        public  DokpoolMetaModifier(String fieldname) {
+            this.fieldname = fieldname;
+        }
+
+        public boolean modify(DokpoolMeta dpm, JSONObject meta) {
+            if (meta.has(fieldname)) {
+                return change(dpm, meta);
+            }
+            return false;
+        }
+        abstract protected boolean change(DokpoolMeta dpm, JSONObject meta);
+    }
+
     /** The fields to set in the DokpoolMeta object.
      *
      * SamplingBegin and SamplingEnd are handled wether or not they
      * are part of this list.
      **/
+    private static final DokpoolMetaModifier[] DOKPOOL_META_MODIFIERS =
+        new DokpoolMetaModifier[] {
+
+        new DokpoolMetaModifier("DokpoolMetaModifier") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setDokpoolContentType(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("IsElan") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                boolean value = meta.getBoolean(fieldname);
+                dpm.setIsElan(value);
+                return value;
+            }
+        },
+        new DokpoolMetaModifier("IsDoksys") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                boolean value = meta.getBoolean(fieldname);
+                dpm.setIsDoksys(value);
+                return value;
+            }
+        },
+        new DokpoolMetaModifier("IsRodos") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                boolean value = meta.getBoolean(fieldname);
+                dpm.setIsRodos(value);
+                return value;
+            }
+        },
+        new DokpoolMetaModifier("IsRei") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                boolean value = meta.getBoolean(fieldname);
+                dpm.setIsRei(value);
+                return value;
+            }
+        },
+        new DokpoolMetaModifier("NetworkOperator") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setNetworkOperator(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("SampleTypeId") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setSampleTypeId(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("SampleType") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setSampleType(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("Dom") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setDom(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("DataType") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setDataType(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("LegalBase") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setLegalBase(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("MeasuringProgram") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setMeasuringProgram(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("Status") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setStatus(meta.getString(fieldname));
+                return false;
+            }
+        },
+        new DokpoolMetaModifier("Purpose") {
+            @Override
+            protected boolean change(DokpoolMeta dpm, JSONObject meta) {
+                dpm.setPurpose(meta.getString(fieldname));
+                return false;
+            }
+        }
+    };
+
+     /*
     private static final String[] DOKPOOL_FIELDS = new String[] {
         "DokpoolContentType",
         "IsElan",
@@ -105,6 +228,7 @@ public final class ReportUtils {
         "Status",
         "Purpose"
     };
+    */
 
     private ReportUtils() {
         // hidden constructor to avoid instantiation.
@@ -274,32 +398,12 @@ public final class ReportUtils {
         annotation.setTitle(irixObj.getString("Title"));
 
         JSONObject metaObj = irixObj.getJSONObject(DOKPOOL_DATA_KEY);
-
         DokpoolMeta meta = new DokpoolMeta();
+
         boolean hasType = false;
-        for (String field: DOKPOOL_FIELDS) {
-            if (!metaObj.has(field)) {
-                continue;
-            }
-            String methodName = "set" + field;
-            String value = metaObj.getString(field);
-            try {
-                if (field.startsWith("Is")) {
-                    Method method = meta.getClass().getMethod(methodName,
-                        Boolean.class);
-                    boolean bValue = value.toLowerCase().equals("true");
-                    method.invoke(meta, bValue);
-                    hasType = bValue || hasType;
-                } else {
-                    Method method = meta.getClass().getMethod(methodName,
-                        String.class);
-                    method.invoke(meta, value);
-                }
-            } catch (Exception e) {
-                log.error(e.getClass().getName()
-                    + " exception while trying to access " + methodName
-                    + " on DokpoolMeta object.");
-            }
+
+        for (DokpoolMetaModifier dpm : DOKPOOL_META_MODIFIERS) {
+            hasType |= dpm.modify(meta, metaObj);
         }
 
         if (!hasType) {

@@ -54,10 +54,10 @@ public class ReportUtilsTest {
         + "        \"DokpoolMeta\": {"
         + "            \"Purpose\": \"Standard-Info\","
         + "            \"DokpoolContentType\": \"eventinformation\","
-        + "            \"IsElan\": \"true\","
-        + "            \"IsDoksys\": \"false\","
-        + "            \"IsRodos\": \"false\","
-        + "            \"IsRei\": \"false\","
+        + "            \"IsElan\": true,"
+        + "            \"IsDoksys\": false,"
+        + "            \"IsRodos\": false,"
+        + "            \"IsRei\": false,"
         + "            \"NetworkOperator\": \"U - BFS (ABI)\","
         + "            \"SampleTypeId\": \"L5\","
         + "            \"SampleType\": \"L5 - Niederschlag\","
@@ -90,7 +90,7 @@ public class ReportUtilsTest {
         + "        },"
         + "        \"DokpoolMeta\": {"
         + "            \"DokpoolContentType\": \"eventinformation\","
-        + "            \"IsRei\": \"true\","
+        + "            \"IsRei\": true,"
         + "            \"SampleTypeId\": \"L5\","
         + "            \"SampleType\": \"L5 - Niederschlag\","
         + "            \"Dom\": \"Gamma-Spektrometrie\","
@@ -171,7 +171,7 @@ public class ReportUtilsTest {
             "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(DOKPOOL_MINIMAL);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
-            .put("IsRei", "false");
+            .put("IsRei", false);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
     }
@@ -183,9 +183,9 @@ public class ReportUtilsTest {
             "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(DOKPOOL_MINIMAL);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
-            .put("IsRei", "false");
+            .put("IsRei", false);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
-            .put("IsDoksys", "true");
+            .put("IsDoksys", true);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
     }
