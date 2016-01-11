@@ -111,6 +111,9 @@
                             <goal>wsimport</goal>
                         </goals>
                         <configuration>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
                             <wsdlDirectory>src/main/webapp/META-INF/</wsdlDirectory>
                             <wsdlLocation>upload-report-v1.wsdl</wsdlLocation>
                             <bindingDirectory>src/main/webapp/WEB-INF/irix-schema</bindingDirectory>
