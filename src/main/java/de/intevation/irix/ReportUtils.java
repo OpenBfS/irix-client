@@ -26,7 +26,6 @@ import java.io.File;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import javax.xml.bind.JAXBContext;
@@ -124,14 +123,8 @@ public final class ReportUtils {
         cal.setTimeZone(TimeZone.getTimeZone("utc"));
         try {
             XMLGregorianCalendar date = DatatypeFactory.newInstance().
-                newXMLGregorianCalendar(cal.get(Calendar.YEAR),
-                                        cal.get(Calendar.MONTH),
-                                        cal.get(Calendar.DAY_OF_MONTH),
-                                        cal.get(Calendar.HOUR),
-                                        cal.get(Calendar.MINUTE),
-                                        cal.get(Calendar.SECOND),
-                                        DatatypeConstants.FIELD_UNDEFINED,
-                                        0);
+                newXMLGregorianCalendar(cal);
+            date.setFractionalSecond(null);
             return date;
         } catch (DatatypeConfigurationException e) {
             log.error("Exception converting to XMLGregorianCalendar");
