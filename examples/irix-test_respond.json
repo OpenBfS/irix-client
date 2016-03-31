@@ -1,6 +1,6 @@
 {
     "printapp": "bfs_rodos_test",
-    "request-type": "upload/respond",
+    "request-type": "respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
         "User": "Testuser",
