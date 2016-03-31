@@ -38,6 +38,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.XMLConstants;
 
+import org.json.JSONArray;
 import org.xml.sax.SAXException;
 
 import org.apache.log4j.Logger;
@@ -49,6 +50,8 @@ import org.iaea._2012.irix.format.base.PersonContactType;
 import org.iaea._2012.irix.format.identification.IdentificationType;
 import org.iaea._2012.irix.format.identification.IdentificationsType;
 import org.iaea._2012.irix.format.identification.ReportContextType;
+import org.iaea._2012.irix.format.identification.ReportingBasesType;
+import org.iaea._2012.irix.format.identification.ConfidentialityType;
 import org.iaea._2012.irix.format.annexes.AnnexesType;
 import org.iaea._2012.irix.format.annexes.AnnotationType;
 import org.iaea._2012.irix.format.annexes.FileEnclosureType;
@@ -178,6 +181,17 @@ public final class ReportUtils {
     }
 
     /**
+     * Add a reportingbase to reportingbases as ReportingBasesType.
+     *
+     * @param reportingbases ReportingBasesType object to modifiy.
+     * @param reportingbase reportingbase to be added.
+     */
+    public static void addReportingBases(ReportingBasesType reportingbases,
+                               String reportingbase) {
+        reportingbases.getReportingBasis().add(reportingbase);
+    }
+
+    /**
      * Prepare the IRIX report to take the PDF attachments.
      *
      * The irix information is taken from the Object specified
@@ -205,6 +219,22 @@ public final class ReportUtils {
                 new BigInteger(idObj.getString("SequenceNumber")));
         }
         identification.setReportUUID(UUID.randomUUID().toString());
+        if (idObj.has("Confidentiality")) {
+            identification.setConfidentiality(
+                ConfidentialityType.fromValue(
+                    idObj.getString("Confidentiality")
+                )
+            );
+        }
+        if (idObj.has("ReportingBases")) {
+            ReportingBasesType reportingbases = new ReportingBasesType();
+            identification.setReportingBases(reportingbases);
+            JSONArray rbjson = idObj.getJSONArray("ReportingBases");
+            for (int i = 0; i < rbjson.length(); i++) {
+                String rbstring = rbjson.getString(i);
+                addReportingBases(reportingbases, rbstring);
+            }
+        }
 
         // Setup identifications in identification
         IdentificationsType identifications = new IdentificationsType();
