@@ -172,6 +172,34 @@ public class ReportUtilsTest {
                     getString("Confidentiality")
             )
         );
+        Assert.assertEquals(
+                report.getIdentification().getConfidentiality().value(),
+                json.getJSONObject("irix").getJSONObject("Identification").
+                    getString("Confidentiality")
+        );
+    }
+
+    // TODO compare inserted values
+    // only testing for number of entries in ReportingBases
+    @Test
+    public void testReportingBases() throws JSONException {
+        JSONObject json = new JSONObject(REQUEST);
+        ReportType report = ReportUtils.prepareReport(json);
+        Assert.assertEquals(
+            report.getIdentification().getReportingBases().
+                getReportingBasis().size(),
+            json.getJSONObject("irix").getJSONObject("Identification").
+                getJSONArray("ReportingBases").length()
+        );
+/*
+        Assert.assertTrue(
+            report.getIdentification().getReportingBases().
+                getReportingBasis().containsAll(
+                    json.getJSONObject("irix").getJSONObject("Identification").
+                        getJSONArray("ReportingBases")
+                )
+        );
+*/
     }
 
     @Test
