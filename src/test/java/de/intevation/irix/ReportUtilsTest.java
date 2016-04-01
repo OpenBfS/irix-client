@@ -9,6 +9,7 @@
 package de.intevation.test.irix;
 
 import org.iaea._2012.irix.format.ReportType;
+import org.iaea._2012.irix.format.identification.ConfidentialityType;
 import org.iaea._2012.irix.format.identification.ReportContextType;
 
 import org.json.JSONObject;
@@ -43,6 +44,11 @@ public class ReportUtilsTest {
         + "        \"User\": \"Testuser\","
         + "        \"Identification\": {"
         + "            \"OrganisationReporting\": \"irix.test.de\","
+        + "            \"Confidentiality\": \"Free for Public Use\","
+        + "            \"ReportingBases\": ["
+        + "                \"EU Council Decision 87/600/EURATOM\", "
+        + "                \"Second entry for Testing\""
+        + "            ],"
         + "            \"ReportContext\": \"Test\","
         + "            \"SequenceNumber\": \"42\","
         + "            \"OrganisationContact\": {"
@@ -100,6 +106,35 @@ public class ReportUtilsTest {
         + "    }"
         + "}";
 
+    private static final String DOKPOOL_FAIL =
+        "{"
+        + "    \"request-type\": \"upload/respond\","
+        + "    \"irix\": {"
+        + "        \"Title\": \"IRIX Test request\","
+        + "        \"User\": \"Testuser\","
+        + "        \"Identification\": {"
+        + "            \"OrganisationReporting\": \"irix.test.de\","
+        + "            \"Confidentiality\": \"FAIL for Testing\","
+        + "            \"ReportContext\": \"Test\","
+        + "            \"SequenceNumber\": \"42\","
+        + "            \"OrganisationContact\": {"
+        + "                \"Name\": \"TestOrg\","
+        + "                \"OrganisationID\": \"irix.test.de\","
+        + "                \"Country\": \"DE\""
+        + "            }"
+        + "        },"
+        + "        \"DokpoolMeta\": {"
+        + "            \"DokpoolContentType\": \"eventinformation\","
+        + "            \"IsRei\": \"true\","
+        + "            \"SampleTypeId\": \"L5\","
+        + "            \"SampleType\": \"L5 - Niederschlag\","
+        + "            \"Dom\": \"Gamma-Spektrometrie\","
+        + "            \"SamplingBegin\": \"2015-05-28T15:35:54.168+02:00\","
+        + "            \"SamplingEnd\":\"2015-05-28T15:52:52.128+02:00\""
+        + "        }"
+        + "    }"
+        + "}";
+
     @Before
     public void setupLogging() {
         ConsoleAppender console = new ConsoleAppender(); //create appender
@@ -110,6 +145,12 @@ public class ReportUtilsTest {
         Logger.getRootLogger().addAppender(console);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFail() throws IllegalArgumentException {
+        JSONObject json = new JSONObject(DOKPOOL_FAIL);
+        ReportType report = ReportUtils.prepareReport(json);
+    }
+
     @Test
     public void testOrganisationReporting() throws JSONException {
         JSONObject json = new JSONObject(REQUEST);
@@ -118,6 +159,19 @@ public class ReportUtilsTest {
             report.getIdentification().getOrganisationReporting(),
             json.getJSONObject("irix").getJSONObject("Identification").
                 getString("OrganisationReporting"));
+    }
+
+    @Test
+    public void testConfidentiality() throws JSONException {
+        JSONObject json = new JSONObject(REQUEST);
+        ReportType report = ReportUtils.prepareReport(json);
+        Assert.assertEquals(
+            report.getIdentification().getConfidentiality(),
+            ConfidentialityType.fromValue(
+                json.getJSONObject("irix").getJSONObject("Identification").
+                    getString("Confidentiality")
+            )
+        );
     }
 
     @Test
