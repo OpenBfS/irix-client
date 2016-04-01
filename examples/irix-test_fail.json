@@ -1,0 +1,148 @@
+{
+    "__comment__": "json to fail on request due to errorenous value in 'Confidentiality'",
+    "printapp": "bfs_rodos_test",
+    "request-type": "upload/respond",
+    "irix": {
+        "Title": "IRIX ☢ Test request",
+        "User": "Testuser",
+        "Identification": {
+            "OrganisationReporting": "irix.test.de",
+            "Confidentiality": "FAIL for Testing",
+            "ReportingBases": ["EU Council Decision 87/600/EURATOM", "Convention on Early Notification of a Nuclear Accident, Article 2"],
+            "ReportContext": "Test",
+            "SequenceNumber": "42",
+            "OrganisationContact": {
+                "Name": "TestOrg",
+                "OrganisationID": "irix.test.de",
+                "Country": "DE"
+            }
+        },
+        "DokpoolMeta": {
+            "Purpose": "Standard-Info",
+            "DokpoolContentType": "eventinformation",
+            "IsElan": "true",
+            "IsDoksys": "false",
+            "IsRodos": "false",
+            "IsRei": "false",
+            "NetworkOperator": "U - BFS (ABI)",
+            "SampleTypeId": "L5",
+            "SampleType": "L5 - Niederschlag",
+            "Dom": "Gamma-Spektrometrie",
+            "DataType": "LaDa",
+            "LegalBase": "§2",
+            "MeasuringProgram": "Intensivmessprogramm",
+            "Status": "3 - nicht plausibel",
+            "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
+            "SamplingEnd":"2015-05-28T15:52:52.128+02:00"
+        }
+    },
+    "mapfish-print": [
+    {
+        "layout": "rodosTest",
+        "outputFormat": "pdf",
+        "attributes": {
+            "map_attribution": "© Bundesamt für Strahlenschutz",
+            "map": {
+                "projection": "EPSG:3857",
+                "dpi": 72,
+                "rotation": 0,
+                "center": [1153044,6650612],
+                "scale": 5000000,
+                "layers": [
+                {
+                    "baseURL": "http://www.imis.bfs.de/cgi-public/wms_geoportal",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": [
+                        "imis.p2odl24h",
+                    "imis.p2g11bfg",
+                    "bundeslaender"
+                        ],
+
+                    "imageFormat": "image/png",
+
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                }
+                ]
+            },
+
+            "is_exercise": "true",
+            "title": "Dokument1: Ein Ortsdosisleistungstest mit Bundeswasserstraßen",
+
+            "legend": {
+                "name": "",
+                "classes": [{
+                    "name": "<b>ODL-Tagesmittelwerte</b><br/>Werte in µSv/h",
+                    "icons": ["http://www.imis.bfs.de/cgi-public/wms_geoportal?TRANSPARENT=TRUE&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=imis.p2odl24h&FORMAT=image%2Fgif&SCALE=6933504.262556662"]
+                }, {
+                    "name": "<b>Gesamt-Gamma Aktivität an BfG-Stationen</b><br/>Gesamt-Gamma [Bq/l]",
+                    "icons": ["http://www.imis.bfs.de/cgi-public/wms_geoportal?TRANSPARENT=TRUE&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=imis.p2g11bfg&FORMAT=image%2Fgif&SCALE=6933504.262556662"]
+                }
+                ]
+            },
+
+            "description": "<b>Datenquelle: TEST</b><br/>Freisetzungsort: Neuer Graben 17, Osnabrück<br/>Ereignis: Übungsstrahler im Büro der Intevation GmbH<br/>Datenbasis: willkürlich",
+            "comment": "Hier könnte auch ein sinnvoller, <i>schön</i> formatierter Kommentar stehen.",
+            "impressum": "<b>Bundesamt für Strahlenschutz<br/>(im Auftrag des BMU)</b><br/><br/>RODOS-Zentrale<br/>Rechnung von: 2015-02-25 11:22 MET<br/>Lauf-Kennung: intevation0001<br/>User-ID: test",
+
+            "doc_creator": "automatisch"
+
+        }
+    },
+    {
+        "layout": "rodosTest",
+        "outputFormat": "pdf",
+        "attributes": {
+            "map_attribution": "© Bundesamt für Strahlenschutz",
+            "map": {
+                "projection": "EPSG:3857",
+                "dpi": 72,
+                "rotation": 0,
+                "center": [1153044,6650612],
+                "scale": 5000000,
+                "layers": [
+                {
+                    "baseURL": "http://www.imis.bfs.de/cgi-public/wms_geoportal",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": [
+                        "imis.p2odl24h",
+                    "imis.p2g11bfg",
+                    "bundeslaender"
+                        ],
+
+                    "imageFormat": "image/png",
+
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                }
+                ]
+            },
+
+            "is_exercise": "true",
+            "title": "Dokument2: Ein Ortsdosisleistungstest mit Bundeswasserstraßen",
+
+            "legend": {
+                "name": "",
+                "classes": [{
+                    "name": "<b>ODL-Tagesmittelwerte</b><br/>Werte in µSv/h",
+                    "icons": ["http://www.imis.bfs.de/cgi-public/wms_geoportal?TRANSPARENT=TRUE&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=imis.p2odl24h&FORMAT=image%2Fgif&SCALE=6933504.262556662"]
+                }, {
+                    "name": "<b>Gesamt-Gamma Aktivität an BfG-Stationen</b><br/>Gesamt-Gamma [Bq/l]",
+                    "icons": ["http://www.imis.bfs.de/cgi-public/wms_geoportal?TRANSPARENT=TRUE&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=imis.p2g11bfg&FORMAT=image%2Fgif&SCALE=6933504.262556662"]
+                }
+                ]
+            },
+
+            "description": "<b>Datenquelle: TEST</b><br/>Freisetzungsort: Neuer Graben 17, Osnabrück<br/>Ereignis: Übungsstrahler im Büro der Intevation GmbH<br/>Datenbasis: willkürlich",
+            "comment": "Hier könnte auch ein sinnvoller, <i>schön</i> formatierter Kommentar stehen.",
+            "impressum": "<b>Bundesamt für Strahlenschutz<br/>(im Auftrag des BMU)</b><br/><br/>RODOS-Zentrale<br/>Rechnung von: 2015-02-25 11:22 MET<br/>Lauf-Kennung: intevation0001<br/>User-ID: test",
+
+            "doc_creator": "automatisch"
+        }
+    }
+    ]
+}
