@@ -229,10 +229,19 @@ public final class ReportUtils {
         if (idObj.has("ReportingBases")) {
             ReportingBasesType reportingbases = new ReportingBasesType();
             identification.setReportingBases(reportingbases);
-            JSONArray rbjson = idObj.getJSONArray("ReportingBases");
-            for (int i = 0; i < rbjson.length(); i++) {
-                String rbstring = rbjson.getString(i);
-                addReportingBases(reportingbases, rbstring);
+            JSONObject rbjson = idObj.getJSONObject("ReportingBases");
+            if (rbjson.has("ReportingBasis")) {
+                if (rbjson.get("ReportingBasis") instanceof JSONArray) {
+                    JSONArray rbsisjson = rbjson.getJSONArray("ReportingBasis");
+                    for (int i = 0; i < rbsisjson.length(); i++) {
+                        String rbstring = rbsisjson.getString(i);
+                        addReportingBases(reportingbases, rbstring);
+                    }
+                }
+                else if (rbjson.get("ReportingBasis") instanceof String) {
+                    String rbstring = rbjson.getString("ReportingBasis");
+                    addReportingBases(reportingbases, rbstring);
+                }
             }
         }
 
