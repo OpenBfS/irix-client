@@ -1,6 +1,6 @@
 {
     "printapp": "bfs_rodos_test",
-    "request-type": "respond",
+    "request-type": "upload/respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
         "User": "Testuser",
@@ -8,11 +8,7 @@
             "OrganisationReporting": "irix.test.de",
             "Confidentiality": "Free for Public Use",
             "ReportingBases": {
-                "ReportingBasis": [
-                    "EU Council Decision 87/600/EURATOM",
-                    "Convention on Early Notification of a Nuclear Accident, Article 2",
-                    "ESD"
-                ]
+                "ReportingBasis": "ESD"
             },
             "ReportContext": "Test",
             "SequenceNumber": "42",

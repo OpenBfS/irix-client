@@ -7,7 +7,13 @@
         "Identification": {
             "OrganisationReporting": "irix.test.de",
             "Confidentiality": "Free for Public Use",
-            "ReportingBases": ["EU Council Decision 87/600/EURATOM", "Convention on Early Notification of a Nuclear Accident, Article 2"],
+            "ReportingBases": {
+                "ReportingBasis": [
+                    "EU Council Decision 87/600/EURATOM",
+                    "Convention on Early Notification of a Nuclear Accident, Article 2",
+                    "ESD"
+                ]
+            },
             "ReportContext": "Test",
             "SequenceNumber": "42",
             "OrganisationContact": {
