@@ -237,8 +237,7 @@ public final class ReportUtils {
                         String rbstring = rbsisjson.getString(i);
                         addReportingBases(reportingbases, rbstring);
                     }
-                }
-                else if (rbjson.get("ReportingBasis") instanceof String) {
+                } else if (rbjson.get("ReportingBasis") instanceof String) {
                     String rbstring = rbjson.getString("ReportingBasis");
                     addReportingBases(reportingbases, rbstring);
                 }
