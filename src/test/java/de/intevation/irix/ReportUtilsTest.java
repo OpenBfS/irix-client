@@ -45,10 +45,13 @@ public class ReportUtilsTest {
         + "        \"Identification\": {"
         + "            \"OrganisationReporting\": \"irix.test.de\","
         + "            \"Confidentiality\": \"Free for Public Use\","
-        + "            \"ReportingBases\": ["
-        + "                \"EU Council Decision 87/600/EURATOM\", "
-        + "                \"Second entry for Testing\""
-        + "            ],"
+        + "            \"ReportingBases\": {"
+        + "                \"ReportingBasis\": ["
+        + "                    \"EU Council Decision 87/600/EURATOM\", "
+        + "                    \"Second entry for Testing\", "
+        + "                    \"ESD\""
+        + "                ]"
+        + "            },"
         + "            \"ReportContext\": \"Test\","
         + "            \"SequenceNumber\": \"42\","
         + "            \"OrganisationContact\": {"
@@ -189,7 +192,8 @@ public class ReportUtilsTest {
             report.getIdentification().getReportingBases().
                 getReportingBasis().size(),
             json.getJSONObject("irix").getJSONObject("Identification").
-                getJSONArray("ReportingBases").length()
+                getJSONObject("ReportingBases").
+                getJSONArray("ReportingBasis").length()
         );
 /*
         Assert.assertTrue(
