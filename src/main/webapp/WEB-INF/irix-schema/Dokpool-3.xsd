@@ -24,24 +24,28 @@
         <xs:element name="DokpoolContentType">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="eventinformation"/>
-              <xs:enumeration value="notification"/>
-              <xs:enumeration value="nppinformation"/>
-              <xs:enumeration value="weatherinformation"/>
-              <xs:enumeration value="trajectory"/>
-              <xs:enumeration value="nppprojection"/>
-              <xs:enumeration value="rodosprojection"/>
-              <xs:enumeration value="otherprojection"/>
-              <xs:enumeration value="gammadoserate"/>
-              <xs:enumeration value="airactivity"/>
-              <xs:enumeration value="groundcontamination"/>
-              <xs:enumeration value="mresult_feed"/>
-              <xs:enumeration value="mresult_food"/>
-              <xs:enumeration value="mresult_water"/>
-              <xs:enumeration value="situationreport"/>
-              <xs:enumeration value="instructions"/>
-              <xs:enumeration value="protectiveactions"/>
-              <xs:enumeration value="mediarelease"/>
+              <xs:annotation>
+                <xs:documentation>
+                  <xs:enumeration value="eventinformation"/>
+                  <xs:enumeration value="notification"/>
+                  <xs:enumeration value="nppinformation"/>
+                  <xs:enumeration value="weatherinformation"/>
+                  <xs:enumeration value="trajectory"/>
+                  <xs:enumeration value="nppprojection"/>
+                  <xs:enumeration value="rodosprojection"/>
+                  <xs:enumeration value="otherprojection"/>
+                  <xs:enumeration value="gammadoserate"/>
+                  <xs:enumeration value="airactivity"/>
+                  <xs:enumeration value="groundcontamination"/>
+                  <xs:enumeration value="mresult_feed"/>
+                  <xs:enumeration value="mresult_food"/>
+                  <xs:enumeration value="mresult_water"/>
+                  <xs:enumeration value="situationreport"/>
+                  <xs:enumeration value="instructions"/>
+                  <xs:enumeration value="protectiveactions"/>
+                  <xs:enumeration value="mediarelease"/>
+                </xs:documentation>
+              </xs:annotation>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
@@ -75,10 +79,14 @@
         <xs:element name="SampleTypeId">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="L5"/>
-              <xs:enumeration value="L51"/>
-              <xs:enumeration value="L52"/>
-              <xs:enumeration value="L53"/>
+              <xs:annotation>
+                <xs:documentation>
+                  <xs:enumeration value="L5"/>
+                  <xs:enumeration value="L51"/>
+                  <xs:enumeration value="L52"/>
+                  <xs:enumeration value="L53"/>
+                </xs:documentation>
+              </xs:annotation>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
@@ -147,7 +155,6 @@
               <xs:enumeration value="Intensivmessprogramm"/>
               <xs:enumeration value="REI"/>
               <xs:enumeration value="Routinemessprogramm"/>
-              <xs:enumeration value="Routinemeßprogramm"/>
               <xs:enumeration value="Spontanproben Bund"/>
             </xs:restriction>
           </xs:simpleType>
