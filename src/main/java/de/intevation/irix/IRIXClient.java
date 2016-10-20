@@ -17,11 +17,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
+import java.net.URI;
 
 import javax.xml.bind.JAXBException;
 
@@ -196,8 +197,18 @@ public class IRIXClient extends HttpServlet {
     protected void handlePrintSpecs(List<JSONObject> specs,
         ReportType report, String printApp, String title)
         throws IOException, PrintException {
-        printApp = URLEncoder.encode(printApp, "UTF-8");
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
+        try {
+            URL url = new URL(printUrl);
+            URI uri = new URI(
+                    url.getProtocol(), url.getUserInfo(),
+                    url.getHost(), url.getPort(), url.getPath(),
+                    url.getQuery(), url.getRef()
+            );
+            printUrl = uri.toString();
+        } catch (URISyntaxException e) {
+            throw new PrintException("URL encoding failed.");
+        }
         int i = 1;
         String suffix = "";
         for (JSONObject spec: specs) {
