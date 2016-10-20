@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 
 import javax.xml.bind.JAXBException;
 
@@ -195,6 +196,7 @@ public class IRIXClient extends HttpServlet {
     protected void handlePrintSpecs(List<JSONObject> specs,
         ReportType report, String printApp, String title)
         throws IOException, PrintException {
+        printApp = URLEncoder.encode(printApp, "UTF-8");
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
         int i = 1;
         String suffix = "";
