@@ -227,15 +227,15 @@ public class IRIXClient extends HttpServlet {
             spec.put("layout", baseLayout + mapSuffix);
             content = PrintClient.getReport(printUrl + ".png",
                 spec.toString());
-            ReportUtils.attachFile(title + "_map" + suffix, content, report,
-                "image/png", title + "_map" + suffix + ".png");
+            ReportUtils.attachFile(title + mapSuffix + suffix, content, report,
+                "image/png", title + mapSuffix + suffix + ".png");
 
             // legend without map
             spec.put("layout", baseLayout + legendSuffix);
             content = PrintClient.getReport(printUrl + ".png",
                 spec.toString());
-            ReportUtils.attachFile(title + "_legend" + suffix, content, report,
-                "image/png", title + "_legend" + suffix + ".png");
+            ReportUtils.attachFile(title + legendSuffix + suffix, content, report,
+                "image/png", title + legendSuffix + suffix + ".png");
         }
     }
 
