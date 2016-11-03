@@ -234,8 +234,8 @@ public class IRIXClient extends HttpServlet {
             spec.put("layout", baseLayout + legendSuffix);
             content = PrintClient.getReport(printUrl + ".png",
                 spec.toString());
-            ReportUtils.attachFile(title + legendSuffix + suffix, content, report,
-                "image/png", title + legendSuffix + suffix + ".png");
+            ReportUtils.attachFile(title + legendSuffix + suffix, content,
+                report, "image/png", title + legendSuffix + suffix + ".png");
         }
     }
 
