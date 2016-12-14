@@ -10,6 +10,9 @@ package de.intevation.irix;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
@@ -17,14 +20,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
 
 import javax.xml.bind.JAXBException;
+
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.TranscoderException;
 
 import org.apache.log4j.Logger;
 
@@ -52,6 +62,7 @@ public class IRIXClient extends HttpServlet {
 
     /** The name of the json array containing the print descriptions. */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
+    private static final String IMAGE_JOB_LIST_KEY = "svg-print";
 
     private static final String REQUEST_TYPE_UPLOAD = "upload";
     private static final String REQUEST_TYPE_RESPOND = "respond";
@@ -151,10 +162,20 @@ public class IRIXClient extends HttpServlet {
     protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
         List <JSONObject> retval = new ArrayList<JSONObject>();
         try {
-            JSONArray mapfishPrintList =
-                jsonObject.getJSONArray(PRINT_JOB_LIST_KEY);
-            for (int i = 0; i < mapfishPrintList.length(); i++) {
-                JSONObject jobDesc = mapfishPrintList.getJSONObject(i);
+            String JobListKey = "";
+            if (jsonObject.has(PRINT_JOB_LIST_KEY)) {
+                JobListKey = PRINT_JOB_LIST_KEY;
+            } else if (jsonObject.has(IMAGE_JOB_LIST_KEY)){
+                JobListKey = IMAGE_JOB_LIST_KEY;
+            } else {
+                log.warn("Request did not contain valid JOB_LIST_KEY: " +
+                        PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY);
+            }
+            JSONArray printList =
+                    jsonObject.getJSONArray(JobListKey);
+            for (int i = 0; i < printList.length(); i++) {
+                JSONObject jobDesc = printList.getJSONObject(i);
+                jobDesc.put("jobKey", JobListKey);
                 retval.add(jobDesc);
             }
         } catch (JSONException e) {
@@ -240,6 +261,43 @@ public class IRIXClient extends HttpServlet {
     }
 
     /**
+     * Helper method to print / attach the requested documents.
+     *
+     * @param specs A list of the json print specs.
+     * @param report The report to attach the data to.
+     * @param title The title for the Annex
+     *
+     * @throws IOException if a requested document could not be printed
+     *                     because of Connection problems.
+     * @throws PrintException it the print service returned an error.
+     */
+    protected void handleImageSpecs(List<JSONObject> specs,
+                                    ReportType report, String title)
+            throws IOException, PrintException {
+        String printUrl = "foo";
+        int i = 1;
+        String suffix = "";
+        for (JSONObject spec: specs) {
+            if (specs.size() > 1) {
+                suffix = " " + Integer.toString(i++);
+            }
+
+            String outputFormat = spec.getString("outputFormat");
+
+            byte[] content = Base64.getDecoder().decode(spec.getString("value"));
+            try{
+                content = svgToPng(content).toByteArray();
+            }catch(TranscoderException e){
+                throw new PrintException("Failed to convert svg to png.");
+            }
+
+            ReportUtils.attachFile(title + mapSuffix + suffix, content, report,
+                    "image/png", title + mapSuffix + suffix + ".png");
+
+        }
+    }
+
+    /**
      * Sends a report to the configured UploadReport service.
      *
      * @param report The report to send.
@@ -308,9 +366,16 @@ public class IRIXClient extends HttpServlet {
         try {
             report = ReportUtils.prepareReport(jsonObject);
             ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            handlePrintSpecs(printSpecs, report,
-                jsonObject.getString("printapp"),
-                jsonObject.getJSONObject("irix").getString("Title"));
+            if (printSpecs.get(0).has("jobKey") &&
+                    printSpecs.get(0).get("jobKey").hashCode() == "svg-print".hashCode()){
+                handleImageSpecs(printSpecs, report,
+                        jsonObject.getJSONObject("irix").getString("Title"));
+            }
+            else {
+                handlePrintSpecs(printSpecs, report,
+                        jsonObject.getString("printapp"),
+                        jsonObject.getJSONObject("irix").getString("Title"));
+            }
         } catch (JSONException e) {
             throw new ServletException("Failed to parse IRIX information: ", e);
         } catch (SAXException e) {
@@ -347,5 +412,29 @@ public class IRIXClient extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws ServletException, IOException  {
+        response.setContentType("application/xml");
+        FileInputStream fis = new FileInputStream(dokpoolSchemaFile);
+        byte[] buf = new byte[8192];
+        int c = 0;
+        while ((c = fis.read(buf, 0, buf.length)) > 0) {
+            response.getOutputStream().write(buf, 0, c);
+            response.getOutputStream().flush();
+        }
+        response.getOutputStream().close();
+        fis.close();
+    }
+
+    private ByteArrayOutputStream svgToPng(byte[] streamBytes)
+            throws TranscoderException, IOException {
+        PNGTranscoder t = new PNGTranscoder();
+        TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(streamBytes));
+        ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+        TranscoderOutput output = new TranscoderOutput(ostream);
+
+        t.transcode(input, output);
+
+        ostream.flush();
+        // ostream.close();
+        return ostream;
     }
 }
