@@ -118,6 +118,13 @@ public class ReportUtilsTest {
         + "        \"Identification\": {"
         + "            \"OrganisationReporting\": \"irix.test.de\","
         + "            \"Confidentiality\": \"FAIL for Testing\","
+        + "            \"ReportingBases\": {"
+        + "                \"ReportingBasis\": ["
+        + "                    \"EU Council Decision 87/600/EURATOM\", "
+        + "                    \"Second entry for Testing\", "
+        + "                    \"ESD\""
+        + "                ]"
+        + "            },"
         + "            \"ReportContext\": \"Test\","
         + "            \"SequenceNumber\": \"42\","
         + "            \"OrganisationContact\": {"
@@ -245,7 +252,7 @@ public class ReportUtilsTest {
             "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(REQUEST);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
-            .put("DokpoolContentType", "foo bar");
+            .put("LegalBase", "foo bar");
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
     }
