@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
@@ -59,6 +58,7 @@ import org.xml.sax.SAXException;
  */
 public class IRIXClient extends HttpServlet {
     private static Logger log = Logger.getLogger(IRIXClient.class);
+    private static final int BUF_SIZE = 8192;
 
     /** The name of the json array containing the print descriptions. */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
@@ -162,20 +162,20 @@ public class IRIXClient extends HttpServlet {
     protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
         List <JSONObject> retval = new ArrayList<JSONObject>();
         try {
-            String JobListKey = "";
+            String jobListKey = "";
             if (jsonObject.has(PRINT_JOB_LIST_KEY)) {
-                JobListKey = PRINT_JOB_LIST_KEY;
-            } else if (jsonObject.has(IMAGE_JOB_LIST_KEY)){
-                JobListKey = IMAGE_JOB_LIST_KEY;
+                jobListKey = PRINT_JOB_LIST_KEY;
+            } else if (jsonObject.has(IMAGE_JOB_LIST_KEY)) {
+                jobListKey = IMAGE_JOB_LIST_KEY;
             } else {
-                log.warn("Request did not contain valid JOB_LIST_KEY: " +
-                        PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY);
+                log.warn("Request did not contain valid JOB_LIST_KEY: "
+                        + PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY);
             }
             JSONArray printList =
-                    jsonObject.getJSONArray(JobListKey);
+                    jsonObject.getJSONArray(jobListKey);
             for (int i = 0; i < printList.length(); i++) {
                 JSONObject jobDesc = printList.getJSONObject(i);
-                jobDesc.put("jobKey", JobListKey);
+                jobDesc.put("jobKey", jobListKey);
                 retval.add(jobDesc);
             }
         } catch (JSONException e) {
@@ -283,16 +283,18 @@ public class IRIXClient extends HttpServlet {
             }
 
             String outputFormat = spec.getString("outputFormat");
+            String mimeType = spec.getString("mimetype");
 
-            byte[] content = Base64.getDecoder().decode(spec.getString("value"));
-            try{
+            byte[] content = Base64.getMimeDecoder()
+                    .decode(spec.getString("value"));
+            /*try {
                 content = svgToPng(content).toByteArray();
-            }catch(TranscoderException e){
+            } catch (TranscoderException e) {
                 throw new PrintException("Failed to convert svg to png.");
-            }
+            }*/
 
-            ReportUtils.attachFile(title + mapSuffix + suffix, content, report,
-                    "image/png", title + mapSuffix + suffix + ".png");
+            ReportUtils.attachFile(title + suffix, content, report,
+                    mimeType, title + suffix + ".svg");
 
         }
     }
@@ -366,12 +368,12 @@ public class IRIXClient extends HttpServlet {
         try {
             report = ReportUtils.prepareReport(jsonObject);
             ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            if (printSpecs.get(0).has("jobKey") &&
-                    printSpecs.get(0).get("jobKey").hashCode() == "svg-print".hashCode()){
+            if (printSpecs.get(0).has("jobKey")
+                    && printSpecs.get(0).get("jobKey")
+                    .hashCode() == IMAGE_JOB_LIST_KEY.hashCode()) {
                 handleImageSpecs(printSpecs, report,
                         jsonObject.getJSONObject("irix").getString("Title"));
-            }
-            else {
+            } else {
                 handlePrintSpecs(printSpecs, report,
                         jsonObject.getString("printapp"),
                         jsonObject.getJSONObject("irix").getString("Title"));
@@ -414,7 +416,7 @@ public class IRIXClient extends HttpServlet {
         throws ServletException, IOException  {
         response.setContentType("application/xml");
         FileInputStream fis = new FileInputStream(dokpoolSchemaFile);
-        byte[] buf = new byte[8192];
+        byte[] buf = new byte[BUF_SIZE];
         int c = 0;
         while ((c = fis.read(buf, 0, buf.length)) > 0) {
             response.getOutputStream().write(buf, 0, c);
@@ -427,7 +429,9 @@ public class IRIXClient extends HttpServlet {
     private ByteArrayOutputStream svgToPng(byte[] streamBytes)
             throws TranscoderException, IOException {
         PNGTranscoder t = new PNGTranscoder();
-        TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(streamBytes));
+        TranscoderInput input = new TranscoderInput(
+                new ByteArrayInputStream(streamBytes)
+        );
         ByteArrayOutputStream ostream = new ByteArrayOutputStream();
         TranscoderOutput output = new TranscoderOutput(ostream);
 
