@@ -1,6 +1,5 @@
 {
-    "printapp": "bfs_rodos_test",
-    "request-type": "upload/respond",
+    "request-type": "respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
         "User": "Testuser",
@@ -43,7 +42,8 @@
     },
     "svg-print": [
     {
-        "mimetype": "application/octet-stream",
+        "mimetype": "image/svg+xml",
+        "inputFormat": "svg",
         "metadata": [],
         "outputFormat": "png",
         "value": "PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDAiIHN0cm9rZT0iZ3JlZW4iIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ieWVsbG93IiAvPgo8L3N2Zz4K"
