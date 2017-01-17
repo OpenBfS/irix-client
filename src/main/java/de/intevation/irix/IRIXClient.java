@@ -50,7 +50,6 @@ import org.xml.sax.SAXException;
  */
 public class IRIXClient extends HttpServlet {
     private static Logger log = Logger.getLogger(IRIXClient.class);
-    private static final int BUFSIZE = 8192;
 
     /** The name of the json array containing the print descriptions. */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
