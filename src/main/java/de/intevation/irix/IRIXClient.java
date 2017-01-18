@@ -10,9 +10,6 @@ package de.intevation.irix;
 
 import java.io.IOException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
@@ -29,11 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 
 import javax.xml.bind.JAXBException;
-
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.TranscoderException;
 
 import org.apache.log4j.Logger;
 
@@ -62,7 +54,7 @@ public class IRIXClient extends HttpServlet {
 
     /** The name of the json array containing the print descriptions. */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
-    private static final String IMAGE_JOB_LIST_KEY = "svg-print";
+    private static final String IMAGE_JOB_LIST_KEY = "img-print";
 
     private static final String REQUEST_TYPE_UPLOAD = "upload";
     private static final String REQUEST_TYPE_RESPOND = "respond";
@@ -274,7 +266,6 @@ public class IRIXClient extends HttpServlet {
     protected void handleImageSpecs(List<JSONObject> specs,
                                     ReportType report, String title)
             throws IOException, PrintException {
-        String printUrl = "foo";
         int i = 1;
         String suffix = "";
         for (JSONObject spec: specs) {
@@ -284,18 +275,12 @@ public class IRIXClient extends HttpServlet {
 
             String outputFormat = spec.getString("outputFormat");
             String mimeType = spec.getString("mimetype");
+            String base64content = spec.getString("value");
 
-            byte[] content = Base64.getMimeDecoder()
-                    .decode(spec.getString("value"));
-            /*try {
-                content = svgToPng(content).toByteArray();
-            } catch (TranscoderException e) {
-                throw new PrintException("Failed to convert svg to png.");
-            }*/
-
+            byte[] content = null;
+            content = Base64.getDecoder().decode(base64content);
             ReportUtils.attachFile(title + suffix, content, report,
-                    mimeType, title + suffix + ".svg");
-
+                    mimeType, title + suffix + "." + outputFormat);
         }
     }
 
@@ -407,38 +392,5 @@ public class IRIXClient extends HttpServlet {
             response.setContentType("application/xml");
             response.getOutputStream().flush();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void doGet(HttpServletRequest request,
-                      HttpServletResponse response)
-        throws ServletException, IOException  {
-        response.setContentType("application/xml");
-        FileInputStream fis = new FileInputStream(dokpoolSchemaFile);
-        byte[] buf = new byte[BUF_SIZE];
-        int c = 0;
-        while ((c = fis.read(buf, 0, buf.length)) > 0) {
-            response.getOutputStream().write(buf, 0, c);
-            response.getOutputStream().flush();
-        }
-        response.getOutputStream().close();
-        fis.close();
-    }
-
-    private ByteArrayOutputStream svgToPng(byte[] streamBytes)
-            throws TranscoderException, IOException {
-        PNGTranscoder t = new PNGTranscoder();
-        TranscoderInput input = new TranscoderInput(
-                new ByteArrayInputStream(streamBytes)
-        );
-        ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-        TranscoderOutput output = new TranscoderOutput(ostream);
-
-        t.transcode(input, output);
-
-        ostream.flush();
-        // ostream.close();
-        return ostream;
     }
 }
