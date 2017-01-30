@@ -93,9 +93,12 @@ public final class ReportUtils {
      **/
     private static final String[] DOKPOOL_FIELDS = new String[] {
         "DokpoolContentType",
+        "DokpoolName",
+        "DokpoolFolder",
         "IsElan",
         "IsDoksys",
         "IsRodos",
+        "RodosMeta",
         "IsRei",
         "NetworkOperator",
         "SampleTypeId",

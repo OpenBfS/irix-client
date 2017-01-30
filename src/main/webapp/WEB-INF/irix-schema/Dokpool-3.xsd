@@ -20,7 +20,6 @@
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
-
         <xs:element name="DokpoolContentType">
           <xs:simpleType>
             <xs:restriction base="xs:string">
@@ -49,18 +48,51 @@
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
+        <xs:element name="DokpoolName" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  <xs:enumeration value="bund"/>
+                  <xs:enumeration value="berlin"/>
+                </xs:documentation>
+              </xs:annotation>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="DokpoolFolder" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  <xs:enumeration value="bund_e-rb"/>
+                  <xs:enumeration value="bund_e-bfe"/>
+                </xs:documentation>
+              </xs:annotation>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
         <xs:element default="false" name="IsElan" type="xs:boolean" minOccurs="0">
         </xs:element>
-
         <xs:element default="true" name="IsDoksys" type="xs:boolean" minOccurs="0">
         </xs:element>
-
-        <xs:element default="false" name="IsRodos" type="xs:boolean" minOccurs="0">
-        </xs:element>
-
+        <xs:sequence minOccurs="0">
+          <xs:element default="false" name="IsRodos" type="xs:boolean">
+          </xs:element>
+          <xs:element name="RodosMeta" minOccurs="0">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    <xs:enumeration value="coming soon"/>
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
         <xs:element default="false" name="IsRei" type="xs:boolean" minOccurs="0">
         </xs:element>
-
         <xs:element name="NetworkOperator" minOccurs="0">
           <xs:simpleType>
             <xs:restriction base="xs:string">
