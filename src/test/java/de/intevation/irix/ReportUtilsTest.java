@@ -228,7 +228,7 @@ public class ReportUtilsTest {
     public void testNoDokpool()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(REQUEST);
         json.getJSONObject("irix").remove("DokpoolMeta");
         ReportType report = ReportUtils.prepareReport(json);
@@ -239,7 +239,7 @@ public class ReportUtilsTest {
     public void testDokpoolValidationOk()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(REQUEST);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
@@ -249,7 +249,7 @@ public class ReportUtilsTest {
     public void testDokpoolValidationFail()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(REQUEST);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("LegalBase", "foo bar");
@@ -261,7 +261,7 @@ public class ReportUtilsTest {
     public void testDokpoolValidationFailType()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(DOKPOOL_MINIMAL);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("IsRei", "false");
@@ -273,7 +273,7 @@ public class ReportUtilsTest {
     public void testDokpoolValidationFailNetworkOp()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(DOKPOOL_MINIMAL);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("IsRei", "false");
@@ -287,7 +287,7 @@ public class ReportUtilsTest {
     public void testSuggestedValues()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(REQUEST);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("Dom", "divination");
@@ -299,7 +299,7 @@ public class ReportUtilsTest {
     public void testDokpoolMinimal()
         throws JAXBException, JSONException, SAXException {
         File schemaFile = new File(
-            "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
+            "src/main/webapp/WEB-INF/irix-schema/Dokpool-4.xsd");
         JSONObject json = new JSONObject(DOKPOOL_MINIMAL);
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.addAnnotation(json, report, schemaFile);
