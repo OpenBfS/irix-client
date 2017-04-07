@@ -5,6 +5,8 @@ cache:
 language: java
 before_install:
   - rm ~/.m2/settings.xml
+  - sudo apt-get -qq update
+  - sudo apt-get install -y xsltproc
 script:
   - mvn clean compile package install
 notifications:
