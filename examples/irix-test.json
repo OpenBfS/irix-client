@@ -1,5 +1,5 @@
 {
-    "printapp": "bfs_rodos_test",
+    "printapp": "IMIS A4 quer",
     "request-type": "upload/respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
@@ -43,7 +43,7 @@
     },
     "mapfish-print": [
     {
-        "layout": "rodosTest",
+        "layout": "imis_A4",
         "outputFormat": "pdf",
         "attributes": {
             "map_attribution": "© Bundesamt für Strahlenschutz",
@@ -97,7 +97,7 @@
         }
     },
     {
-        "layout": "rodosTest",
+        "layout": "imis_A4",
         "outputFormat": "pdf",
         "attributes": {
             "map_attribution": "© Bundesamt für Strahlenschutz",
