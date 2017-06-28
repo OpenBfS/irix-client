@@ -42,6 +42,20 @@
     },
     "img-print": [
     {
+        "mimetype": "image/png",
+        "inputFormat": "png",
+        "metadata": [],
+        "outputFormat": "png",
+        "url": "https://www.imis.bfs.de/geoportal/classic/resources/img/bfs-logo-75pct.png"
+    },
+        {
+            "mimetype": "image/png",
+            "inputFormat": "png",
+            "metadata": [],
+            "outputFormat": "png",
+            "url": "http://www.imis.bfs.de/geoportal/classic/resources/img/bfs-logo-75pct.png"
+        },
+    {
         "mimetype": "image/svg+xml",
         "inputFormat": "svg",
         "metadata": [],

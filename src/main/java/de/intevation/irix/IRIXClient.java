@@ -10,6 +10,8 @@ package de.intevation.irix;
 
 import java.io.IOException;
 import java.io.File;
+//import java.io.ByteArrayInputStream;
+//import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
@@ -21,7 +23,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Base64;
+//import java.util.Base64.Decoder;
 import java.net.URL;
+//import java.net.URLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 
@@ -196,6 +200,25 @@ public class IRIXClient extends HttpServlet {
     }
 
     /**
+     * Wrapper to forward a image error response.
+     *
+     * @param err the ImageException.
+     * @param response the javax.servlet.http.HttpServletResponse
+     * to be used for returning the error.
+     *
+     * @throws IOException if such occured on the output stream.
+     */
+    public void writeImageError(ImageException err,
+                                HttpServletResponse response)
+            throws IOException {
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getOutputStream().print(err.getMessage());
+        response.getOutputStream().flush();
+        return;
+    }
+
+    /**
      * Helper method to print / attach the requested documents.
      *
      * @param specs A list of the json print specs.
@@ -261,11 +284,11 @@ public class IRIXClient extends HttpServlet {
      *
      * @throws IOException if a requested document could not be printed
      *                     because of Connection problems.
-     * @throws PrintException it the print service returned an error.
+     * @throws ImageException it the print service returned an error.
      */
     protected void handleImageSpecs(List<JSONObject> specs,
                                     ReportType report, String title)
-            throws IOException, PrintException {
+            throws IOException, ImageException {
         int i = 1;
         String suffix = "";
         for (JSONObject spec: specs) {
@@ -275,12 +298,33 @@ public class IRIXClient extends HttpServlet {
 
             String outputFormat = spec.getString("outputFormat");
             String mimeType = spec.getString("mimetype");
-            String base64content = spec.getString("value");
-
             byte[] content = null;
-            content = Base64.getDecoder().decode(base64content);
-            ReportUtils.attachFile(title + suffix, content, report,
-                    mimeType, title + suffix + "." + outputFormat);
+            if (spec.has("value")
+                    && spec.get("value").toString().length() > 0) {
+                // content is embedded as base64 string
+                String base64content = spec.getString("value");
+                content = Base64.getDecoder().decode(base64content);
+                //content = decoder.decode(base64content);
+            } else if (spec.has("url")) {
+                // content has to be fetched from external URL
+                String imageUrl = spec.get("url").toString();
+                try {
+                    URL url = new URL(imageUrl);
+                    URI uri = new URI(
+                            url.getProtocol(), url.getUserInfo(),
+                            url.getHost(), url.getPort(), url.getPath(),
+                            url.getQuery(), url.getRef()
+                    );
+                    imageUrl = uri.toString();
+                } catch (URISyntaxException e) {
+                    throw new ImageException("URL encoding failed.");
+                }
+                content = ImageClient.getImage(imageUrl);
+            }
+            if (content.getClass().equals(byte[].class)) {
+                ReportUtils.attachFile(title + suffix, content, report,
+                        mimeType, title + suffix + "." + outputFormat);
+            }
         }
     }
 
@@ -369,6 +413,9 @@ public class IRIXClient extends HttpServlet {
             throw new ServletException("Failed to parse schema.", e);
         } catch (JAXBException e) {
             throw new ServletException("Invalid request.", e);
+        } catch (ImageException e) {
+            writeImageError(e, response);
+            return;
         } catch (PrintException e) {
             writePrintError(e, response);
             return;
@@ -393,4 +440,6 @@ public class IRIXClient extends HttpServlet {
             response.getOutputStream().flush();
         }
     }
+
+
 }
