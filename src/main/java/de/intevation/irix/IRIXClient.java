@@ -10,8 +10,6 @@ package de.intevation.irix;
 
 import java.io.IOException;
 import java.io.File;
-//import java.io.ByteArrayInputStream;
-//import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
@@ -23,9 +21,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Base64;
-//import java.util.Base64.Decoder;
 import java.net.URL;
-//import java.net.URLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 
