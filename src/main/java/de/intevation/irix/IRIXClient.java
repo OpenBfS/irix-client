@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -49,9 +50,11 @@ import org.xml.sax.SAXException;
  */
 public class IRIXClient extends HttpServlet {
     private static Logger log = Logger.getLogger(IRIXClient.class);
+    private static final int BUF_SIZE = 8192;
 
     /** The name of the json array containing the print descriptions. */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
+    private static final String IMAGE_JOB_LIST_KEY = "img-print";
 
     private static final String REQUEST_TYPE_UPLOAD = "upload";
     private static final String REQUEST_TYPE_RESPOND = "respond";
@@ -151,10 +154,20 @@ public class IRIXClient extends HttpServlet {
     protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
         List <JSONObject> retval = new ArrayList<JSONObject>();
         try {
-            JSONArray mapfishPrintList =
-                jsonObject.getJSONArray(PRINT_JOB_LIST_KEY);
-            for (int i = 0; i < mapfishPrintList.length(); i++) {
-                JSONObject jobDesc = mapfishPrintList.getJSONObject(i);
+            String jobListKey = "";
+            if (jsonObject.has(PRINT_JOB_LIST_KEY)) {
+                jobListKey = PRINT_JOB_LIST_KEY;
+            } else if (jsonObject.has(IMAGE_JOB_LIST_KEY)) {
+                jobListKey = IMAGE_JOB_LIST_KEY;
+            } else {
+                log.warn("Request did not contain valid JOB_LIST_KEY: "
+                        + PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY);
+            }
+            JSONArray printList =
+                    jsonObject.getJSONArray(jobListKey);
+            for (int i = 0; i < printList.length(); i++) {
+                JSONObject jobDesc = printList.getJSONObject(i);
+                jobDesc.put("jobKey", jobListKey);
                 retval.add(jobDesc);
             }
         } catch (JSONException e) {
@@ -175,6 +188,25 @@ public class IRIXClient extends HttpServlet {
     public void writePrintError(PrintException err,
                                 HttpServletResponse response)
         throws IOException {
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getOutputStream().print(err.getMessage());
+        response.getOutputStream().flush();
+        return;
+    }
+
+    /**
+     * Wrapper to forward a image error response.
+     *
+     * @param err the ImageException.
+     * @param response the javax.servlet.http.HttpServletResponse
+     * to be used for returning the error.
+     *
+     * @throws IOException if such occured on the output stream.
+     */
+    public void writeImageError(ImageException err,
+                                HttpServletResponse response)
+            throws IOException {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getOutputStream().print(err.getMessage());
@@ -236,6 +268,59 @@ public class IRIXClient extends HttpServlet {
                 spec.toString());
             ReportUtils.attachFile(title + legendSuffix + suffix, content,
                 report, "image/png", title + legendSuffix + suffix + ".png");
+        }
+    }
+
+    /**
+     * Helper method to print / attach the requested documents.
+     *
+     * @param specs A list of the json print specs.
+     * @param report The report to attach the data to.
+     * @param title The title for the Annex
+     *
+     * @throws IOException if a requested document could not be printed
+     *                     because of Connection problems.
+     * @throws ImageException it the print service returned an error.
+     */
+    protected void handleImageSpecs(List<JSONObject> specs,
+                                    ReportType report, String title)
+            throws IOException, ImageException {
+        int i = 1;
+        String suffix = "";
+        for (JSONObject spec: specs) {
+            if (specs.size() > 1) {
+                suffix = " " + Integer.toString(i++);
+            }
+
+            String outputFormat = spec.getString("outputFormat");
+            String mimeType = spec.getString("mimetype");
+            byte[] content = null;
+            if (spec.has("value")
+                    && spec.get("value").toString().length() > 0) {
+                // content is embedded as base64 string
+                String base64content = spec.getString("value");
+                content = Base64.getDecoder().decode(base64content);
+                //content = decoder.decode(base64content);
+            } else if (spec.has("url")) {
+                // content has to be fetched from external URL
+                String imageUrl = spec.get("url").toString();
+                try {
+                    URL url = new URL(imageUrl);
+                    URI uri = new URI(
+                            url.getProtocol(), url.getUserInfo(),
+                            url.getHost(), url.getPort(), url.getPath(),
+                            url.getQuery(), url.getRef()
+                    );
+                    imageUrl = uri.toString();
+                } catch (URISyntaxException e) {
+                    throw new ImageException("URL encoding failed.");
+                }
+                content = ImageClient.getImage(imageUrl);
+            }
+            if (content.getClass().equals(byte[].class)) {
+                ReportUtils.attachFile(title + suffix, content, report,
+                        mimeType, title + suffix + "." + outputFormat);
+            }
         }
     }
 
@@ -308,15 +393,25 @@ public class IRIXClient extends HttpServlet {
         try {
             report = ReportUtils.prepareReport(jsonObject);
             ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            handlePrintSpecs(printSpecs, report,
-                jsonObject.getString("printapp"),
-                jsonObject.getJSONObject("irix").getString("Title"));
+            if (printSpecs.get(0).has("jobKey")
+                    && printSpecs.get(0).get("jobKey")
+                    .hashCode() == IMAGE_JOB_LIST_KEY.hashCode()) {
+                handleImageSpecs(printSpecs, report,
+                        jsonObject.getJSONObject("irix").getString("Title"));
+            } else {
+                handlePrintSpecs(printSpecs, report,
+                        jsonObject.getString("printapp"),
+                        jsonObject.getJSONObject("irix").getString("Title"));
+            }
         } catch (JSONException e) {
             throw new ServletException("Failed to parse IRIX information: ", e);
         } catch (SAXException e) {
             throw new ServletException("Failed to parse schema.", e);
         } catch (JAXBException e) {
             throw new ServletException("Invalid request.", e);
+        } catch (ImageException e) {
+            writeImageError(e, response);
+            return;
         } catch (PrintException e) {
             writePrintError(e, response);
             return;
@@ -342,10 +437,5 @@ public class IRIXClient extends HttpServlet {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void doGet(HttpServletRequest request,
-                      HttpServletResponse response)
-        throws ServletException, IOException  {
-    }
+
 }
