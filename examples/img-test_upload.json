@@ -1,7 +1,7 @@
 {
     "request-type": "upload",
     "irix": {
-        "Title": "IRIX ☢ Test request",
+        "Title": "IRIX Image Test request",
         "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",
@@ -23,7 +23,7 @@
         },
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
-            "DokpoolContentType": "mresult_feed",
+            "DokpoolContentType": "gammadoserate",
             "IsElan": "true",
             "IsDoksys": "false",
             "IsRodos": "false",
