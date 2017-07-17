@@ -1,5 +1,5 @@
 {
-    "request-type": "upload/respond",
+    "request-type": "upload",
     "irix": {
         "Title": "IRIX ☢ Test request",
         "User": "Testuser",
@@ -23,7 +23,7 @@
         },
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
-            "DokpoolContentType": "eventinformation",
+            "DokpoolContentType": "mresult_feed",
             "IsElan": "true",
             "IsDoksys": "false",
             "IsRodos": "false",

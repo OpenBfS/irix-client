@@ -294,6 +294,9 @@ public class IRIXClient extends HttpServlet {
 
             String outputFormat = spec.getString("outputFormat");
             String mimeType = spec.getString("mimetype");
+            if (spec.has("outputSuffix")) {
+                suffix += spec.getString("outputSuffix");
+            }
             byte[] content = null;
             if (spec.has("value")
                     && spec.get("value").toString().length() > 0) {
