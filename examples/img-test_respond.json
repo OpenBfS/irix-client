@@ -24,9 +24,9 @@
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
             "DokpoolContentType": "eventinformation",
-            "IsElan": "true",
+            "IsElan": true,
             "IsDoksys": "false",
-            "IsRodos": "false",
+            "IsRodos": false,
             "IsRei": "false",
             "NetworkOperator": "U - BFS (ABI)",
             "SampleTypeId": "L5",
