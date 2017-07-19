@@ -313,7 +313,7 @@ public final class ReportUtils {
                 continue;
             }
             String methodName = "set" + field;
-            String value = metaObj.getString(field);
+            String value = metaObj.get(field).toString();
             try {
                 if (field.startsWith("Is")) {
                     Method method = meta.getClass().getMethod(methodName,
