@@ -8,6 +8,11 @@
 
 package de.intevation.irix;
 
+import java.io.File;
+import java.io.StringReader;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+
 import java.lang.reflect.Method;
 
 import java.security.MessageDigest;
@@ -20,10 +25,6 @@ import java.util.UUID;
 import java.util.TimeZone;
 import java.math.BigInteger;
 
-import java.io.OutputStream;
-
-import java.io.File;
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -31,6 +32,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.dom.DOMResult;
 
@@ -437,5 +439,63 @@ public final class ReportUtils {
         }
 
         jaxbMarshaller.marshal(new ObjectFactory().createReport(report), out);
+    }
+
+    /**
+     * Unmarshall and Validate a report object from an input string.
+     *
+     * @param report The report to create.
+     * @param in The input string.
+     * @param irixSchema The schema to validate against. Or null.
+     * @throws javax.xml.bind.JAXBException if an error was
+     * encountered while creating the JAXBContext
+     * @throws org.xml.sax.SAXException in case of errors during
+     * parsing of the schema.
+     */
+    public static void unmarshallReport(String in, ReportType report,
+                                        File irixSchema)
+            throws JAXBException, SAXException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(
+                ReportType.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        jaxbUnmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbUnmarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+        if (irixSchema != null) {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(
+                    XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(irixSchema);
+            jaxbUnmarshaller.setSchema(schema);
+        }
+
+        StringReader reader = new StringReader(in);
+        report = (ReportType) jaxbUnmarshaller.unmarshal(reader);
+    }
+
+    /**
+     * Unmarshall and Validate a report object from an input file.
+     *
+     * @param file The input file.
+     * @param irixSchema The schema to validate against. Or null.
+     * @return report object returned
+     * @throws javax.xml.bind.JAXBException if an error was
+     * encountered while creating the JAXBContext
+     * @throws org.xml.sax.SAXException in case of errors during
+     * parsing of the schema.
+     * @throws java.io.FileNotFoundException in case of errors opening file
+     */
+    public static ReportType unmarshallReport(File file, File irixSchema)
+            throws JAXBException, SAXException, FileNotFoundException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(
+                ReportType.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+        if (irixSchema != null) {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(
+                    XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(irixSchema);
+            jaxbUnmarshaller.setSchema(schema);
+        }
+        return (ReportType) jaxbUnmarshaller.unmarshal(file);
     }
 };
