@@ -8,8 +8,12 @@
 
 package de.intevation.irix;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.Reader;
+import java.io.StringReader;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
@@ -26,6 +30,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLInputFactory;
+
 
 import org.apache.log4j.Logger;
 
