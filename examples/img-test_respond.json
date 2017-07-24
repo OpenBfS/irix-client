@@ -24,6 +24,11 @@
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
             "DokpoolContentType": "eventinformation",
+            "DokpoolName": "bund",
+            "DokpoolGroupFolder": "bund_e-rb",
+            "DokpoolPrivateFolder": "rb-fr",
+            "DokpoolTransferFolder": "",
+            "ElanScenario": "routine",
             "IsElan": true,
             "IsDoksys": "false",
             "IsRodos": false,

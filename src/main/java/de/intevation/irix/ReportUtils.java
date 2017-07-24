@@ -100,6 +100,7 @@ public final class ReportUtils {
         "DokpoolGroupFolder",
         "DokpoolPrivateFolder",
         "DokpoolTransferFolder",
+        "ElanScenario",
         "IsElan",
         "IsDoksys",
         "IsRodos",
