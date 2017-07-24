@@ -29,6 +29,7 @@
             "DokpoolGroupFolder": "bund_e-rb",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
+            "DokpoolScenrio": "routine",
             "IsElan": "true",
             "IsDoksys": "false",
             "IsRodos": "true",
