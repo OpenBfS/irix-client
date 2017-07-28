@@ -24,6 +24,11 @@
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
             "DokpoolContentType": "gammadoserate",
+            "DokpoolName": "bund",
+            "DokpoolGroupFolder": "bund_auto-messungen/automatisch-intern",
+            "DokpoolPrivateFolder": "rb-fr",
+            "DokpoolTransferFolder": "",
+            "ElanScenario": "routinemode",
             "IsElan": true,
             "IsDoksys": "false",
             "IsRodos": false,
