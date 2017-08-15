@@ -300,8 +300,12 @@ public class IRIXClient extends HttpServlet {
             byte[] content = null;
             if (spec.has("value")
                     && spec.get("value").toString().length() > 0) {
-                // content is embedded as base64 string
-                String base64content = spec.getString("value");
+                // content is embedded as base64 string (incl. data:... part)
+                String base64value = spec.getString("value");
+                // removing everything before including an eventually
+                // existing comma to separate base64 content
+                String base64content = base64value.
+                        split(",")[base64value.split(",").length - 1];
                 content = Base64.getDecoder().decode(base64content);
                 //content = decoder.decode(base64content);
             } else if (spec.has("url")) {
