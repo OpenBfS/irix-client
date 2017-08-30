@@ -1,7 +1,7 @@
 {
     "request-type": "upload",
     "irix": {
-        "Title": "IRIX Image Test request",
+        "Title": "IRIX Image ☢ Upload Test request",
         "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",
