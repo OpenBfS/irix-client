@@ -28,7 +28,12 @@
             "DokpoolGroupFolder": "bund_auto-messungen/automatisch-intern",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
-            "ElanScenario": "routinemode",
+            "ElanScenarios": {
+              "ElanScenario": [
+                "routinemode",
+                "event_foo_closed"
+              ]
+            },
             "IsElan": true,
             "IsDoksys": "false",
             "IsRodos": false,
