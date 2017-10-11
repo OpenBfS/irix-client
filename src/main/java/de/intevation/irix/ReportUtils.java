@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+import java.util.List;
 import java.util.TimeZone;
 import java.math.BigInteger;
 
@@ -68,6 +69,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
 import de.bfs.irix.extensions.dokpool.DokpoolMeta;
+import de.bfs.irix.extensions.dokpool.DokpoolMeta.ElanScenarios;
 
 /**
  * Static helper methods to work with an IRIX Report.
@@ -100,7 +102,6 @@ public final class ReportUtils {
         "DokpoolGroupFolder",
         "DokpoolPrivateFolder",
         "DokpoolTransferFolder",
-        "ElanScenario",
         "IsElan",
         "IsDoksys",
         "IsRodos",
@@ -252,6 +253,8 @@ public final class ReportUtils {
             }
         }
 
+
+
         // Setup identifications in identification
         IdentificationsType identifications = new IdentificationsType();
         identification.setIdentifications(identifications);
@@ -359,6 +362,29 @@ public final class ReportUtils {
             xmlCalendarFromString(metaObj.getString("SamplingBegin")));
         meta.setSamplingEnd(
             xmlCalendarFromString(metaObj.getString("SamplingEnd")));
+
+        if (metaObj.has("ElanScenarios")) {
+            ElanScenarios elanscenarios = new ElanScenarios();
+            //meta.setElanScenarios(elanscenarios);
+            JSONObject rbjson = metaObj.getJSONObject("ElanScenarios");
+            if (rbjson.has("ElanScenario")) {
+                List<String> elanscenario = elanscenarios.getElanScenario();
+                if (rbjson.get("ElanScenario") instanceof JSONArray) {
+                    JSONArray rbsisjson = rbjson.getJSONArray("ElanScenario");
+
+                    //List<String> rblist = new ArrayList<String>();
+                    for (int i = 0; i < rbsisjson.length(); i++) {
+                        elanscenario.add(rbsisjson.getString(i));
+                    }
+                    //elanscenarios.getElanScenario().add();
+                } else if (rbjson.get("ElanScenario") instanceof String) {
+                    String rbstring = rbjson.getString("ElanScenario");
+                    elanscenario.add(rbstring);
+                    //setElanScenarios(elanscenarios, rbstring);
+                }
+                meta.setElanScenarios(elanscenarios);
+            }
+        }
 
         DOMResult res = new DOMResult();
         Element ele = null;
