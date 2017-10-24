@@ -2,6 +2,7 @@
     "request-type": "upload/respond",
     "irix": {
         "Title": "IRIX ☢ Test request",
+        "Text": "reported by the German Federal Office for Radiation Protection.",
         "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",
@@ -23,7 +24,7 @@
         },
         "DokpoolMeta": {
             "Purpose": "Standard-Info",
-            "DokpoolContentType": "eventinformation",
+            "DokpoolContentType": "gammadoserate",
             "IsElan": "true",
             "IsDoksys": "false",
             "IsRodos": "false",

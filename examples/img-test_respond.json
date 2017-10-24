@@ -2,6 +2,7 @@
     "request-type": "respond",
     "irix": {
         "Title": "IRIX image ☢ Respond Test request",
+        "Text": "reported by the German Federal Office for Radiation Protection.",
         "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",

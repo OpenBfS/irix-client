@@ -2,6 +2,7 @@
     "request-type": "upload",
     "irix": {
         "Title": "IRIX Image ☢ Upload Test request",
+        "Text": "reported by the German Federal Office for Radiation Protection.",
         "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",
@@ -31,7 +32,7 @@
             "ElanScenarios": {
               "ElanScenario": [
                 "routinemode",
-                "event_foo_closed"
+                "ereignis-abc"
               ]
             },
             "IsElan": true,
