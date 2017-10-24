@@ -311,7 +311,9 @@ public final class ReportUtils {
         // prepare annoation
         AnnotationType annotation = new AnnotationType();
         FreeTextType freeText = new FreeTextType();
-        freeText.getContent().add(irixObj.getString("Text"));
+        if (irixObj.has("Text")) {
+            freeText.getContent().add(irixObj.getString("Text"));
+        }
         annotation.setText(freeText);
         annotation.setTitle(irixObj.getString("Title"));
 
