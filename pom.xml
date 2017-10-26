@@ -169,5 +169,6 @@
         <project.custom.java.version>1.7</project.custom.java.version>
         <maven.compiler.source>${project.custom.java.version}</maven.compiler.source>
         <maven.compiler.target>${project.custom.java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>

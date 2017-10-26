@@ -2,6 +2,7 @@
     "request-type": "respond",
     "irix": {
         "Title": "IRIX image ☢ Respond Test request",
+        "Text": "reported by the Dschörman/German Federal Office for Radiation (☢) Protection.",
         "User": "Testuser",
         "Identification": {
             "OrganisationReporting": "irix.test.de",
@@ -28,7 +29,9 @@
             "DokpoolGroupFolder": "bund_e-rb",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
-            "ElanScenario": "routine",
+            "ElanScenarios": {
+              "ElanScenario": [ "routinemode" ]
+            },
             "IsElan": true,
             "IsDoksys": "false",
             "IsRodos": false,

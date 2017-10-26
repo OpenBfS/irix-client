@@ -29,7 +29,9 @@
             "DokpoolGroupFolder": "bund_e-rb",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
-            "ElanScenario": "routine",
+            "ElanScenarios": {
+              "ElanScenario": [ "routinemode" ]
+            },
             "IsElan": "true",
             "IsDoksys": "false",
             "IsRodos": "true",
