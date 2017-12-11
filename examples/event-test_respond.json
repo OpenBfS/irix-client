@@ -1,0 +1,41 @@
+{
+    "request-type": "respond",
+    "irix": {
+        "Title": "IRIX Event Register Test requÄst with (☢).",
+        "Text": "reported by the Dschörman/German Federal Office for Radiation (☢) Protection.",
+        "User": "Testuser",
+        "Identification": {
+            "OrganisationReporting": "irix.test.de",
+            "Confidentiality": "Free for Public Use",
+            "ReportingBases": {
+                "ReportingBasis": [
+                    "EU Council Decision 87/600/EURATOM",
+                    "Convention on Early Notification of a Nuclear Accident, Article 2",
+                    "ESD"
+                ]
+            },
+            "ReportContext": "Test",
+            "SequenceNumber": "42",
+            "OrganisationContact": {
+                "Name": "TestOrg",
+                "OrganisationID": "irix.test.de",
+                "Country": "DE"
+            }
+        }
+    },
+    "event": [
+        {
+            "EventInformation": {
+                "ValidAt": "2017-08-22T22:00:04Z",
+                "TypeOfEvent": "Transport Event",
+                "TypeOfEventDescription": "transport event next to sim city",
+                "DateAndTimeOfEvent": "2017-08-22T22:00:04Z",
+                "IsEstimate": true,
+                "Location": {
+                    "Name": "Freiburg"
+                },
+                "EventDescription": "an accident occured while a nuclear fuel transporter has been hit by a truck"
+            }
+        }
+    ]
+}

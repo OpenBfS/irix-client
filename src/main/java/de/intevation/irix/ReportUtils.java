@@ -51,11 +51,16 @@ import org.iaea._2012.irix.format.ReportType;
 import org.iaea._2012.irix.format.ObjectFactory;
 import org.iaea._2012.irix.format.base.OrganisationContactType;
 import org.iaea._2012.irix.format.base.PersonContactType;
+import org.iaea._2012.irix.format.base.YesNoType;
 import org.iaea._2012.irix.format.identification.IdentificationType;
 import org.iaea._2012.irix.format.identification.IdentificationsType;
 import org.iaea._2012.irix.format.identification.ReportContextType;
 import org.iaea._2012.irix.format.identification.ReportingBasesType;
 import org.iaea._2012.irix.format.identification.ConfidentialityType;
+import org.iaea._2012.irix.format.eventinformation.EventInformationType;
+import org.iaea._2012.irix.format.eventinformation.TypeOfEventType;
+import org.iaea._2012.irix.format.eventinformation.DateAndTimeOfEventType;
+import org.iaea._2012.irix.format.locations.LocationOrLocationRefType;
 import org.iaea._2012.irix.format.annexes.AnnexesType;
 import org.iaea._2012.irix.format.annexes.AnnotationType;
 import org.iaea._2012.irix.format.annexes.FileEnclosureType;
@@ -201,6 +206,58 @@ public final class ReportUtils {
     }
 
     /**
+     * Handle the contents of the event element.
+     *
+     * This is currently a basic version that adds a single
+     * EventInformationType element.
+     *
+     * @param report element to which the eventinformation should
+     * be added.
+     * @param obj the json object to take the eventinformation from.
+     *
+     * @throws org.json.JSONException if values are missing in {@code obj}.
+     */
+    public static void addEventInformation(
+            ReportType report,
+            JSONObject obj) throws JSONException {
+        JSONArray eventArr = obj.getJSONArray("event");
+        JSONObject eventObj = eventArr.getJSONObject(0)
+                .getJSONObject("EventInformation");
+        EventInformationType eventInformation = new EventInformationType();
+        eventInformation.setValidAt(xmlCalendarFromString(eventObj
+                .getString("ValidAt")));
+        TypeOfEventType typeOfEventType = TypeOfEventType.fromValue(eventObj
+                .getString("TypeOfEvent"));
+        eventInformation.setTypeOfEvent(typeOfEventType);
+        eventInformation.setTypeOfEventDescription(eventObj
+                .getString("TypeOfEventDescription"));
+        FreeTextType eventDescription = new FreeTextType();
+        if (eventObj.has("EventDescription")) {
+            eventDescription.getContent().add(eventObj
+                    .getString("EventDescription"));
+        }
+        eventInformation.setEventDescription(eventDescription);
+        LocationOrLocationRefType location = new LocationOrLocationRefType();
+        JSONObject locObj = eventObj.getJSONObject("Location");
+        location.setRef(locObj.getString("Name"));
+        eventInformation.setLocation(location);
+        DateAndTimeOfEventType dateandtimeofevent
+                = new DateAndTimeOfEventType();
+        dateandtimeofevent.setValue(xmlCalendarFromString(eventObj
+                .getString("DateAndTimeOfEvent")));
+        if (eventObj.has("IsEstimate")) {
+            if (eventObj.getBoolean("IsEstimate")) {
+                dateandtimeofevent.setIsEstimate(YesNoType.YES);
+            } else {
+                dateandtimeofevent.setIsEstimate(YesNoType.NO);
+            }
+        }
+        eventInformation.setDateAndTimeOfEvent(dateandtimeofevent);
+        report.setEventInformation(eventInformation);
+    }
+
+
+    /**
      * Prepare the IRIX report to take the PDF attachments.
      *
      * The irix information is taken from the Object specified
@@ -267,6 +324,10 @@ public final class ReportUtils {
         identification.setReportContext(ReportContextType.fromValue(
                 idObj.getString("ReportContext")));
         report.setIdentification(identification);
+        if (jsonObject.has("event")) {
+            EventInformationType eventinformation = new EventInformationType();
+            addEventInformation(report, jsonObject);
+        }
         AnnexesType annex = new AnnexesType();
         report.setAnnexes(annex);
 
@@ -434,7 +495,7 @@ public final class ReportUtils {
             throw new RuntimeException("SHA-1 unavailable. Can't happen.");
         }
 
-        // Add the acutal file
+        // Add the actual file
         FileEnclosureType file = new FileEnclosureType();
         file.setTitle(title);
         file.setMimeType(mimeType);
