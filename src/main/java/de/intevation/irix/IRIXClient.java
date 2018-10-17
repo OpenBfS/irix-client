@@ -44,15 +44,16 @@ import org.xml.sax.SAXException;
 
 /**
  * Servlet implementation for the IRIX-Client.
- *
+ * <p>
  * Process client requests and handle resulting IRIX-reports.
- *
  */
 public class IRIXClient extends HttpServlet {
     private static Logger log = Logger.getLogger(IRIXClient.class);
     private static final int BUF_SIZE = 8192;
 
-    /** The name of the json array containing the print descriptions. */
+    /**
+     * The name of the json array containing the print descriptions.
+     */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
     private static final String IMAGE_JOB_LIST_KEY = "img-print";
     private static final String EVENT_JOB_LIST_KEY = "event";
@@ -61,34 +62,59 @@ public class IRIXClient extends HttpServlet {
     private static final String REQUEST_TYPE_RESPOND = "respond";
     private static final String REQUEST_TYPE_UPLOAD_RESPOND = "upload/respond";
 
-    /** Path to the irixSchema xsd file. */
+    /**
+     * Path to the irixSchema xsd file.
+     */
     private static final String IRIX_SCHEMA_LOC =
-        "/WEB-INF/irix-schema/IRIX.xsd";
+            "/WEB-INF/irix-schema/IRIX.xsd";
 
-    /** Path to the Dokpool extension xsd file. */
+    /**
+     * Path to the Dokpool extension xsd file.
+     */
     private static final String DOKPOOL_SCHEMA_LOC =
-        "/WEB-INF/irix-schema/Dokpool-3.xsd";
+            "/WEB-INF/irix-schema/Dokpool-3.xsd";
 
-    /** The IRIX XSD-schema file. */
+    /**
+     * The IRIX XSD-schema file.
+     */
     protected File irixSchemaFile;
-    /** The Dokpool XSD-schema file. */
+    /**
+     * The Dokpool XSD-schema file.
+     */
     protected File dokpoolSchemaFile;
 
-    /** Append to mapfish-print layout name to identify map layout. */
+    /**
+     * Append to mapfish-print layout name to identify map layout.
+     */
     protected String mapSuffix;
-    /** Append to mapfish-print layout name to identify legend layout. */
+    /**
+     * Append to mapfish-print layout name to identify legend layout.
+     */
     protected String legendSuffix;
-    /** Base URL of mapfish-print service. */
+    /**
+     * Base URL of mapfish-print service.
+     */
     protected String baseUrl;
-    /** URL of irix-webservice upload service. */
+    /**
+     * URL of irix-webservice upload service.
+     */
     protected URL irixServiceUrl;
+    /**
+     * forward Headers (incl. auth Headers).
+     */
+    protected Boolean keepRequestHeaders;
+    /**
+     * store request Header fo reuse.
+     */
+    protected HttpServletRequest keptRequest;
+
 
     /**
      * Get configuration parameters from web.xml and initialize servlet
      * context.
      *
      * @throws javax.servlet.ServletException if a configuration
-     * parameter is missing.
+     *                                        parameter is missing.
      */
     @Override
     public void init() throws ServletException {
@@ -101,31 +127,41 @@ public class IRIXClient extends HttpServlet {
         legendSuffix = getInitParameter("legend-layout-suffix");
         if (legendSuffix == null) {
             throw new ServletException(
-                "Missing 'legend-layout-suffix' parameter.");
+                    "Missing 'legend-layout-suffix' parameter.");
         }
 
         mapSuffix = getInitParameter("map-layout-suffix");
         if (mapSuffix == null) {
             throw new ServletException(
-                "Missing 'map-layout-suffix' parameter.");
+                    "Missing 'map-layout-suffix' parameter.");
         }
 
         String irixServiceStr = getInitParameter("irix-webservice-url");
         if (irixServiceStr == null) {
             throw new ServletException(
-                "Missing 'irix-webservice-url' parameter.");
+                    "Missing 'irix-webservice-url' parameter.");
         }
         try {
             irixServiceUrl = new URL(irixServiceStr);
         } catch (MalformedURLException e) {
             throw new ServletException(
-                "Bad configuration value for: irix-webservice-url", e);
+                    "Bad configuration value for: irix-webservice-url", e);
         }
 
         ServletContext sc = getServletContext();
 
         irixSchemaFile = new File(sc.getRealPath(IRIX_SCHEMA_LOC));
         dokpoolSchemaFile = new File(sc.getRealPath(DOKPOOL_SCHEMA_LOC));
+
+        keepRequestHeaders = Boolean.parseBoolean(
+                getInitParameter("keep-request-headers")
+        );
+        //FIXME this if should never be true according to getInitParameter
+        if (keepRequestHeaders == null) {
+            throw new ServletException(
+                    "Missing 'keep-request-headers' parameter.");
+        }
+
     }
 
     /**
@@ -137,6 +173,9 @@ public class IRIXClient extends HttpServlet {
      */
     protected JSONObject parseRequest(HttpServletRequest request) {
         try {
+            if (keepRequestHeaders) {
+                this.keptRequest = request;
+            }
             return new JSONObject(new JSONTokener(request.getReader()));
         } catch (IOException e) {
             log.warn("Request did not contain valid json: " + e.getMessage());
@@ -148,12 +187,12 @@ public class IRIXClient extends HttpServlet {
      * Obtain all the print specs in the JSON request.
      *
      * @param jsonObject a {@link org.json.JSONObject} object with the content
-     * of the request.
+     *                   of the request.
      * @return a {@link java.util.List} of JSON objects, each containing one
      * print spec.
      */
     protected List<JSONObject> getPrintSpecs(JSONObject jsonObject) {
-        List <JSONObject> retval = new ArrayList<JSONObject>();
+        List<JSONObject> retval = new ArrayList<JSONObject>();
         try {
             String jobListKey = "";
             if (jsonObject.has(PRINT_JOB_LIST_KEY)) {
@@ -182,15 +221,14 @@ public class IRIXClient extends HttpServlet {
     /**
      * Wrapper to forward a print error response.
      *
-     * @param err the PrintException.
+     * @param err      the PrintException.
      * @param response the javax.servlet.http.HttpServletResponse
-     * to be used for returning the error.
-     *
+     *                 to be used for returning the error.
      * @throws IOException if such occured on the output stream.
      */
     public void writePrintError(PrintException err,
                                 HttpServletResponse response)
-        throws IOException {
+            throws IOException {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getOutputStream().print(err.getMessage());
@@ -201,10 +239,9 @@ public class IRIXClient extends HttpServlet {
     /**
      * Wrapper to forward a image error response.
      *
-     * @param err the ImageException.
+     * @param err      the ImageException.
      * @param response the javax.servlet.http.HttpServletResponse
-     * to be used for returning the error.
-     *
+     *                 to be used for returning the error.
      * @throws IOException if such occured on the output stream.
      */
     public void writeImageError(ImageException err,
@@ -220,18 +257,20 @@ public class IRIXClient extends HttpServlet {
     /**
      * Helper method to print / attach the requested documents.
      *
-     * @param specs A list of the json print specs.
-     * @param report The report to attach the data to.
+     * @param specs    A list of the json print specs.
+     * @param report   The report to attach the data to.
      * @param printApp The printApp to use
-     * @param title The title for the Annex
-     *
-     * @throws IOException if a requested document could not be printed
-     *                     because of Connection problems.
+     * @param title    The title for the Annex
+     * @throws IOException    if a requested document could not be printed
+     *                        because of Connection problems.
      * @throws PrintException it the print service returned an error.
      */
-    protected void handlePrintSpecs(List<JSONObject> specs,
-        ReportType report, String printApp, String title)
-        throws IOException, PrintException {
+    protected void handlePrintSpecs(
+            List<JSONObject> specs,
+            ReportType report,
+            String printApp,
+            String title
+    ) throws IOException, PrintException {
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
         try {
             URL url = new URL(printUrl);
@@ -246,43 +285,46 @@ public class IRIXClient extends HttpServlet {
         }
         int i = 1;
         String suffix = "";
-        for (JSONObject spec: specs) {
+        for (JSONObject spec : specs) {
             if (specs.size() > 1) {
                 suffix = " " + Integer.toString(i++);
             }
 
             byte[] content = PrintClient.getReport(printUrl + ".pdf",
-                spec.toString());
+                    spec.toString());
             ReportUtils.attachFile(title + suffix, content, report,
-                "application/pdf", title + suffix + ".pdf");
+                    "application/pdf", title + suffix + ".pdf");
 
             String baseLayout = spec.getString("layout");
 
             // map without legend
             spec.put("layout", baseLayout + mapSuffix);
             content = PrintClient.getReport(printUrl + ".png",
-                spec.toString());
+                    spec.toString());
             ReportUtils.attachFile(title + mapSuffix + suffix, content, report,
-                "image/png", title + mapSuffix + suffix + ".png");
+                    "image/png", title + mapSuffix + suffix + ".png");
 
             // legend without map
             spec.put("layout", baseLayout + legendSuffix);
             content = PrintClient.getReport(printUrl + ".png",
-                spec.toString());
-            ReportUtils.attachFile(title + legendSuffix + suffix, content,
-                report, "image/png", title + legendSuffix + suffix + ".png");
+                    spec.toString());
+            ReportUtils.attachFile(
+                    title + legendSuffix + suffix, content,
+                    report,
+                    "image/png",
+                    title + legendSuffix + suffix + ".png"
+            );
         }
     }
 
     /**
      * Helper method to print / attach the requested documents.
      *
-     * @param specs A list of the json print specs.
+     * @param specs  A list of the json print specs.
      * @param report The report to attach the data to.
-     * @param title The title for the Annex
-     *
-     * @throws IOException if a requested document could not be printed
-     *                     because of Connection problems.
+     * @param title  The title for the Annex
+     * @throws IOException    if a requested document could not be printed
+     *                        because of Connection problems.
      * @throws ImageException it the print service returned an error.
      */
     protected void handleImageSpecs(List<JSONObject> specs,
@@ -290,7 +332,7 @@ public class IRIXClient extends HttpServlet {
             throws IOException, ImageException {
         int i = 1;
         String suffix = "";
-        for (JSONObject spec: specs) {
+        for (JSONObject spec : specs) {
             if (specs.size() > 1) {
                 suffix = " " + Integer.toString(i++);
             }
@@ -341,7 +383,8 @@ public class IRIXClient extends HttpServlet {
      * @throws javax.servlet.ServletException if uploading failed.
      */
     protected void sendReportToService(ReportType report)
-        throws ServletException {
+            throws ServletException {
+        //FIXME how to handle authentication headers from original request??
         UploadReportService service = new UploadReportService(irixServiceUrl);
         UploadReportInterface irixservice = service.getUploadReportPort();
         log.debug("Sending report.");
@@ -349,29 +392,27 @@ public class IRIXClient extends HttpServlet {
             irixservice.uploadReport(report);
         } catch (UploadReportException_Exception e) {
             throw new ServletException(
-                "Failed to send report to IRIX service.", e);
+                    "Failed to send report to IRIX service.", e);
         }
         log.debug("Report successfully sent.");
     }
 
     /**
      * Handle POST request.
-     *
+     * <p>
      * Parse request and generate according IRIX report for response.
      *
-     * @param request object that contains the request the client has made
-     * of the servlet
+     * @param request  object that contains the request the client has made
+     *                 of the servlet
      * @param response object that contains the response the servlet sends
-     * to the client
-     *
+     *                 to the client
      * @throws ServletException in case of errors with schema.
-     * @throws IOException if the request is invalid.
-     *
+     * @throws IOException      if the request is invalid.
      */
     @Override
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         JSONObject jsonObject = parseRequest(request);
         if (jsonObject == null) {
@@ -394,8 +435,8 @@ public class IRIXClient extends HttpServlet {
         requestType = requestType.toLowerCase();
 
         if (!requestType.equals(REQUEST_TYPE_UPLOAD)
-            && !requestType.equals(REQUEST_TYPE_RESPOND)
-            && !requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
+                && !requestType.equals(REQUEST_TYPE_RESPOND)
+                && !requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
             throw new ServletException("Unknown request-type: " + requestType);
         }
 
@@ -432,15 +473,15 @@ public class IRIXClient extends HttpServlet {
         }
 
         if (requestType.equals(REQUEST_TYPE_UPLOAD)
-            || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
+                || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
             sendReportToService(report);
         }
 
         if (requestType.equals(REQUEST_TYPE_RESPOND)
-            || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
+                || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
             try {
                 ReportUtils.marshallReport(report, response.getOutputStream(),
-                    irixSchemaFile);
+                        irixSchemaFile);
             } catch (JAXBException e) {
                 throw new ServletException("Invalid request.", e);
             } catch (SAXException e) {
