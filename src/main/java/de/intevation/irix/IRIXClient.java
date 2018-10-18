@@ -99,6 +99,15 @@ public class IRIXClient extends HttpServlet {
      * URL of irix-webservice upload service.
      */
     protected URL irixServiceUrl;
+    /**
+     * forward Headers (incl. auth Headers).
+     */
+    protected Boolean keepRequestHeaders;
+    /**
+     * store request Header fo reuse.
+     */
+    protected HttpServletRequest keptRequest;
+
 
     /**
      * Get configuration parameters from web.xml and initialize servlet
@@ -143,6 +152,16 @@ public class IRIXClient extends HttpServlet {
 
         irixSchemaFile = new File(sc.getRealPath(IRIX_SCHEMA_LOC));
         dokpoolSchemaFile = new File(sc.getRealPath(DOKPOOL_SCHEMA_LOC));
+
+        keepRequestHeaders = Boolean.parseBoolean(
+                getInitParameter("keep-request-headers")
+        );
+        //FIXME this if should never be true according to getInitParameter
+        if (keepRequestHeaders == null) {
+            throw new ServletException(
+                    "Missing 'keep-request-headers' parameter.");
+        }
+
     }
 
     /**
@@ -154,6 +173,9 @@ public class IRIXClient extends HttpServlet {
      */
     protected JSONObject parseRequest(HttpServletRequest request) {
         try {
+            if (keepRequestHeaders) {
+                this.keptRequest = request;
+            }
             return new JSONObject(new JSONTokener(request.getReader()));
         } catch (IOException e) {
             log.warn("Request did not contain valid json: " + e.getMessage());
@@ -286,9 +308,12 @@ public class IRIXClient extends HttpServlet {
             spec.put("layout", baseLayout + legendSuffix);
             content = PrintClient.getReport(printUrl + ".png",
                     spec.toString());
-            ReportUtils.attachFile(title + legendSuffix
-                    + suffix, content, report, "image/png", title
-                    + legendSuffix + suffix + ".png");
+            ReportUtils.attachFile(
+                    title + legendSuffix + suffix, content,
+                    report,
+                    "image/png",
+                    title + legendSuffix + suffix + ".png"
+            );
         }
     }
 
@@ -359,6 +384,7 @@ public class IRIXClient extends HttpServlet {
      */
     protected void sendReportToService(ReportType report)
             throws ServletException {
+        //FIXME how to handle authentication headers from original request??
         UploadReportService service = new UploadReportService(irixServiceUrl);
         UploadReportInterface irixservice = service.getUploadReportPort();
         log.debug("Sending report.");

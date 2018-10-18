@@ -12,8 +12,7 @@
          <init-param>
              <param-name>irix-webservice-url</param-name>
              <!-- URL of the irix-webservice to use for uploads -->
-             <!--param-value>http://test-docker-fr.lab.bfs.de:18087/irix-webservice/upload-report</param-value> -->
-             <param-value>http://localhost:8080/irix-webservice/upload-report</param-value>
+             <param-value>http://localhost:8087/irix-webservice/upload-report</param-value>
          </init-param>
          <init-param>
              <param-name>print-url</param-name>
@@ -29,6 +28,11 @@
              <!-- Suffix to add to the layout for legend only output -->
              <param-name>legend-layout-suffix</param-name>
              <param-value>_legend</param-value>
+         </init-param>
+         <init-param>
+             <!-- keep request Headers -->
+             <param-name>keep-request-headers</param-name>
+             <param-value>true</param-value>
          </init-param>
      </servlet>
 
