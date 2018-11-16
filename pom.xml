@@ -51,6 +51,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <extension>true</extension>
                     <schemaDirectory>${basedir}/src/main/webapp/WEB-INF/irix-schema</schemaDirectory>
                     <schemaIncludes>
                         <include>IRIX.xsd</include>
@@ -63,7 +64,16 @@
                     <args>
                         <arg>-extension</arg>
                         <arg>-Xnamespace-prefix</arg>
+                        <!--<arg>-Xjsonix</arg>
+                        <arg>-Xjsonix-generateJsonSchema</arg>-->
                     </args>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.hisrc.jsonix</groupId>
+                            <artifactId>jsonix-schema-compiler</artifactId>
+                            <version>2.3.9</version>
+                        </plugin>
+                    </plugins>
                     <verbose>false</verbose>
                 </configuration>
 

@@ -110,7 +110,11 @@ public final class ReportUtils {
         "IsElan",
         "IsDoksys",
         "IsRodos",
-        "IsRei",
+        "IsRei"
+    };
+
+    // removed Doksys specific fields
+    /*
         "NetworkOperator",
         "SampleTypeId",
         "SampleType",
@@ -120,7 +124,7 @@ public final class ReportUtils {
         "MeasuringProgram",
         "Status",
         "Purpose"
-    };
+     */
 
     private ReportUtils() {
         // hidden constructor to avoid instantiation.
@@ -419,12 +423,13 @@ public final class ReportUtils {
             throw new JAXBException(
                 "Doksys documents need to have a Network Operator set.");
         }
-
-        // Handle the datetime values
-        meta.setSamplingBegin(
-            xmlCalendarFromString(metaObj.getString("SamplingBegin")));
-        meta.setSamplingEnd(
-            xmlCalendarFromString(metaObj.getString("SamplingEnd")));
+        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()) {
+            // Handle the datetime values
+            meta.setSamplingBegin(
+                    xmlCalendarFromString(metaObj.getString("SamplingBegin")));
+            meta.setSamplingEnd(
+                    xmlCalendarFromString(metaObj.getString("SamplingEnd")));
+        }
 
         if (metaObj.has("ElanScenarios")) {
             ElanScenarios elanscenarios = new ElanScenarios();
