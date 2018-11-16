@@ -59,17 +59,13 @@
                         "EndRelease": "2018-11-18Z0:00:00",
                         "Label": "F6.FOO-BAR",
                         "Type": "normal",
-                        "Activity": {
-                            "Noble": 1.9E27,
-                            "Iodine": 1.5E25,
-                            "Aerosol": 4.2E23,
-                            "Special": 0.0
-                        },
-                        "Block": {
-                            "Name": "FOO-1",
-                            "Latitude": 42.0,
-                            "Longitude": 42.0
-                        },
+                        "ActivityNoble": 1.9E27,
+                        "ActivityIodine": 1.5E25,
+                        "ActivityAerosol": 4.2E23,
+                        "ActivitySpecial": 0.0,
+                        "BlockName": "FOO-1",
+                        "BlockLatitude": 42.0,
+                        "BlockLongitude": 42.0,
                         "Comment": "Nothing happened at this spot in 1745."
                     },
                     {
@@ -77,33 +73,26 @@
                         "EndRelease": "2018-11-21Z0:00:00",
                         "Label": "F6.BAR-FOO",
                         "Type": "normal",
-                        "Activity": {
-                            "Noble": 1.9E26,
-                            "Iodine": 1.5E24,
-                            "Aerosol": 4.2E22,
-                            "Special": 0.0
-                        },
-                        "Block": {
-                            "Name": "FOO-1",
-                            "Latitude": 43.0,
-                            "Longitude": 41.0
-                        },
+                        "ActivityNoble": 1.9E26,
+                        "ActivityIodine": 1.5E24,
+                        "ActivityAerosol": 4.2E22,
+                        "ActivitySpecial": 0.0,
+                        "BlockName": "FOO-1",
+                        "BlockLatitude": 43.0,
+                        "BlockLongitude": 41.0
                         "Comment": "Nothing happened at this spot in 1975."
                     }
                 ],
-                "Prognosis": {
-                    "Provider": "Deutscher_Wetterdienst_DWD",
-                    "Meteo": "nwp",
-                    "End": "2018-10-25Z10:00:00",
-                    "Date": "2018-10-23Z06:00:00",
-                    "Begin": "2018-10-23Z10:00:00",
-                    "Dates": [
-                        "2018-10-23Z06:00:00",
-                        "2018-10-23Z12:00:00"
-                    ]
-                }
-            },
-            "Rei": ""
+                "PrognosisProvider": "Deutscher_Wetterdienst_DWD",
+                "PrognosisMeteo": "nwp",
+                "PrognosisEnd": "2018-10-25Z10:00:00",
+                "PrognosisDate": "2018-10-23Z06:00:00",
+                "PrognosisBegin": "2018-10-23Z10:00:00",
+                "PrognosisDates": [
+                    "2018-10-23Z06:00:00",
+                    "2018-10-23Z12:00:00"
+                ]
+            }
         }
     },
     "doc-print": [
