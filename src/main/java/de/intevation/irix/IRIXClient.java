@@ -387,6 +387,9 @@ public class IRIXClient extends HttpServlet {
         //FIXME how to handle authentication headers from original request??
         UploadReportService service = new UploadReportService(irixServiceUrl);
         UploadReportInterface irixservice = service.getUploadReportPort();
+
+        // TODO Add HTTP headers to the web service request
+
         log.debug("Sending report.");
         try {
             irixservice.uploadReport(report);

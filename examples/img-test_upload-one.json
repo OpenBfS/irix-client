@@ -1,0 +1,72 @@
+{
+    "request-type": "upload",
+    "irix": {
+        "Title": "IRIX Image Upload Test requÄst with (☢).",
+        "Text": "reported by the Dschörman/German Federal Office for Radiation (☢) Protection. <a href='https://entw-imis.lab.bfs.de/gis/#map/1234075/6706481/6|layers/%7B%220790a4e9-7d76-4c37-9843-6be28f80b916%22%3A%7B%22isVisible%22%3A1%2C%22filters%22%3A%5B%7B%22type%22%3A%22pointintime%22%2C%22effectivedatetime%22%3A1509019200000%7D%2C%7B%22type%22%3A%22value%22%2C%22effectivevalue%22%3A%5B%22'BfS'%22%5D%2C%22alias%22%3A%22Messnetz%22%2C%22param%22%3A%22source%22%7D%5D%7D%7D|'>Permalink</a>",
+        "User": "Testuser",
+        "Identification": {
+            "OrganisationReporting": "irix.test.de",
+            "Confidentiality": "Free for Public Use",
+            "ReportingBases": {
+                "ReportingBasis": [
+                    "EU Council Decision 87/600/EURATOM",
+                    "Convention on Early Notification of a Nuclear Accident, Article 2",
+                    "ESD"
+                ]
+            },
+            "ReportContext": "Test",
+            "SequenceNumber": "42",
+            "OrganisationContact": {
+                "Name": "TestOrg",
+                "OrganisationID": "irix.test.de",
+                "Country": "DE"
+            }
+        },
+        "DokpoolMeta": {
+            "Purpose": "Standard-Info",
+            "DokpoolContentType": "gammadoserate",
+            "DokpoolName": "bund",
+            "DokpoolGroupFolder": "bund_auto-messungen/automatisch-intern",
+            "DokpoolPrivateFolder": "rb-fr",
+            "DokpoolTransferFolder": "",
+            "ElanScenarios": {
+              "ElanScenario": [
+                "routinemode",
+                "ereignis-abc"
+              ]
+            },
+            "IsElan": true,
+            "IsDoksys": "false",
+            "IsRodos": false,
+            "IsRei": "false",
+            "NetworkOperator": "U - BFS (ABI)",
+            "SampleTypeId": "L5",
+            "SampleType": "L5 - Niederschlag",
+            "Dom": "Gamma-Spektrometrie",
+            "DataType": "LaDa",
+            "LegalBase": "Europa",
+            "MeasuringProgram": "Intensivmessprogramm",
+            "Status": "3 - nicht plausibel",
+            "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
+            "SamplingEnd": "2015-05-28T15:52:52.128+02:00"
+        }
+    },
+    "img-print": [
+        {
+            "mimetype": "image/png",
+            "inputFormat": "png",
+            "metadata": [],
+            "outputFormat": "png",
+            "outputSuffix": "_legend",
+            "url": "https://www.imis.bfs.de/geoportal/classic/resources/img/bfs-logo-75pct.png"
+        },
+        {
+            "mimetype": "image/png",
+            "inputFormat": "png",
+            "metadata": [],
+            "outputFormat": "png",
+            "outputSuffix": "_map",
+            "url": "http://www.imis.bfs.de/geoportal/classic/resources/img/bfs-logo-75pct.png"
+        }
+    ]
+}
