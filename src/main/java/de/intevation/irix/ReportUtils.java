@@ -74,7 +74,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
 import de.bfs.irix.extensions.dokpool.DokpoolMeta;
-import de.bfs.irix.extensions.dokpool.DokpoolMeta.ElanScenarios;
+import de.bfs.irix.extensions.dokpool.DokpoolMeta.ELAN;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta.DOKSYS;
+import de.bfs.irix.extensions.dokpool.DokpoolMeta.RODOS;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta.REI;
 
 /**
  * Static helper methods to work with an IRIX Report.
@@ -111,6 +114,21 @@ public final class ReportUtils {
         "IsDoksys",
         "IsRodos",
         "IsRei"
+    };
+
+    private static final String[] RODOS_FIELDS = new String[] {
+        "ProjectComment",
+        "Site",
+        "ReportRunID",
+        "Model",
+        "CalculationId",
+        "CalculationDate",
+        "CalculationUser",
+        "Projectname",
+        "ProjectChain",
+        "WorkingMode",
+        "Sourceterm",
+        "Prognosis"
     };
 
     // removed Doksys specific fields
@@ -410,48 +428,92 @@ public final class ReportUtils {
                     + " on DokpoolMeta object.");
             }
         }
-
         if (!hasType) {
             // Faked JAXBException as we can't write these restrictions in
             // Schema 1.0
             throw new JAXBException("At least one of the fields, IsElan, "
                 + "IsDoksys, IsRodos, IsRei needs to be true");
         }
+        // FIXME process DOKSYS, ELAN, RODOS and REI sequentially
         if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()
-            && (meta.getNetworkOperator() == null
-                || meta.getNetworkOperator().isEmpty())) {
-            throw new JAXBException(
-                "Doksys documents need to have a Network Operator set.");
+            && (meta.getDOKSYS() == null
+                || meta.getDOKSYS().getNetworkOperator().isEmpty())) {
+            try {
+                meta.getDOKSYS().setNetworkOperator(metaObj
+                        .getJSONObject("Doksys").getString("NetworkOperator"));
+            } catch (Exception e) {
+                throw new JAXBException(
+                        "Doksys documents need to have a Network Operator set."
+                );
+            }
         }
         if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()) {
             // Handle the datetime values
-            meta.setSamplingBegin(
+            meta.getDOKSYS().setSamplingBegin(
                     xmlCalendarFromString(metaObj.getString("SamplingBegin")));
-            meta.setSamplingEnd(
+            meta.getDOKSYS().setSamplingEnd(
                     xmlCalendarFromString(metaObj.getString("SamplingEnd")));
         }
+        if (metaObj.has("Elan") && meta.isIsElan()) {
+            ELAN elan = new ELAN();
+            if (metaObj.getJSONObject("Elan").has("ElanScenarios")) {
+                ELAN.ElanScenarios elanscenarios = new ELAN.ElanScenarios();
+                JSONObject rbjson = metaObj.getJSONObject("Elan")
+                    .getJSONObject("ElanScenarios");
+                if (rbjson.has("ElanScenario")) {
+                    List<String> elanscenario = elanscenarios.getElanScenario();
+                    if (rbjson.get("ElanScenario") instanceof JSONArray) {
+                        JSONArray rbsisjson = rbjson
+                                .getJSONArray("ElanScenario");
 
-        if (metaObj.has("ElanScenarios")) {
-            ElanScenarios elanscenarios = new ElanScenarios();
-            //meta.setElanScenarios(elanscenarios);
-            JSONObject rbjson = metaObj.getJSONObject("ElanScenarios");
-            if (rbjson.has("ElanScenario")) {
-                List<String> elanscenario = elanscenarios.getElanScenario();
-                if (rbjson.get("ElanScenario") instanceof JSONArray) {
-                    JSONArray rbsisjson = rbjson.getJSONArray("ElanScenario");
-
-                    //List<String> rblist = new ArrayList<String>();
-                    for (int i = 0; i < rbsisjson.length(); i++) {
-                        elanscenario.add(rbsisjson.getString(i));
+                        //List<String> rblist = new ArrayList<String>();
+                        for (int i = 0; i < rbsisjson.length(); i++) {
+                            elanscenario.add(rbsisjson.getString(i));
+                        }
+                        //elanscenarios.getElanScenario().add();
+                    } else if (rbjson.get("ElanScenario") instanceof String) {
+                        String rbstring = rbjson.getString("ElanScenario");
+                        elanscenario.add(rbstring);
+                        //setElanScenarios(elanscenarios, rbstring);
                     }
-                    //elanscenarios.getElanScenario().add();
-                } else if (rbjson.get("ElanScenario") instanceof String) {
-                    String rbstring = rbjson.getString("ElanScenario");
-                    elanscenario.add(rbstring);
-                    //setElanScenarios(elanscenarios, rbstring);
+                    elan.setElanScenarios(elanscenarios);
+                    meta.setELAN(elan);
                 }
-                meta.setElanScenarios(elanscenarios);
             }
+        }
+        if (metaObj.has("Rodos") && meta.isIsRodos()) {
+            RODOS rodos = new RODOS();
+            JSONObject rodosMetaObj = metaObj.getJSONObject("Rodos");
+            for (String field: RODOS_FIELDS) {
+                if (!rodosMetaObj.has(field)) {
+                    continue;
+                }
+                String methodName = "set" + field;
+                try {
+                    if (field.equals("CalculationDate")) {
+                        String value = rodosMetaObj.get(field).toString();
+                        XMLGregorianCalendar calval;
+                        calval = xmlCalendarFromString(value);
+                        Method method = rodos.getClass().getMethod(
+                                methodName,
+                                XMLGregorianCalendar.class
+                        );
+                        method.invoke(rodos, calval);
+                    } else {
+                        String value = rodosMetaObj.get(field).toString();
+                        Method method = rodos.getClass().getMethod(
+                                methodName,
+                                String.class
+                        );
+                        method.invoke(rodos, value);
+                    }
+                } catch (Exception e) {
+                    log.error(e.getClass().getName()
+                            + " exception while trying to access " + methodName
+                            + " on DokpoolRodosMeta object.");
+                }
+            }
+            meta.setRODOS(rodos);
         }
 
         DOMResult res = new DOMResult();
