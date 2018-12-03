@@ -450,7 +450,7 @@ public class IRIXClient extends HttpServlet {
         ReportType report = null;
         try {
             report = ReportUtils.prepareReport(jsonObject);
-            ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
+            DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
             if (printSpecs.get(0).has("jobKey")
                     && printSpecs.get(0).get("jobKey")
                     .hashCode() == EVENT_JOB_LIST_KEY.hashCode()) {
