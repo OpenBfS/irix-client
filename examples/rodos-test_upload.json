@@ -53,7 +53,7 @@
                 "Projectname": "notfallstation-0,25-barakw-nodwd",
                 "ProjectChain": "EmergencyLite",
                 "WorkingMode": "Exercise",
-                "Sourceterm": [
+                "Sourceterms": [
                     {
                         "StartRelease": "2018-11-16T18:00:00Z",
                         "EndRelease": "2018-11-18T10:00:00Z",

@@ -54,7 +54,7 @@ import java.lang.reflect.Method;
 //import java.math.BigInteger;
 //import java.security.MessageDigest;
 //import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,15 +93,15 @@ public final class DokpoolUtils {
     };
 
     private static final String[] DOKSYS_FIELDS = new String[] {
-            "NetworkOperator",
-            "SampleTypeId",
-            "SampleType",
-            "Dom",
-            "DataType",
-            "LegalBase",
-            "MeasuringProgram",
-            "Status",
-            "Purpose"
+        "NetworkOperator",
+        "SampleTypeId",
+        "SampleType",
+        "Dom",
+        "DataType",
+        "LegalBase",
+        "MeasuringProgram",
+        "Status",
+        "Purpose"
     };
 
     private static final String[] RODOS_FIELDS = new String[] {
@@ -115,7 +115,7 @@ public final class DokpoolUtils {
         "Projectname",
         "ProjectChain",
         "WorkingMode",
-        "Sourceterm",
+        "Sourceterms",
         "Prognosis"
     };
 
@@ -458,14 +458,14 @@ public final class DokpoolUtils {
             RODOS rodos) {
         RODOS.Sourceterms sourceterms = new RODOS.Sourceterms();
 
-        JSONObject rodosSourcetermsMetaObj = rodosMetaObj
-                .getJSONObject("Sourceterms");
+        JSONArray rodosSourcetermsMetaObj = rodosMetaObj
+                .getJSONArray("Sourceterms");
 
         for (int i = 0; i < rodosSourcetermsMetaObj.length(); i++) {
             RODOS.Sourceterms.Sourceterm sourceterm =
                     new RODOS.Sourceterms.Sourceterm();
-            JSONObject rodosSourcetermMetaObj = rodosSourcetermsMetaObj;
-            for (String field: RODOS_SOURCETERM_FIELDS) {
+            JSONArray rodosSourcetermMetaObj = rodosSourcetermsMetaObj;
+            /*for (String field: RODOS_SOURCETERM_FIELDS) {
                 if (!rodosSourcetermsMetaObj.has(field)) {
                     continue;
                 }
@@ -482,7 +482,7 @@ public final class DokpoolUtils {
                             + " exception while trying to access " + methodName
                             + " on DokpoolRodosSourcetermMeta object.");
                 }
-            }
+            }*/
         }
 
         RODOS.Sourceterms.Sourceterm sourceterm =
@@ -525,20 +525,18 @@ public final class DokpoolUtils {
                     RODOS.Prognosis.Dates dates = new RODOS.Prognosis.Dates();
                     JSONArray datesMetaObj = rodosPrognosisMetaObj
                             .getJSONArray(field);
-                    List<XMLGregorianCalendar> datesList = new ArrayList<>();
+                    List<XMLGregorianCalendar> datesList = dates.getDate();
                     for (int i = 0; i < datesMetaObj.length(); i++) {
                         String value = datesMetaObj.get(i).toString();
                         XMLGregorianCalendar calval;
                         calval = ReportUtils.xmlCalendarFromString(value);
                         datesList.add(calval);
                     }
-                    List<XMLGregorianCalendar> date = dates.getDate();
-                    date = datesList;
                     Method method = prognosis.getClass().getMethod(
                             methodName,
                             RODOS.Prognosis.Dates.class
                     );
-                    method.invoke(prognosis, date);
+                    method.invoke(prognosis, dates);
                 } else {
                     String value = rodosPrognosisMetaObj.get(field).toString();
                     Method method = prognosis.getClass().getMethod(
@@ -554,7 +552,6 @@ public final class DokpoolUtils {
             }
         }
         rodos.setPrognosis(prognosis);
-
     }
 
 }
