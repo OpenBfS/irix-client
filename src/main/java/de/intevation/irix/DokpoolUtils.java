@@ -50,11 +50,13 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 //import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 //import java.math.BigInteger;
 //import java.security.MessageDigest;
 //import java.security.NoSuchAlgorithmException;
 //import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -394,8 +396,9 @@ public final class DokpoolUtils {
                             XMLGregorianCalendar.class
                     );
                     method.invoke(rodos, calval);
-                } else if (field.equals("Sourceterms")) {
-                    addRodosSourceterms(rodosMetaObj, rodos);
+                } else if (field.equals("Sourceterms")
+                        || field.equals("Sourceterm")) {
+                    addRodosSourceterms(rodosMetaObj, rodos, field);
                 } else if (field.equals("Prognosis")) {
                     addRodosPrognosis(rodosMetaObj, rodos);
                 } else {
@@ -452,44 +455,108 @@ public final class DokpoolUtils {
      *
      * @param rodos The rodos part of the report to add the Sourceterm meta to.
      * @param rodosMetaObj The Rodos metaJsonObject of the request.
+     * @param field The key holding the Sourceterm(s)
      */
     public static void addRodosSourceterms(
             JSONObject rodosMetaObj,
-            RODOS rodos) {
+            RODOS rodos,
+            String field) {
         RODOS.Sourceterms sourceterms = new RODOS.Sourceterms();
-
+        List<RODOS.Sourceterms.Sourceterm> sourcetermList =
+                sourceterms.getSourceterm();
         JSONArray rodosSourcetermsMetaObj = rodosMetaObj
-                .getJSONArray("Sourceterms");
-
+                .getJSONArray(field);
+        List<String> dateParams = Arrays.asList("StartRelease", "EndRelease");
+        List<String> complexParams = Arrays.asList("Block", "Activity");
         for (int i = 0; i < rodosSourcetermsMetaObj.length(); i++) {
-            RODOS.Sourceterms.Sourceterm sourceterm =
-                    new RODOS.Sourceterms.Sourceterm();
-            JSONArray rodosSourcetermMetaObj = rodosSourcetermsMetaObj;
-            /*for (String field: RODOS_SOURCETERM_FIELDS) {
-                if (!rodosSourcetermsMetaObj.has(field)) {
+            JSONObject rodosSourcetermMetaObj =
+                    rodosSourcetermsMetaObj.getJSONObject(i);
+            RODOS.Sourceterms.Sourceterm sourceterm
+                    = new RODOS.Sourceterms.Sourceterm();
+            for (String rsfield: RODOS_SOURCETERM_FIELDS) {
+                if (!rodosSourcetermMetaObj.has(rsfield)) {
                     continue;
                 }
-                String methodName = "set" + field;
+                String methodName = "set" + rsfield;
                 try {
-                    String value = rodosSourcetermMetaObj.get(field).toString();
-                    Method method = rodosSourcetermMetaObj.getClass().getMethod(
-                            methodName,
-                            String.class
-                    );
-                    method.invoke(sourceterm, value);
+                    if (dateParams.contains(rsfield)) {
+                        String value = rodosSourcetermMetaObj
+                                .get(rsfield).toString();
+                        XMLGregorianCalendar calval;
+                        calval = ReportUtils.xmlCalendarFromString(value);
+                        Method method = sourceterm.getClass().getMethod(
+                                methodName,
+                                XMLGregorianCalendar.class
+                        );
+                        method.invoke(sourceterm, calval);
+                    } else if (complexParams.contains(rsfield)) {
+                        for (String rssfield: complexParams) {
+                            if (rsfield.equals("Activity")) {
+                                RODOS.Sourceterms.Sourceterm.Activity activity
+                                        = new RODOS.Sourceterms.Sourceterm
+                                        .Activity();
+                                JSONObject rodosSourcetermActivityMetaObj
+                                        = rodosSourcetermMetaObj
+                                        .getJSONObject(rsfield);
+                                for (Field afield: RODOS.Sourceterms
+                                        .Sourceterm.Activity.class
+                                        .getDeclaredFields()) {
+                                    String aFieldName = afield.getName()
+                                            .substring(0, 1).toUpperCase()
+                                            + afield.getName().substring(1);
+                                    String aMethodName
+                                            = "set" + aFieldName;
+                                    /*Number numval
+                                            = rodosSourcetermActivityMetaObj
+                                            .getDouble(aFieldName);*/
+                                    Float numval = BigDecimal.valueOf(
+                                            rodosSourcetermActivityMetaObj
+                                            .getDouble(aFieldName))
+                                            .floatValue();
+                                    Method aMethod = RODOS.Sourceterms
+                                            .Sourceterm.Activity.class
+                                            .getMethod(
+                                                    aMethodName,
+                                            float.class
+                                    );
+                                    aMethod.invoke(activity, numval);
+                                }
+                                sourceterm.setActivity(activity);
+                            }
+                            if (rsfield.equals("Block")) {
+                                RODOS.Sourceterms.Sourceterm.Block block
+                                        = sourceterm.getBlock();
+                                JSONObject rodosSourcetermBlockMetaObj
+                                        = rodosSourcetermMetaObj
+                                        .getJSONObject(rsfield);
+                            }
+                        }
+
+                        String value =
+                                rodosSourcetermMetaObj.get(rsfield).toString();
+                        Method method = sourceterm.getClass().getMethod(
+                                methodName,
+                                String.class
+                        );
+                        method.invoke(sourceterm, value);
+                    } else {
+                        String value =
+                                rodosSourcetermMetaObj.get(rsfield).toString();
+                        Method method = sourceterm.getClass().getMethod(
+                                methodName,
+                                String.class
+                                );
+                        method.invoke(sourceterm, value);
+                    }
                 } catch (Exception e) {
                     log.error(e.getClass().getName()
                             + " exception while trying to access " + methodName
                             + " on DokpoolRodosSourcetermMeta object.");
                 }
-            }*/
+            }
+            sourcetermList.add(sourceterm);
         }
-
-        RODOS.Sourceterms.Sourceterm sourceterm =
-                new RODOS.Sourceterms.Sourceterm();
-
         rodos.setSourceterms(sourceterms);
-
     }
 
     /**
