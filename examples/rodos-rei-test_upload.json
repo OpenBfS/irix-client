@@ -32,7 +32,7 @@
             "IsElan": true,
             "IsDoksys": false,
             "IsRodos": true,
-            "IsRei": "false",
+            "IsRei": "true",
             "Elan": {
                 "ElanScenarios": {
                     "ElanScenario": [
@@ -102,6 +102,20 @@
                         "2018-10-23T12:00:00Z"
                     ]
                 }
+            },
+            "Rei": {
+                "Revision": false,
+                "Databasis": "REI-I",
+                "Year": 2009,
+                "Quartal": 2,
+                "Medium": "Abwasser",
+                "NetworkOperator": "Bayern",
+                "UOOZB": "KKW Grafenrheinfeld",
+                "Purpose": "REI",
+                "PDFVersion": "PDF/A-1b",
+                "SigningDate": "2018-11-16T16:19:55Z",
+                "SigningComment": "REI signing comment after validation",
+                "Signed": true
             }
         }
     },

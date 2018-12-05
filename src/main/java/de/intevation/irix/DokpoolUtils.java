@@ -57,6 +57,8 @@ import java.lang.reflect.Method;
 //import java.security.NoSuchAlgorithmException;
 //import java.util.ArrayList;
 import java.math.BigDecimal;
+//import java.math.BigInteger;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -140,7 +142,20 @@ public final class DokpoolUtils {
         "Comment"
     };
 
-    private static final String[] REI_FIELDS = new String[] {};
+    private static final String[] REI_FIELDS = new String[] {
+        "Revision", // Bool
+        "Databasis", // REI-E oder REI-I
+        "Year", // (Mitte Sammelzeitraum): z.B. „2009“
+        "Quartal", // Quartal(Mitte Sammelzeitraum): z.B. „1“
+        "Medium", // String oder Liste ?? z.B. „Abwasser“ und/oder „Fortluft“
+        "NetworkOperator", // z.B. „Bayern“
+        "UOOZB", // z.B. „KKW Grafenrheinfeld“
+        "Purpose", // REI
+        "PDFVersion",  // PDF/A-1b
+        "SigningDate",
+        "SigningComment",
+        "Signed", // Bool
+};
 
 
 
@@ -249,35 +264,6 @@ public final class DokpoolUtils {
         }
         if (metaObj.has("Elan") && meta.isIsElan()) {
             addElanMeta(metaObj, meta);
-
-/*
-            ELAN elan = new ELAN();
-            if (metaObj.getJSONObject("Elan").has("ElanScenarios")) {
-                ELAN.ElanScenarios elanscenarios = new ELAN.ElanScenarios();
-                JSONObject rbjson = metaObj.getJSONObject("Elan")
-                    .getJSONObject("ElanScenarios");
-                if (rbjson.has("ElanScenario")) {
-                    List<String> elanscenario = elanscenarios.getElanScenario();
-                    if (rbjson.get("ElanScenario") instanceof JSONArray) {
-                        JSONArray rbsisjson = rbjson
-                                .getJSONArray("ElanScenario");
-
-                        //List<String> rblist = new ArrayList<String>();
-                        for (int i = 0; i < rbsisjson.length(); i++) {
-                            elanscenario.add(rbsisjson.getString(i));
-                        }
-                        //elanscenarios.getElanScenario().add();
-                    } else if (rbjson.get("ElanScenario") instanceof String) {
-                        String rbstring = rbjson.getString("ElanScenario");
-                        elanscenario.add(rbstring);
-                        //setElanScenarios(elanscenarios, rbstring);
-                    }
-                    elan.setElanScenarios(elanscenarios);
-                    meta.setELAN(elan);
-                }
-            }
-*/
-
         }
         if (metaObj.has("Rodos") && meta.isIsRodos()) {
             addRodosMeta(metaObj, meta);
@@ -426,20 +412,55 @@ public final class DokpoolUtils {
      * @param metaObj The full metaJsonObject of the request.
      */
     public static void addReiMeta(JSONObject metaObj, DokpoolMeta meta) {
+
         REI rei = new REI();
         JSONObject reiMetaObj = metaObj.getJSONObject("Rei");
+        List<String> dateParams = Arrays.asList("SigningDate");
+        List<String> boolParams = Arrays.asList("Revision", "Signed");
+        List<String> numParams = Arrays.asList("Year", "Quartal");
         for (String field: REI_FIELDS) {
             if (!reiMetaObj.has(field)) {
                 continue;
             }
             String methodName = "set" + field;
             try {
-                String value = reiMetaObj.get(field).toString();
-                Method method = rei.getClass().getMethod(
-                        methodName,
-                        String.class
-                );
-                method.invoke(rei, value);
+
+                if (dateParams.contains(field)) {
+                    String value = reiMetaObj
+                            .get(field).toString();
+                    XMLGregorianCalendar calval;
+                    calval = ReportUtils.xmlCalendarFromString(value);
+                    Method method = rei.getClass().getMethod(
+                            methodName,
+                            XMLGregorianCalendar.class
+                    );
+                    method.invoke(rei, calval);
+                } else if (boolParams.contains(field)) {
+                    Boolean bval = reiMetaObj.getBoolean(field);
+                    Method bMethod = REI.class.getMethod(
+                            methodName,
+                            Boolean.class
+                    );
+                    bMethod.invoke(rei, bval);
+                } else if (numParams.contains(field)) {
+                    BigInteger numval = BigInteger.valueOf(
+                            reiMetaObj.getInt(field)
+                    );
+                    Method numMethod = REI.class.getMethod(
+                            methodName,
+                            BigInteger.class
+                    );
+                    numMethod.invoke(rei, numval);
+                } else {
+                    String value = reiMetaObj
+                            .getString(field);
+                    Method aMethod = REI.class
+                            .getMethod(
+                                    methodName,
+                                    String.class
+                            );
+                    aMethod.invoke(rei, value);
+                }
             } catch (Exception e) {
                 log.error(e.getClass().getName()
                         + " exception while trying to access " + methodName
@@ -490,55 +511,75 @@ public final class DokpoolUtils {
                         );
                         method.invoke(sourceterm, calval);
                     } else if (complexParams.contains(rsfield)) {
-                        for (String rssfield: complexParams) {
-                            if (rsfield.equals("Activity")) {
-                                RODOS.Sourceterms.Sourceterm.Activity activity
-                                        = new RODOS.Sourceterms.Sourceterm
-                                        .Activity();
-                                JSONObject rodosSourcetermActivityMetaObj
-                                        = rodosSourcetermMetaObj
-                                        .getJSONObject(rsfield);
-                                for (Field afield: RODOS.Sourceterms
+                        if (rsfield.equals("Activity")) {
+                            RODOS.Sourceterms.Sourceterm.Activity activity
+                                    = new RODOS.Sourceterms.Sourceterm
+                                    .Activity();
+                            JSONObject rodosSourcetermActivityMetaObj
+                                    = rodosSourcetermMetaObj
+                                    .getJSONObject(rsfield);
+                            for (Field afield: RODOS.Sourceterms
+                                    .Sourceterm.Activity.class
+                                    .getDeclaredFields()) {
+                                String aFieldName = afield.getName()
+                                        .substring(0, 1).toUpperCase()
+                                        + afield.getName().substring(1);
+                                String aMethodName
+                                        = "set" + aFieldName;
+                                Float numval = BigDecimal.valueOf(
+                                        rodosSourcetermActivityMetaObj
+                                        .getDouble(aFieldName))
+                                        .floatValue();
+                                Method aMethod = RODOS.Sourceterms
                                         .Sourceterm.Activity.class
-                                        .getDeclaredFields()) {
-                                    String aFieldName = afield.getName()
-                                            .substring(0, 1).toUpperCase()
-                                            + afield.getName().substring(1);
-                                    String aMethodName
-                                            = "set" + aFieldName;
-                                    /*Number numval
-                                            = rodosSourcetermActivityMetaObj
-                                            .getDouble(aFieldName);*/
-                                    Float numval = BigDecimal.valueOf(
-                                            rodosSourcetermActivityMetaObj
-                                            .getDouble(aFieldName))
-                                            .floatValue();
+                                        .getMethod(
+                                                aMethodName,
+                                        float.class
+                                );
+                                aMethod.invoke(activity, numval);
+                            }
+                            sourceterm.setActivity(activity);
+                        }
+                        if (rsfield.equals("Block")) {
+                            RODOS.Sourceterms.Sourceterm.Block block
+                                    = new RODOS.Sourceterms.Sourceterm.Block();
+                            JSONObject rodosSourcetermBlockMetaObj
+                                    = rodosSourcetermMetaObj
+                                    .getJSONObject(rsfield);
+                            for (Field afield: RODOS.Sourceterms
+                                    .Sourceterm.Block.class
+                                    .getDeclaredFields()) {
+                                String aFieldName = afield.getName()
+                                        .substring(0, 1).toUpperCase()
+                                        + afield.getName().substring(1);
+                                String aMethodName
+                                        = "set" + aFieldName;
+                                if (afield.getType() == String.class) {
+                                    String value = rodosSourcetermBlockMetaObj
+                                                    .getString(aFieldName);
                                     Method aMethod = RODOS.Sourceterms
-                                            .Sourceterm.Activity.class
+                                            .Sourceterm.Block.class
                                             .getMethod(
                                                     aMethodName,
-                                            float.class
-                                    );
-                                    aMethod.invoke(activity, numval);
+                                                    String.class
+                                            );
+                                    aMethod.invoke(block, value);
+                                } else {
+                                    Float numval = BigDecimal.valueOf(
+                                            rodosSourcetermBlockMetaObj
+                                                    .getDouble(aFieldName))
+                                            .floatValue();
+                                    Method aMethod = RODOS.Sourceterms
+                                            .Sourceterm.Block.class
+                                            .getMethod(
+                                                    aMethodName,
+                                                    float.class
+                                            );
+                                    aMethod.invoke(block, numval);
                                 }
-                                sourceterm.setActivity(activity);
                             }
-                            if (rsfield.equals("Block")) {
-                                RODOS.Sourceterms.Sourceterm.Block block
-                                        = sourceterm.getBlock();
-                                JSONObject rodosSourcetermBlockMetaObj
-                                        = rodosSourcetermMetaObj
-                                        .getJSONObject(rsfield);
-                            }
+                            sourceterm.setBlock(block);
                         }
-
-                        String value =
-                                rodosSourcetermMetaObj.get(rsfield).toString();
-                        Method method = sourceterm.getClass().getMethod(
-                                methodName,
-                                String.class
-                        );
-                        method.invoke(sourceterm, value);
                     } else {
                         String value =
                                 rodosSourcetermMetaObj.get(rsfield).toString();
