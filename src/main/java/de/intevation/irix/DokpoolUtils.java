@@ -93,7 +93,8 @@ public final class DokpoolUtils {
         "IsElan",
         "IsDoksys",
         "IsRodos",
-        "IsRei"
+        "IsRei",
+        "Purpose"
     };
 
     private static final String[] DOKSYS_FIELDS = new String[] {
@@ -105,7 +106,12 @@ public final class DokpoolUtils {
         "LegalBase",
         "MeasuringProgram",
         "Status",
-        "Purpose"
+        "SamplingBegin",
+        "SamplingEnd",
+        "TrajectoryStartLocation",
+        "TrajectoryEndLocation",
+        "TrajectoryStartTime",
+        "TrajectoryEndTime"
     };
 
     private static final String[] RODOS_FIELDS = new String[] {
@@ -144,33 +150,21 @@ public final class DokpoolUtils {
 
     private static final String[] REI_FIELDS = new String[] {
         "Revision", // Bool
-        "Databasis", // REI-E oder REI-I
+        "LegalBase", // REI-E oder REI-I
         "Year", // (Mitte Sammelzeitraum): z.B. „2009“
-        "Quartal", // Quartal(Mitte Sammelzeitraum): z.B. „1“
-        "Medium", // String oder Liste ?? z.B. „Abwasser“ und/oder „Fortluft“
+        "Quarter", // Quartal(Mitte Sammelzeitraum): z.B. „1“
+        "Period", // e.g. Q3 for third Quarter
+        "SamplingBegin",
+        "SamplingEnd",
+        "SampleType", // String or List z.B. „Abwasser“ und/oder „Fortluft“
         "NetworkOperator", // z.B. „Bayern“
-        "UOOZB", // z.B. „KKW Grafenrheinfeld“
+        "Location", // z.B. „KKW Grafenrheinfeld“
         "Purpose", // REI
         "PDFVersion",  // PDF/A-1b
         "SigningDate",
         "SigningComment",
-        "Signed", // Bool
+        "Signed" // Bool
 };
-
-
-
-    // removed Doksys specific fields
-    /*
-        "NetworkOperator",
-        "SampleTypeId",
-        "SampleType",
-        "Dom",
-        "DataType",
-        "LegalBase",
-        "MeasuringProgram",
-        "Status",
-        "Purpose"
-     */
 
     private DokpoolUtils() {
         // hidden constructor to avoid instantiation.
@@ -234,7 +228,7 @@ public final class DokpoolUtils {
                     + " on DokpoolMeta object.");
             }
         }
-        if (!hasType) {
+        /*if (!hasType) {
             // Faked JAXBException as we can't write these restrictions in
             // Schema 1.0
             throw new JAXBException("At least one of the fields, IsElan, "
@@ -261,6 +255,9 @@ public final class DokpoolUtils {
             meta.getDOKSYS().setSamplingEnd(
                     ReportUtils.xmlCalendarFromString(metaObj
                             .getString("SamplingEnd")));
+        }*/
+        if (metaObj.has("Doksys") && meta.isIsDoksys()) {
+            addDoksysMeta(metaObj, meta);
         }
         if (metaObj.has("Elan") && meta.isIsElan()) {
             addElanMeta(metaObj, meta);
@@ -300,19 +297,37 @@ public final class DokpoolUtils {
      */
     public static void addDoksysMeta(JSONObject metaObj, DokpoolMeta meta) {
         DOKSYS doksys = new DOKSYS();
-        JSONObject rodosMetaObj = metaObj.getJSONObject("Doksys");
+        JSONObject doksysMetaObj = metaObj.getJSONObject("Doksys");
+        List<String> dateParams = Arrays.asList(
+                "SamplingBegin",
+                "SamplingEnd",
+                "TrajectoryStartTime",
+                "TrajectoryEndTime"
+        );
         for (String field: DOKSYS_FIELDS) {
-            if (!rodosMetaObj.has(field)) {
+            if (!doksysMetaObj.has(field)) {
                 continue;
             }
             String methodName = "set" + field;
             try {
-                String value = rodosMetaObj.get(field).toString();
-                Method method = doksys.getClass().getMethod(
-                        methodName,
-                        String.class
-                );
-                method.invoke(doksys, value);
+                if (dateParams.contains(field)) {
+                    String value = doksysMetaObj
+                            .get(field).toString();
+                    XMLGregorianCalendar calval;
+                    calval = ReportUtils.xmlCalendarFromString(value);
+                    Method method = doksys.getClass().getMethod(
+                            methodName,
+                            XMLGregorianCalendar.class
+                    );
+                    method.invoke(doksys, calval);
+                } else {
+                    String value = doksysMetaObj.get(field).toString();
+                    Method method = doksys.getClass().getMethod(
+                            methodName,
+                            String.class
+                    );
+                    method.invoke(doksys, value);
+                }
             } catch (Exception e) {
                 log.error(e.getClass().getName()
                         + " exception while trying to access " + methodName
@@ -415,9 +430,13 @@ public final class DokpoolUtils {
 
         REI rei = new REI();
         JSONObject reiMetaObj = metaObj.getJSONObject("Rei");
-        List<String> dateParams = Arrays.asList("SigningDate");
+        List<String> dateParams = Arrays.asList(
+                "SigningDate",
+                "SamplingBegin",
+                "SamplingEnd"
+        );
         List<String> boolParams = Arrays.asList("Revision", "Signed");
-        List<String> numParams = Arrays.asList("Year", "Quartal");
+        List<String> numParams = Arrays.asList("Year", "Quarter");
         for (String field: REI_FIELDS) {
             if (!reiMetaObj.has(field)) {
                 continue;

@@ -30,7 +30,7 @@
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
             "IsElan": true,
-            "IsDoksys": false,
+            "IsDoksys": "true",
             "IsRodos": true,
             "IsRei": "true",
             "Elan": {
@@ -41,7 +41,22 @@
                     ]
                 }
             },
-            "Doksys": {},
+            "Doksys": {
+                "NetworkOperator": "U - BFS (ABI)",
+                "SampleTypeId": "L5",
+                "SampleType": "L5 - Niederschlag",
+                "Dom": "Gamma-Spektrometrie",
+                "DataType": "LaDa",
+                "LegalBase": "AVV IMIS",
+                "MeasuringProgram": "Intensivmessprogramm",
+                "Status": "nicht plausibel",
+                "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
+                "SamplingEnd":"2015-05-28T15:52:52.128+02:00",
+                "TrajectoryStartLocation": "Freiburg",
+                "TrajectoryEndLocation": "München",
+                "TrajectoryStartTime": "2016-05-28T15:35:54.168+02:00",
+                "TrajectoryEndTime": "2016-05-28T15:52:52.128+02:00"
+            },
             "Rodos": {
                 "ProjectComment": "foo",
                 "Site": "BARAKW",
@@ -105,12 +120,15 @@
             },
             "Rei": {
                 "Revision": false,
-                "Databasis": "REI-I",
+                "LegalBase": "REI-I",
                 "Year": 2009,
-                "Quartal": 2,
-                "Medium": "Abwasser",
+                "Quarter": 3,
+                "Period": "Q3",
+                "SamplingBegin": "2018-04-01",
+                "SamplingEnd": "2018-06-30",
+                "SampleType": "Abwasser",
                 "NetworkOperator": "Bayern",
-                "UOOZB": "KKW Grafenrheinfeld",
+                "Location": "KKW Grafenrheinfeld",
                 "Purpose": "REI",
                 "PDFVersion": "PDF/A-1b",
                 "SigningDate": "2018-11-16T16:19:55Z",
