@@ -90,14 +90,15 @@ public final class DokpoolUtils {
         "DokpoolGroupFolder",
         "DokpoolPrivateFolder",
         "DokpoolTransferFolder",
+        "Subjects",
         "IsElan",
         "IsDoksys",
         "IsRodos",
-        "IsRei",
-        "Purpose"
+        "IsRei"
     };
 
     private static final String[] DOKSYS_FIELDS = new String[] {
+        "Purpose",
         "NetworkOperator",
         "SampleTypeId",
         "SampleType",
@@ -130,6 +131,7 @@ public final class DokpoolUtils {
     };
 
     private static final String[] RODOS_PROGNOSIS_FIELDS = new String[]{
+        "Type",
         "Provider",
         "Meteo",
         "End",
@@ -150,16 +152,16 @@ public final class DokpoolUtils {
 
     private static final String[] REI_FIELDS = new String[] {
         "Revision", // Bool
-        "LegalBase", // REI-E oder REI-I
+        //"LegalBase", // REI-E oder REI-I
         "Year", // (Mitte Sammelzeitraum): z.B. „2009“
         "Quarter", // Quartal(Mitte Sammelzeitraum): z.B. „1“
         "Period", // e.g. Q3 for third Quarter
-        "SamplingBegin",
-        "SamplingEnd",
-        "SampleType", // String or List z.B. „Abwasser“ und/oder „Fortluft“
-        "NetworkOperator", // z.B. „Bayern“
+        // "SamplingBegin",
+        //"SamplingEnd",
+        //"SampleType", // String or List z.B. „Abwasser“ und/oder „Fortluft“
+        "Media",
+        //"NetworkOperator", // z.B. „Bayern“
         "Location", // z.B. „KKW Grafenrheinfeld“
-        "Purpose", // REI
         "PDFVersion",  // PDF/A-1b
         "SigningDate",
         "SigningComment",
@@ -213,10 +215,23 @@ public final class DokpoolUtils {
             try {
                 if (field.startsWith("Is")) {
                     Method method = meta.getClass().getMethod(methodName,
-                        Boolean.class);
+                            Boolean.class);
                     boolean bValue = value.toLowerCase().equals("true");
                     method.invoke(meta, bValue);
                     hasType = bValue || hasType;
+                //FIXME add Subjects handling
+                } else if (field.equals("Subjects")) {
+                    if (metaObj.has("Subjects")) {
+                        JSONArray dpSubjectsJson
+                                = metaObj.getJSONArray("Subjects");
+                        DokpoolMeta.Subjects subjects
+                                = new DokpoolMeta.Subjects();
+                        List<String> subjectsList = subjects.getSubject();
+                        for (int i = 0; i < dpSubjectsJson.length(); i++) {
+                            subjectsList.add(dpSubjectsJson.getString(i));
+                        }
+                        meta.setSubjects(subjects);
+                    }
                 } else {
                     Method method = meta.getClass().getMethod(methodName,
                         String.class);
@@ -228,34 +243,6 @@ public final class DokpoolUtils {
                     + " on DokpoolMeta object.");
             }
         }
-        /*if (!hasType) {
-            // Faked JAXBException as we can't write these restrictions in
-            // Schema 1.0
-            throw new JAXBException("At least one of the fields, IsElan, "
-                + "IsDoksys, IsRodos, IsRei needs to be true");
-        }
-        // FIXME process DOKSYS, ELAN, RODOS and REI sequentially
-        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()
-            && (meta.getDOKSYS() == null
-                || meta.getDOKSYS().getNetworkOperator().isEmpty())) {
-            try {
-                meta.getDOKSYS().setNetworkOperator(metaObj
-                        .getJSONObject("Doksys").getString("NetworkOperator"));
-            } catch (Exception e) {
-                throw new JAXBException(
-                        "Doksys documents need to have a Network Operator set."
-                );
-            }
-        }
-        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()) {
-            // Handle the datetime values
-            meta.getDOKSYS().setSamplingBegin(
-                    ReportUtils.xmlCalendarFromString(metaObj
-                            .getString("SamplingBegin")));
-            meta.getDOKSYS().setSamplingEnd(
-                    ReportUtils.xmlCalendarFromString(metaObj
-                            .getString("SamplingEnd")));
-        }*/
         if (metaObj.has("Doksys") && meta.isIsDoksys()) {
             addDoksysMeta(metaObj, meta);
         }
@@ -346,29 +333,17 @@ public final class DokpoolUtils {
      */
     public static void addElanMeta(JSONObject metaObj, DokpoolMeta meta) {
         ELAN elan = new ELAN();
-        if (metaObj.getJSONObject("Elan").has("ElanScenarios")) {
-            ELAN.ElanScenarios elanscenarios = new ELAN.ElanScenarios();
-            JSONObject rbjson = metaObj.getJSONObject("Elan")
-                    .getJSONObject("ElanScenarios");
-            if (rbjson.has("ElanScenario")) {
-                List<String> elanscenario = elanscenarios.getElanScenario();
-                if (rbjson.get("ElanScenario") instanceof JSONArray) {
-                    JSONArray rbsisjson = rbjson
-                            .getJSONArray("ElanScenario");
-
-                    //List<String> rblist = new ArrayList<String>();
-                    for (int i = 0; i < rbsisjson.length(); i++) {
-                        elanscenario.add(rbsisjson.getString(i));
-                    }
-                    //elanscenarios.getElanScenario().add();
-                } else if (rbjson.get("ElanScenario") instanceof String) {
-                    String rbstring = rbjson.getString("ElanScenario");
-                    elanscenario.add(rbstring);
-                    //setElanScenarios(elanscenarios, rbstring);
-                }
-                elan.setElanScenarios(elanscenarios);
-                meta.setELAN(elan);
+        if (metaObj.getJSONObject("Elan").has("Scenarios")) {
+            //ELAN.Scenarios elanscenarios = elan.getScenarios();
+            ELAN.Scenarios elanscenarios = new ELAN.Scenarios();
+            JSONArray elanScenariosMetaJson = metaObj.getJSONObject("Elan")
+                    .getJSONArray("Scenarios");
+            List<String> elanscenarioList = elanscenarios.getScenario();
+            for (int i = 0; i < elanScenariosMetaJson.length(); i++) {
+                elanscenarioList.add(elanScenariosMetaJson.getString(i));
             }
+            elan.setScenarios(elanscenarios);
+            meta.setELAN(elan);
         }
     }
 
@@ -430,13 +405,9 @@ public final class DokpoolUtils {
 
         REI rei = new REI();
         JSONObject reiMetaObj = metaObj.getJSONObject("Rei");
-        List<String> dateParams = Arrays.asList(
-                "SigningDate",
-                "SamplingBegin",
-                "SamplingEnd"
-        );
-        List<String> boolParams = Arrays.asList("Revision", "Signed");
-        List<String> numParams = Arrays.asList("Year", "Quarter");
+        List<String> dateParams = Arrays.asList("SigningDate");
+        List<String> boolParams = Arrays.asList("Signed");
+        List<String> numParams = Arrays.asList("Year", "Quarter", "Revision");
         for (String field: REI_FIELDS) {
             if (!reiMetaObj.has(field)) {
                 continue;
