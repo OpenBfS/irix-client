@@ -23,8 +23,7 @@
             }
         },
         "DokpoolMeta": {
-            "Purpose": "Standard-Info",
-            "DokpoolContentType": "rodosFooBar",
+            "DokpoolContentType": "rodosprojection",
             "DokpoolName": "bund",
             "DokpoolGroupFolder": "bund_e-messzentrale-bfs/messungen/automatisch",
             "DokpoolPrivateFolder": "rb-fr",
@@ -33,15 +32,18 @@
             "IsDoksys": "true",
             "IsRodos": true,
             "IsRei": "true",
+            "Subjects": [
+                "FooSubject",
+                "Bar subject"
+            ],
             "Elan": {
-                "ElanScenarios": {
-                    "ElanScenario": [
-                        "routinemode",
-                        "ereignis-abc"
-                    ]
-                }
+                "Scenarios": [
+                    "routinemode",
+                    "ereignis-abc"
+                ]
             },
             "Doksys": {
+                "Purpose": "Standard-Info",
                 "NetworkOperator": "U - BFS (ABI)",
                 "SampleTypeId": "L5",
                 "SampleType": "L5 - Niederschlag",
@@ -83,7 +85,8 @@
                         "Block": {
                             "Name": "FOO-1",
                             "Latitude": 42.0,
-                            "Longitude": 42.0
+                            "Longitude": 42.0,
+                            "VentHeight": 35
                         },
                         "Comment": "Nothing happened at this spot in 1745."
                     },
@@ -99,14 +102,16 @@
                             "Special": 0.0
                         },
                         "Block": {
-                            "Name": "FOO-1",
+                            "Name": "FOO-2",
                             "Latitude": 43.0,
-                            "Longitude": 41.0
+                            "Longitude": 41.0,
+                            "VentHeight": 30
                         },
                         "Comment": "Nothing happened at this spot in 1975."
                     }
                 ],
                 "Prognosis": {
+                    "Type": "DWD",
                     "Provider": "Deutscher_Wetterdienst_DWD",
                     "Meteo": "nwp",
                     "End": "2018-10-25T10:00:00Z",
@@ -119,17 +124,15 @@
                 }
             },
             "Rei": {
-                "Revision": false,
-                "LegalBase": "REI-I",
+                "Revision": 7,
                 "Year": 2009,
                 "Quarter": 3,
                 "Period": "Q3",
-                "SamplingBegin": "2018-04-01",
-                "SamplingEnd": "2018-06-30",
-                "SampleType": "Abwasser",
-                "NetworkOperator": "Bayern",
+                "Media": [
+                    "Abwasser",
+                    "Fortuft"
+                ],
                 "Location": "KKW Grafenrheinfeld",
-                "Purpose": "REI",
                 "PDFVersion": "PDF/A-1b",
                 "SigningDate": "2018-11-16T16:19:55Z",
                 "SigningComment": "REI signing comment after validation",
