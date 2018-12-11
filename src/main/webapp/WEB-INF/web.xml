@@ -17,7 +17,7 @@
          <init-param>
              <param-name>print-url</param-name>
              <!-- Base URL of the mapfish-print service -->
-             <param-value>http://localhost:8080/print-servlet-3.3-SNAPSHOT/print/</param-value>
+             <param-value>http://localhost:8080/print/print/</param-value>
          </init-param>
          <init-param>
              <!-- Suffix to add to the layout for map only output -->

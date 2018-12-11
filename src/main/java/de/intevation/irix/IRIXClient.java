@@ -56,6 +56,7 @@ public class IRIXClient extends HttpServlet {
      */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
     private static final String IMAGE_JOB_LIST_KEY = "img-print";
+    private static final String DOC_JOB_LIST_KEY = "doc-print";
     private static final String EVENT_JOB_LIST_KEY = "event";
 
     private static final String REQUEST_TYPE_UPLOAD = "upload";
@@ -199,11 +200,14 @@ public class IRIXClient extends HttpServlet {
                 jobListKey = PRINT_JOB_LIST_KEY;
             } else if (jsonObject.has(IMAGE_JOB_LIST_KEY)) {
                 jobListKey = IMAGE_JOB_LIST_KEY;
+            } else if (jsonObject.has(DOC_JOB_LIST_KEY)) {
+                jobListKey = DOC_JOB_LIST_KEY;
             } else if (jsonObject.has(EVENT_JOB_LIST_KEY)) {
                 jobListKey = EVENT_JOB_LIST_KEY;
             } else {
                 log.warn("Request did not contain valid JOB_LIST_KEY: "
-                        + PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY);
+                        + PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY
+                        + ", " + DOC_JOB_LIST_KEY);
             }
             JSONArray printList =
                     jsonObject.getJSONArray(jobListKey);
@@ -387,6 +391,9 @@ public class IRIXClient extends HttpServlet {
         //FIXME how to handle authentication headers from original request??
         UploadReportService service = new UploadReportService(irixServiceUrl);
         UploadReportInterface irixservice = service.getUploadReportPort();
+
+        // TODO Add HTTP headers to the web service request
+
         log.debug("Sending report.");
         try {
             irixservice.uploadReport(report);
@@ -443,7 +450,7 @@ public class IRIXClient extends HttpServlet {
         ReportType report = null;
         try {
             report = ReportUtils.prepareReport(jsonObject);
-            ReportUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
+            DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
             if (printSpecs.get(0).has("jobKey")
                     && printSpecs.get(0).get("jobKey")
                     .hashCode() == EVENT_JOB_LIST_KEY.hashCode()) {
@@ -451,6 +458,11 @@ public class IRIXClient extends HttpServlet {
             } else if (printSpecs.get(0).has("jobKey")
                     && printSpecs.get(0).get("jobKey")
                     .hashCode() == IMAGE_JOB_LIST_KEY.hashCode()) {
+                handleImageSpecs(printSpecs, report,
+                        jsonObject.getJSONObject("irix").getString("Title"));
+            } else if (printSpecs.get(0).has("jobKey")
+                    && printSpecs.get(0).get("jobKey")
+                    .hashCode() == DOC_JOB_LIST_KEY.hashCode()) {
                 handleImageSpecs(printSpecs, report,
                         jsonObject.getJSONObject("irix").getString("Title"));
             } else {
@@ -472,9 +484,36 @@ public class IRIXClient extends HttpServlet {
             return;
         }
 
-        if (requestType.equals(REQUEST_TYPE_UPLOAD)
-                || requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
-            sendReportToService(report);
+        if (requestType.equals(REQUEST_TYPE_UPLOAD)) {
+            try {
+                sendReportToService(report);
+                response.setContentType("text/html");
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (ServletException se) {
+                response.setContentType("text/plain");
+                response.setStatus(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+                );
+                response.getWriter().write(se.toString());
+                response.getWriter().flush();
+                response.getWriter().close();
+                log.error(se);
+            }
+        }
+
+        if (requestType.equals(REQUEST_TYPE_UPLOAD_RESPOND)) {
+            try {
+                sendReportToService(report);
+            } catch (ServletException se) {
+                response.setContentType("text/plain");
+                response.setStatus(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+                );
+                response.getWriter().write(se.toString());
+                response.getWriter().flush();
+                response.getWriter().close();
+                log.error(se);
+            }
         }
 
         if (requestType.equals(REQUEST_TYPE_RESPOND)

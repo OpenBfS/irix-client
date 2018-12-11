@@ -11,7 +11,7 @@ package de.intevation.irix;
 import java.io.File;
 import java.io.OutputStream;
 
-import java.lang.reflect.Method;
+//import java.lang.reflect.Method;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-import java.util.List;
+//import java.util.List;
 import java.util.TimeZone;
 import java.math.BigInteger;
 
@@ -35,7 +35,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.dom.DOMResult;
+//import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.validation.Schema;
@@ -62,7 +62,7 @@ import org.iaea._2012.irix.format.eventinformation.TypeOfEventType;
 import org.iaea._2012.irix.format.eventinformation.DateAndTimeOfEventType;
 import org.iaea._2012.irix.format.locations.LocationOrLocationRefType;
 import org.iaea._2012.irix.format.annexes.AnnexesType;
-import org.iaea._2012.irix.format.annexes.AnnotationType;
+//import org.iaea._2012.irix.format.annexes.AnnotationType;
 import org.iaea._2012.irix.format.annexes.FileEnclosureType;
 import org.iaea._2012.irix.format.annexes.FileHashType;
 import org.iaea._2012.irix.format.base.FreeTextType;
@@ -70,11 +70,14 @@ import org.iaea._2012.irix.format.base.FreeTextType;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Document;
+//import org.w3c.dom.Element;
+//import org.w3c.dom.Document;
 
-import de.bfs.irix.extensions.dokpool.DokpoolMeta;
-import de.bfs.irix.extensions.dokpool.DokpoolMeta.ElanScenarios;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta.ELAN;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta.DOKSYS;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta.RODOS;
+//import de.bfs.irix.extensions.dokpool.DokpoolMeta.REI;
 
 /**
  * Static helper methods to work with an IRIX Report.
@@ -110,7 +113,26 @@ public final class ReportUtils {
         "IsElan",
         "IsDoksys",
         "IsRodos",
-        "IsRei",
+        "IsRei"
+    };
+
+    private static final String[] RODOS_FIELDS = new String[] {
+        "ProjectComment",
+        "Site",
+        "ReportRunID",
+        "Model",
+        "CalculationId",
+        "CalculationDate",
+        "CalculationUser",
+        "Projectname",
+        "ProjectChain",
+        "WorkingMode",
+        "Sourceterm",
+        "Prognosis"
+    };
+
+    // removed Doksys specific fields
+    /*
         "NetworkOperator",
         "SampleTypeId",
         "SampleType",
@@ -120,7 +142,7 @@ public final class ReportUtils {
         "MeasuringProgram",
         "Status",
         "Purpose"
-    };
+     */
 
     private ReportUtils() {
         // hidden constructor to avoid instantiation.
@@ -345,127 +367,6 @@ public final class ReportUtils {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(cal.getTime());
         return createXMLCalFromGregCal(c);
-    }
-
-    /**
-     * Add an annotation to the Report containing the DokpoolMeta data fields.
-     *
-     * @param report The report to add the annoation to.
-     * @param jsonObject The full jsonObject of the request.
-     * @param schemaFile Optional. Schema to validate against.
-     * @throws org.json.JSONException If the JSONObject does not match
-     * expectations.
-     * @throws org.xml.sax.SAXException In case there is a problem with
-     * the schema.
-     * @throws javax.xml.bind.JAXBException if validation failed or something
-     * else went wrong.
-     */
-    public static void addAnnotation(JSONObject jsonObject, ReportType report,
-            File schemaFile)
-        throws JSONException, SAXException, JAXBException {
-        JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
-
-        if (!irixObj.has(DOKPOOL_DATA_KEY)) {
-            return;
-        }
-
-        // prepare annoation
-        AnnotationType annotation = new AnnotationType();
-        FreeTextType freeText = new FreeTextType();
-        if (irixObj.has("Text")) {
-            freeText.getContent().add(irixObj.getString("Text"));
-        }
-        annotation.setText(freeText);
-        annotation.setTitle(irixObj.getString("Title"));
-
-        JSONObject metaObj = irixObj.getJSONObject(DOKPOOL_DATA_KEY);
-
-        DokpoolMeta meta = new DokpoolMeta();
-        boolean hasType = false;
-        for (String field: DOKPOOL_FIELDS) {
-            if (!metaObj.has(field)) {
-                continue;
-            }
-            String methodName = "set" + field;
-            String value = metaObj.get(field).toString();
-            try {
-                if (field.startsWith("Is")) {
-                    Method method = meta.getClass().getMethod(methodName,
-                        Boolean.class);
-                    boolean bValue = value.toLowerCase().equals("true");
-                    method.invoke(meta, bValue);
-                    hasType = bValue || hasType;
-                } else {
-                    Method method = meta.getClass().getMethod(methodName,
-                        String.class);
-                    method.invoke(meta, value);
-                }
-            } catch (Exception e) {
-                log.error(e.getClass().getName()
-                    + " exception while trying to access " + methodName
-                    + " on DokpoolMeta object.");
-            }
-        }
-
-        if (!hasType) {
-            // Faked JAXBException as we can't write these restrictions in
-            // Schema 1.0
-            throw new JAXBException("At least one of the fields, IsElan, "
-                + "IsDoksys, IsRodos, IsRei needs to be true");
-        }
-        if (meta.isIsDoksys() != null && meta.isIsDoksys().booleanValue()
-            && (meta.getNetworkOperator() == null
-                || meta.getNetworkOperator().isEmpty())) {
-            throw new JAXBException(
-                "Doksys documents need to have a Network Operator set.");
-        }
-
-        // Handle the datetime values
-        meta.setSamplingBegin(
-            xmlCalendarFromString(metaObj.getString("SamplingBegin")));
-        meta.setSamplingEnd(
-            xmlCalendarFromString(metaObj.getString("SamplingEnd")));
-
-        if (metaObj.has("ElanScenarios")) {
-            ElanScenarios elanscenarios = new ElanScenarios();
-            //meta.setElanScenarios(elanscenarios);
-            JSONObject rbjson = metaObj.getJSONObject("ElanScenarios");
-            if (rbjson.has("ElanScenario")) {
-                List<String> elanscenario = elanscenarios.getElanScenario();
-                if (rbjson.get("ElanScenario") instanceof JSONArray) {
-                    JSONArray rbsisjson = rbjson.getJSONArray("ElanScenario");
-
-                    //List<String> rblist = new ArrayList<String>();
-                    for (int i = 0; i < rbsisjson.length(); i++) {
-                        elanscenario.add(rbsisjson.getString(i));
-                    }
-                    //elanscenarios.getElanScenario().add();
-                } else if (rbjson.get("ElanScenario") instanceof String) {
-                    String rbstring = rbjson.getString("ElanScenario");
-                    elanscenario.add(rbstring);
-                    //setElanScenarios(elanscenarios, rbstring);
-                }
-                meta.setElanScenarios(elanscenarios);
-            }
-        }
-
-        DOMResult res = new DOMResult();
-        Element ele = null;
-        JAXBContext jaxbContext = JAXBContext.newInstance(DokpoolMeta.class);
-        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-        if (schemaFile != null) {
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(
-                    XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(schemaFile);
-            jaxbMarshaller.setSchema(schema);
-        }
-        jaxbMarshaller.marshal(meta, res);
-        ele = ((Document) res.getNode()).getDocumentElement();
-
-        annotation.getAny().add(ele);
-        report.getAnnexes().getAnnotation().add(annotation);
     }
 
     /**

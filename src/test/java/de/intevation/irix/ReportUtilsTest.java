@@ -8,6 +8,7 @@
 
 package de.intevation.test.irix;
 
+import de.intevation.irix.DokpoolUtils;
 import org.iaea._2012.irix.format.ReportType;
 import org.iaea._2012.irix.format.identification.ConfidentialityType;
 import org.iaea._2012.irix.format.identification.ReportContextType;
@@ -232,7 +233,7 @@ public class ReportUtilsTest {
         JSONObject json = new JSONObject(REQUEST);
         json.getJSONObject("irix").remove("DokpoolMeta");
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test
@@ -242,7 +243,7 @@ public class ReportUtilsTest {
             "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(REQUEST);
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test(expected = JAXBException.class)
@@ -254,7 +255,7 @@ public class ReportUtilsTest {
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("LegalBase", "foo bar");
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test(expected = JAXBException.class)
@@ -266,7 +267,7 @@ public class ReportUtilsTest {
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("IsRei", "false");
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test(expected = JAXBException.class)
@@ -280,7 +281,7 @@ public class ReportUtilsTest {
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("IsDoksys", "true");
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test
@@ -292,7 +293,7 @@ public class ReportUtilsTest {
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("Dom", "divination");
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test
@@ -302,7 +303,7 @@ public class ReportUtilsTest {
             "src/main/webapp/WEB-INF/irix-schema/Dokpool-3.xsd");
         JSONObject json = new JSONObject(DOKPOOL_MINIMAL);
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, schemaFile);
+        DokpoolUtils.addAnnotation(json, report, schemaFile);
     }
 
     @Test
@@ -350,7 +351,7 @@ public class ReportUtilsTest {
     public void testAnnotation() throws SAXException, JAXBException {
         JSONObject json = new JSONObject(REQUEST);
         ReportType report = ReportUtils.prepareReport(json);
-        ReportUtils.addAnnotation(json, report, null);
+        DokpoolUtils.addAnnotation(json, report, null);
         Assert.assertEquals(
             report.getAnnexes().getAnnotation().get(0).getTitle(),
             json.getJSONObject("irix").getString("Title"));
@@ -362,7 +363,7 @@ public class ReportUtilsTest {
         ReportType report = ReportUtils.prepareReport(json);
         json.getJSONObject("irix").getJSONObject("DokpoolMeta")
             .put("SamplingBegin", "2015-15-28T15:35:54.168+02:00");
-        ReportUtils.addAnnotation(json, report, null);
+        DokpoolUtils.addAnnotation(json, report, null);
     }
 
     @Test
