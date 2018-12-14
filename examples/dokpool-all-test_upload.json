@@ -28,6 +28,7 @@
             "DokpoolGroupFolder": "bund_e-messzentrale-bfs/messungen/automatisch",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
+            "DokpoolDocumentOwner": "rb-fr",
             "IsElan": true,
             "IsDoksys": "true",
             "IsRodos": true,

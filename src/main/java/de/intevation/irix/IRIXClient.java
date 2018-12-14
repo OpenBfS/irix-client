@@ -428,6 +428,7 @@ public class IRIXClient extends HttpServlet {
         }
 
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
+        // FIXME allow empty printSpecs (IRIX without attachements)
         if (printSpecs.isEmpty()) {
             throw new ServletException(
                     "Could not extract any print specs from request.");

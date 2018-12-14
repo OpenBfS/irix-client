@@ -90,6 +90,7 @@ public final class DokpoolUtils {
         "DokpoolGroupFolder",
         "DokpoolPrivateFolder",
         "DokpoolTransferFolder",
+        "DokpoolDocumentOwner",
         "Subjects",
         "IsElan",
         "IsDoksys",
