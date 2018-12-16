@@ -1,0 +1,144 @@
+{
+    "request-type": "respond",
+    "irix": {
+        "Title": "IRIX Image Upload Test requÄst with (☢).",
+        "Text": "reported by the Dschörman/German Federal Office for Radiation (☢) Protection. <a href='https://entw-imis.lab.bfs.de/gis/#map/1234075/6706481/6|layers/%7B%220790a4e9-7d76-4c37-9843-6be28f80b916%22%3A%7B%22isVisible%22%3A1%2C%22filters%22%3A%5B%7B%22type%22%3A%22pointintime%22%2C%22effectivedatetime%22%3A1509019200000%7D%2C%7B%22type%22%3A%22value%22%2C%22effectivevalue%22%3A%5B%22'BfS'%22%5D%2C%22alias%22%3A%22Messnetz%22%2C%22param%22%3A%22source%22%7D%5D%7D%7D|'>Permalink</a>",
+        "User": "Testuser",
+        "Identification": {
+            "OrganisationReporting": "irix.test.de",
+            "Confidentiality": "Free for Public Use",
+            "ReportingBases": {
+                "ReportingBasis": [
+                    "EU Council Decision 87/600/EURATOM",
+                    "Convention on Early Notification of a Nuclear Accident, Article 2",
+                    "ESD"
+                ]
+            },
+            "ReportContext": "Test",
+            "SequenceNumber": "42",
+            "OrganisationContact": {
+                "Name": "TestOrg",
+                "OrganisationID": "irix.test.de",
+                "Country": "DE"
+            }
+        },
+        "DokpoolMeta": {
+            "DokpoolContentType": "rodosprojection",
+            "DokpoolName": "bund",
+            "DokpoolGroupFolder": "bund_e-messzentrale-bfs/messungen/automatisch",
+            "DokpoolPrivateFolder": "rb-fr",
+            "DokpoolTransferFolder": "",
+            "DokpoolDocumentOwner": "rb-fr",
+            "IsElan": true,
+            "IsDoksys": "true",
+            "IsRodos": true,
+            "IsRei": "true",
+            "Subjects": [
+                "FooSubject",
+                "Bar subject"
+            ],
+            "Elan": {
+                "Scenarios": [
+                    "routinemode",
+                    "ereignis-abc"
+                ]
+            },
+            "Doksys": {
+                "Purpose": "Standard-Info",
+                "NetworkOperator": "U - BFS (ABI)",
+                "SampleTypeId": "L5",
+                "SampleType": "L5 - Niederschlag",
+                "Dom": "Gamma-Spektrometrie",
+                "DataType": "LaDa",
+                "LegalBase": "AVV IMIS",
+                "MeasuringProgram": "Intensivmessprogramm",
+                "Status": "nicht plausibel",
+                "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
+                "SamplingEnd":"2015-05-28T15:52:52.128+02:00",
+                "TrajectoryStartLocation": "Freiburg",
+                "TrajectoryEndLocation": "München",
+                "TrajectoryStartTime": "2016-05-28T15:35:54.168+02:00",
+                "TrajectoryEndTime": "2016-05-28T15:52:52.128+02:00"
+            },
+            "Rodos": {
+                "ProjectComment": "foo",
+                "Site": "BARAKW",
+                "ReportRunID": "a0cd758c-0aa9-155b-685e-bbe7048a57a5",
+                "Model": "Emergency",
+                "CalculationId": "012345678910",
+                "CalculationDate": "2018-11-16T16:19:55Z",
+                "CalculationUser": "user1",
+                "Projectname": "notfallstation-0,25-barakw-nodwd",
+                "ProjectChain": "EmergencyLite",
+                "WorkingMode": "Exercise",
+                "Sourceterms": [
+                    {
+                        "StartRelease": "2018-11-16T18:00:00Z",
+                        "EndRelease": "2018-11-18T10:00:00Z",
+                        "Label": "F6.FOO-BAR",
+                        "Type": "normal",
+                        "Activity": {
+                            "Noble": 1.9E27,
+                            "Iodine": 1.5E25,
+                            "Aerosol": 4.2E23,
+                            "Special": 0.0
+                        },
+                        "Block": {
+                            "Name": "FOO-1",
+                            "Latitude": 42.0,
+                            "Longitude": 42.0,
+                            "VentHeight": 35
+                        },
+                        "Comment": "Nothing happened at this spot in 1745."
+                    },
+                    {
+                        "StartRelease": "2018-11-20T18:00:00Z",
+                        "EndRelease": "2018-11-21T00:00:00Z",
+                        "Label": "F6.BAR-FOO",
+                        "Type": "normal",
+                        "Activity": {
+                            "Noble": 1.9E26,
+                            "Iodine": 1.5E24,
+                            "Aerosol": 4.2E22,
+                            "Special": 0.0
+                        },
+                        "Block": {
+                            "Name": "FOO-2",
+                            "Latitude": 43.0,
+                            "Longitude": 41.0,
+                            "VentHeight": 30
+                        },
+                        "Comment": "Nothing happened at this spot in 1975."
+                    }
+                ],
+                "Prognosis": {
+                    "Type": "DWD",
+                    "Provider": "Deutscher_Wetterdienst_DWD",
+                    "Meteo": "nwp",
+                    "End": "2018-10-25T10:00:00Z",
+                    "Date": "2018-10-23T06:00:00Z",
+                    "Begin": "2018-10-23T10:00:00Z",
+                    "Dates": [
+                        "2018-10-23T06:00:00Z",
+                        "2018-10-23T12:00:00Z"
+                    ]
+                }
+            },
+            "Rei": {
+                "Revision": 7,
+                "Year": 2009,
+                "Quarter": 3,
+                "Period": "Q3",
+                "Media": [
+                    "Abwasser",
+                    "Fortuft"
+                ],
+                "Location": "KKW Grafenrheinfeld",
+                "PDFVersion": "PDF/A-1b",
+                "SigningDate": "2018-11-16T16:19:55Z",
+                "SigningComment": "REI signing comment after validation",
+                "Signed": true
+            }
+        }
+    }
+}

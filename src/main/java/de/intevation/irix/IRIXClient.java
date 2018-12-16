@@ -430,8 +430,9 @@ public class IRIXClient extends HttpServlet {
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
         // FIXME allow empty printSpecs (IRIX without attachements)
         if (printSpecs.isEmpty()) {
-            throw new ServletException(
-                    "Could not extract any print specs from request.");
+            log.warn("Could not extract any print specs from request.");
+            //throw new ServletException(
+            //        "Could not extract any print specs from request.");
         }
 
         String requestType = null;
@@ -452,24 +453,29 @@ public class IRIXClient extends HttpServlet {
         try {
             report = ReportUtils.prepareReport(jsonObject);
             DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
-            if (printSpecs.get(0).has("jobKey")
-                    && printSpecs.get(0).get("jobKey")
-                    .hashCode() == EVENT_JOB_LIST_KEY.hashCode()) {
-                log.debug("Found key for eventinformation.");
-            } else if (printSpecs.get(0).has("jobKey")
-                    && printSpecs.get(0).get("jobKey")
-                    .hashCode() == IMAGE_JOB_LIST_KEY.hashCode()) {
-                handleImageSpecs(printSpecs, report,
-                        jsonObject.getJSONObject("irix").getString("Title"));
-            } else if (printSpecs.get(0).has("jobKey")
-                    && printSpecs.get(0).get("jobKey")
-                    .hashCode() == DOC_JOB_LIST_KEY.hashCode()) {
-                handleImageSpecs(printSpecs, report,
-                        jsonObject.getJSONObject("irix").getString("Title"));
-            } else {
-                handlePrintSpecs(printSpecs, report,
-                        jsonObject.getString("printapp"),
-                        jsonObject.getJSONObject("irix").getString("Title"));
+            if (!printSpecs.isEmpty()) {
+                if (printSpecs.get(0).has("jobKey")
+                        && printSpecs.get(0).get("jobKey")
+                        .hashCode() == EVENT_JOB_LIST_KEY.hashCode()) {
+                    log.debug("Found key for eventinformation.");
+                } else if (printSpecs.get(0).has("jobKey")
+                        && printSpecs.get(0).get("jobKey")
+                        .hashCode() == IMAGE_JOB_LIST_KEY.hashCode()) {
+                    handleImageSpecs(printSpecs, report,
+                            jsonObject.getJSONObject("irix")
+                                    .getString("Title"));
+                } else if (printSpecs.get(0).has("jobKey")
+                        && printSpecs.get(0).get("jobKey")
+                        .hashCode() == DOC_JOB_LIST_KEY.hashCode()) {
+                    handleImageSpecs(printSpecs, report,
+                            jsonObject.getJSONObject("irix")
+                                    .getString("Title"));
+                } else {
+                    handlePrintSpecs(printSpecs, report,
+                            jsonObject.getString("printapp"),
+                            jsonObject.getJSONObject("irix")
+                                    .getString("Title"));
+                }
             }
         } catch (JSONException e) {
             throw new ServletException("Failed to parse IRIX information: ", e);
