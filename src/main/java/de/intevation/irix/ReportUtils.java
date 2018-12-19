@@ -11,8 +11,6 @@ package de.intevation.irix;
 import java.io.File;
 import java.io.OutputStream;
 
-//import java.lang.reflect.Method;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -20,7 +18,6 @@ import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-//import java.util.List;
 import java.util.TimeZone;
 import java.math.BigInteger;
 
@@ -35,7 +32,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLStreamReader;
-//import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.validation.Schema;
@@ -62,22 +58,12 @@ import org.iaea._2012.irix.format.eventinformation.TypeOfEventType;
 import org.iaea._2012.irix.format.eventinformation.DateAndTimeOfEventType;
 import org.iaea._2012.irix.format.locations.LocationOrLocationRefType;
 import org.iaea._2012.irix.format.annexes.AnnexesType;
-//import org.iaea._2012.irix.format.annexes.AnnotationType;
 import org.iaea._2012.irix.format.annexes.FileEnclosureType;
 import org.iaea._2012.irix.format.annexes.FileHashType;
 import org.iaea._2012.irix.format.base.FreeTextType;
 
 import org.json.JSONObject;
 import org.json.JSONException;
-
-//import org.w3c.dom.Element;
-//import org.w3c.dom.Document;
-
-//import de.bfs.irix.extensions.dokpool.DokpoolMeta;
-//import de.bfs.irix.extensions.dokpool.DokpoolMeta.ELAN;
-//import de.bfs.irix.extensions.dokpool.DokpoolMeta.DOKSYS;
-//import de.bfs.irix.extensions.dokpool.DokpoolMeta.RODOS;
-//import de.bfs.irix.extensions.dokpool.DokpoolMeta.REI;
 
 /**
  * Static helper methods to work with an IRIX Report.
@@ -130,19 +116,6 @@ public final class ReportUtils {
         "Sourceterm",
         "Prognosis"
     };
-
-    // removed Doksys specific fields
-    /*
-        "NetworkOperator",
-        "SampleTypeId",
-        "SampleType",
-        "Dom",
-        "DataType",
-        "LegalBase",
-        "MeasuringProgram",
-        "Status",
-        "Purpose"
-     */
 
     private ReportUtils() {
         // hidden constructor to avoid instantiation.
