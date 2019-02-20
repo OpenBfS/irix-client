@@ -174,6 +174,50 @@
                     </webAppConfig>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.2.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>generate-rpm</id>
+                        <goals>
+                            <goal>rpm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <license>GPL (c) 2005, SWWDC</license>
+                    <distribution>Trash 2005</distribution>
+                    <group>Application/Collectors</group>
+                    <mappings>
+                        <mapping>
+                            <directory>/var/lib/tomcat/webapps/${project.artifactId}</directory>
+                            <filemode>755</filemode>
+                            <username>tomcat</username>
+                            <groupname>tomcat</groupname>
+                            <sources>
+                                <source>
+                                    <location>target/${project.artifactId}</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                    </mappings>
+                    <!--<preinstallScriptlet>
+                        <script>echo "installing ${project.name} now"</script>
+                    </preinstallScriptlet>
+                    <postinstallScriptlet>
+                        <scriptFile>src/main/scripts/postinstall</scriptFile>
+                        <fileEncoding>utf-8</fileEncoding>
+                        <filter>true</filter>
+                    </postinstallScriptlet>
+                    <preremoveScriptlet>
+                        <scriptFile>src/main/scripts/preremove</scriptFile>
+                        <fileEncoding>utf-8</fileEncoding>
+                    </preremoveScriptlet>-->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <properties>
