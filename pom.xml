@@ -188,9 +188,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <license>GPL (c) 2005, SWWDC</license>
-                    <distribution>Trash 2005</distribution>
-                    <group>Application/Collectors</group>
+                    <license>GPLv3 (c) 2019, BfS - German Federal Office for Radiation Protection</license>
+                    <distribution>el7</distribution>
+                    <group>Applications/Internet</group>
+                    <description>Print-Client creating IRIX Documents from an extended Mapfish Print3 request and sending them to an IRIX Webservice. IRIX is the International Radiological Information eXchange format standard developed by the IAEA.</description>
                     <mappings>
                         <mapping>
                             <directory>/var/lib/tomcat/webapps/${project.artifactId}</directory>
