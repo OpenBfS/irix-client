@@ -12,12 +12,12 @@
          <init-param>
              <param-name>irix-webservice-url</param-name>
              <!-- URL of the irix-webservice to use for uploads -->
-             <param-value>http://localhost:8087/irix-webservice/upload-report</param-value>
+             <param-value>http://localhost:8080/irix-webservice/upload-report</param-value>
          </init-param>
          <init-param>
              <param-name>print-url</param-name>
              <!-- Base URL of the mapfish-print service -->
-             <param-value>http://localhost:8080/print/print/</param-value>
+             <param-value>http://localhost:8080/print/</param-value>
          </init-param>
          <init-param>
              <!-- Suffix to add to the layout for map only output -->
