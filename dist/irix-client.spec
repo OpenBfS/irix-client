@@ -51,6 +51,7 @@ echo '</Context>' >> %{name}.xml
 popd
 
 mkdir -p %{buildroot}%{confdir}/conf.d
+mkdir -p %{buildroot}%{irixconfdir}
 cp ./src/main/webapp/WEB-INF/web.xml %{buildroot}%{irixconfdir}/%{name}_web.xml
 
 %clean
