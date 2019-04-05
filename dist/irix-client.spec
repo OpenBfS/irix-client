@@ -14,6 +14,7 @@ Requires:       java
 Requires:       tomcat >= 7.0.40
 
 %global confdir %{_sysconfdir}/tomcat
+%global irixconfdir %{_sysconfdir}/irix
 
 %if 0%{?rhel}
 # For EPEL, override the '_sharedstatedir' macro on RHEL
@@ -45,12 +46,12 @@ echo '<Context reloadable="true" privileged="true" altDDName="/etc/tomcat/conf.d
 echo '    <!-- **** Note - we have added in the reloadable and privileged attributes' >> %{name}.xml
 echo '    to enable the invoker servlet and cgi support (other changes needed in' >> %{name}.xml
 echo '    web.xml too for that, though **** -->' >> %{name}.xml
-echo '    <WatchedResource>/etc/tomcat/conf.d/irix-client_web.xml</WatchedResource>' >> %{name}.xml
+echo '    <WatchedResource>/etc/irix/irix-client_web.xml</WatchedResource>' >> %{name}.xml
 echo '</Context>' >> %{name}.xml
 popd
 
 mkdir -p %{buildroot}%{confdir}/conf.d
-cp ./src/main/webapp/WEB-INF/web.xml %{buildroot}%{confdir}/conf.d/%{name}_web.xml
+cp ./src/main/webapp/WEB-INF/web.xml %{buildroot}%{irixconfdir}/%{name}_web.xml
 
 %clean
 rm -rf %{buildroot}
@@ -61,7 +62,7 @@ rm -rf %{_sharedstatedir}/tomcat/webapps/%{name}
 %files
 %defattr(-,root,root)
 %{_sharedstatedir}/tomcat/webapps/*
-%config(noreplace) %{confdir}/conf.d/%{name}_web.xml
+%config(noreplace) %{irixconfdir}/%{name}_web.xml
 %config(noreplace) %{confdir}/Catalina/localhost/%{name}.xml
 
 %changelog
