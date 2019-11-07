@@ -373,9 +373,22 @@ public class IRIXClient extends HttpServlet {
                 }
                 content = ImageClient.getImage(imageUrl);
             }
+            String attachLinkname = "";
+            if (spec.has("linkName")) {
+                attachLinkname = spec.get("linkName").toString();
+                int index = attachLinkname.lastIndexOf("." + outputFormat);
+                if (index > 0) {
+                    attachLinkname = attachLinkname.substring(0, index);
+                }
+            }
             if (content.getClass().equals(byte[].class)) {
-                ReportUtils.attachFile(title + suffix, content, report,
-                        mimeType, title + suffix + "." + outputFormat);
+                if (attachLinkname.length() > 0) {
+                    ReportUtils.attachFile(attachLinkname, content, report,
+                            mimeType, attachLinkname + "." + outputFormat);
+                } else {
+                    ReportUtils.attachFile(title + suffix, content, report,
+                            mimeType, title + suffix + "." + outputFormat);
+                }
             }
         }
     }
