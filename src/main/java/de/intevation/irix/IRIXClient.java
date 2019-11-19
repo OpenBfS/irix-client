@@ -275,7 +275,10 @@ public class IRIXClient extends HttpServlet {
             String printApp,
             String title
     ) throws IOException, PrintException {
+        baseUrl = "http://localhost:8090/print/print/";
+        printApp = "simple";
         String printUrl = baseUrl + "/" + printApp + "/buildreport";
+        String printCapaUrl = baseUrl + "/" + printApp + "/capabilities.json";
         try {
             URL url = new URL(printUrl);
             URI uri = new URI(
@@ -294,6 +297,10 @@ public class IRIXClient extends HttpServlet {
                 suffix = " " + Integer.toString(i++);
             }
 
+
+
+            byte[] printLayouts = PrintClient.getLayouts(printCapaUrl);
+
             byte[] content = PrintClient.getReport(printUrl + ".pdf",
                     spec.toString());
             ReportUtils.attachFile(title + suffix, content, report,
@@ -301,6 +308,8 @@ public class IRIXClient extends HttpServlet {
 
             String baseLayout = spec.getString("layout");
 
+
+            // try to fetch additional attachments for map and legend (as png)
             // map without legend
             spec.put("layout", baseLayout + mapSuffix);
             content = PrintClient.getReport(printUrl + ".png",
