@@ -28,6 +28,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 
+import org.json.JSONObject;
+
 import java.nio.charset.Charset;
 
 /**
@@ -71,7 +73,7 @@ public class PrintClient {
      * @throws IOException if communication with print service failed.
      * @throws PrintException if the print job failed.
      */
-    public static byte[] getLayouts(String printUrl)
+    public static JSONObject getLayouts(String printUrl)
             throws IOException, PrintException {
         return getLayouts(printUrl, CONNECTION_TIMEOUT);
     }
@@ -150,7 +152,7 @@ public class PrintClient {
      * @throws IOException if communication with print service failed.
      * @throws PrintException if the print job failed.
      */
-    public static byte[] getLayouts(String printUrl, int timeout)
+    public static JSONObject getLayouts(String printUrl, int timeout)
             throws IOException, PrintException {
 
         RequestConfig config = RequestConfig.custom().
@@ -164,21 +166,17 @@ public class PrintClient {
 
         StatusLine status = resp.getStatusLine();
 
-        byte [] retval = null;
+        JSONObject retval = null;
         try {
             HttpEntity respEnt = resp.getEntity();
-            InputStream in = respEnt.getContent();
-            if (in != null) {
+            if (respEnt != null) {
                 try {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    byte [] buf = new byte[BYTE_ARRAY_SIZE];
-                    int r;
-                    while ((r = in.read(buf)) >= 0) {
-                        out.write(buf, 0, r);
-                    }
-                    retval = out.toByteArray();
+                    String respString = EntityUtils.toString(respEnt);
+                    retval = new JSONObject(respString);
+                } catch (IOException e) {
+                    throw new PrintException("Response wasn't JSON parseable: "
+                            + e);
                 } finally {
-                    in.close();
                     EntityUtils.consume(respEnt);
                 }
             }
@@ -188,7 +186,7 @@ public class PrintClient {
         if (status.getStatusCode() < HttpURLConnection.HTTP_OK
             || status.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
             if (retval != null) {
-                throw new PrintException(new String(retval));
+                throw new PrintException(new String(retval.toString()));
             } else {
                 throw new PrintException("Communication with print service '"
                         + printUrl + "' failed."
@@ -197,5 +195,4 @@ public class PrintClient {
         }
         return retval;
     }
-
 }

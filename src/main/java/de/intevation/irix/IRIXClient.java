@@ -265,6 +265,7 @@ public class IRIXClient extends HttpServlet {
      * @param report   The report to attach the data to.
      * @param printApp The printApp to use
      * @param title    The title for the Annex
+     * @param baseurl  The baseurl to use as mapfish print endpoint
      * @throws IOException    if a requested document could not be printed
      *                        because of Connection problems.
      * @throws PrintException it the print service returned an error.
@@ -273,60 +274,110 @@ public class IRIXClient extends HttpServlet {
             List<JSONObject> specs,
             ReportType report,
             String printApp,
-            String title
+            String title,
+            String baseurl
     ) throws IOException, PrintException {
-        baseUrl = "http://localhost:8090/print/print/";
-        printApp = "simple";
-        String printUrl = baseUrl + "/" + printApp + "/buildreport";
-        String printCapaUrl = baseUrl + "/" + printApp + "/capabilities.json";
-        try {
-            URL url = new URL(printUrl);
-            URI uri = new URI(
-                    url.getProtocol(), url.getUserInfo(),
-                    url.getHost(), url.getPort(), url.getPath(),
-                    url.getQuery(), url.getRef()
-            );
-            printUrl = uri.toString();
-        } catch (URISyntaxException e) {
-            throw new PrintException("URL encoding failed.");
-        }
         int i = 1;
         String suffix = "";
+        String printUrl = baseUrl + "/" + printApp + "/buildreport";
+        String printCapaUrl = baseUrl + "/" + printApp + "/capabilities.json";
+        if (baseurl != "") {
+            printUrl = baseurl + "/" + printApp + "/buildreport";
+            printCapaUrl = baseurl + "/" + printApp + "/capabilities.json";
+        }
         for (JSONObject spec : specs) {
             if (specs.size() > 1) {
                 suffix = " " + Integer.toString(i++);
             }
+            if (spec.has("baseurl") && spec.get("baseurl") != "") {
+                String specBaseUrl = spec.get("baseurl").toString();
+                if (spec.has("printapp") && spec.get("printapp") != "") {
+                    String specPrintApp = spec.get("printapp").toString();
+                    printUrl = specBaseUrl + "/" + specPrintApp
+                            + "/buildreport";
+                    printCapaUrl = specBaseUrl + "/" + specPrintApp
+                            + "/capabilities.json";
+                } else {
+                    printUrl = specBaseUrl + "/" + printApp + "/buildreport";
+                    printCapaUrl = specBaseUrl + "/" + printApp
+                            + "/capabilities.json";
+                }
+            }
+            try {
+                URL url = new URL(printUrl);
+                URI uri = new URI(
+                        url.getProtocol(), url.getUserInfo(),
+                        url.getHost(), url.getPort(), url.getPath(),
+                        url.getQuery(), url.getRef()
+                );
+                printUrl = uri.toString();
+            } catch (URISyntaxException e) {
+                throw new PrintException("URL encoding for printUrl failed.");
+            }
 
-
-
-            byte[] printLayouts = PrintClient.getLayouts(printCapaUrl);
-
-            byte[] content = PrintClient.getReport(printUrl + ".pdf",
-                    spec.toString());
-            ReportUtils.attachFile(title + suffix, content, report,
-                    "application/pdf", title + suffix + ".pdf");
+            try {
+                URL capaurl = new URL(printCapaUrl);
+                URI capauri = new URI(
+                        capaurl.getProtocol(), capaurl.getUserInfo(),
+                        capaurl.getHost(), capaurl.getPort(), capaurl.getPath(),
+                        capaurl.getQuery(), capaurl.getRef()
+                );
+                printCapaUrl = capauri.toString();
+            } catch (URISyntaxException e) {
+                throw new PrintException("URL encoding for "
+                        + "printCapaUrl failed.");
+            }
 
             String baseLayout = spec.getString("layout");
 
+            JSONObject printLayouts = PrintClient.getLayouts(printCapaUrl);
+            List<String> printLayoutsList = new ArrayList<String>();
+            if (printLayouts.has("layouts")) {
+                JSONArray printLayoutsArray = printLayouts
+                        .getJSONArray("layouts");
+                for (int j = 0; j < printLayoutsArray.length(); j++) {
+                     printLayoutsList.add(printLayoutsArray.getJSONObject(j)
+                             .get("name").toString());
+                }
+            }
+
+            if (printLayoutsList.contains(baseLayout)) {
+                byte[] content = PrintClient.getReport(printUrl + ".pdf",
+                        spec.toString());
+                ReportUtils.attachFile(title + suffix, content, report,
+                        "application/pdf", title + suffix + ".pdf");
+            } else {
+                log.info("Layout " + spec.get("layout") + " not found at "
+                        +  printCapaUrl);
+            }
 
             // try to fetch additional attachments for map and legend (as png)
-            // map without legend
-            spec.put("layout", baseLayout + mapSuffix);
-            content = PrintClient.getReport(printUrl + ".png",
-                    spec.toString());
-            ReportUtils.attachFile(title + mapSuffix + suffix, content, report,
-                    "image/png", title + mapSuffix + suffix + ".png");
+            // try map without legend
+            if (printLayoutsList.contains(baseLayout + mapSuffix)) {
+                spec.put("layout", baseLayout + mapSuffix);
+                byte[] content = PrintClient.getReport(printUrl + ".png",
+                        spec.toString());
+                ReportUtils.attachFile(title + mapSuffix + suffix, content,
+                        report, "image/png", title + mapSuffix + suffix
+                                + ".png");
+            } else {
+                log.info("Layout " + spec.get("layout") + " not found at "
+                        +  printCapaUrl);
+            }
 
             // legend without map
-            spec.put("layout", baseLayout + legendSuffix);
-            content = PrintClient.getReport(printUrl + ".png",
-                    spec.toString());
-            ReportUtils.attachFile(
-                    title + legendSuffix + suffix, content,
-                    report,
-                    "image/png",
-                    title + legendSuffix + suffix + ".png"
-            );
+            if (printLayoutsList.contains(baseLayout + mapSuffix)) {
+                spec.put("layout", baseLayout + legendSuffix);
+                byte[] content = PrintClient.getReport(printUrl + ".png",
+                        spec.toString());
+                ReportUtils.attachFile(title + legendSuffix + suffix, content,
+                        report, "image/png",
+                        title + legendSuffix + suffix + ".png"
+                );
+            } else {
+                log.info("Layout " + spec.get("layout") + " not found at "
+                        +  printCapaUrl);
+            }
         }
     }
 
@@ -472,6 +523,10 @@ public class IRIXClient extends HttpServlet {
         }
 
         ReportType report = null;
+        String baseurl = "";
+        if (jsonObject.has("baseurl")) {
+            baseurl = jsonObject.getString("baseurl");
+        }
         try {
             report = ReportUtils.prepareReport(jsonObject);
             DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
@@ -496,7 +551,8 @@ public class IRIXClient extends HttpServlet {
                     handlePrintSpecs(printSpecs, report,
                             jsonObject.getString("printapp"),
                             jsonObject.getJSONObject("irix")
-                                    .getString("Title"));
+                                    .getString("Title"),
+                            baseurl);
                 }
             }
         } catch (JSONException e) {
