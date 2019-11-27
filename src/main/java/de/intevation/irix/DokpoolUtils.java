@@ -152,17 +152,15 @@ public final class DokpoolUtils {
     };
 
     private static final String[] REI_FIELDS = new String[] {
-        "Revision", // Bool
-        //"LegalBase", // REI-E oder REI-I
+        "Revision", // numeric
         "Year", // (Mitte Sammelzeitraum): z.B. „2009“
-        "Quarter", // Quartal(Mitte Sammelzeitraum): z.B. „1“
         "Period", // e.g. Q3 for third Quarter
-        // "SamplingBegin",
-        //"SamplingEnd",
-        //"SampleType", // String or List z.B. „Abwasser“ und/oder „Fortluft“
-        "Media",
-        //"NetworkOperator", // z.B. „Bayern“
-        "Location", // z.B. „KKW Grafenrheinfeld“
+        "NuclearInstallation", // z.B. „KKW Grafenrheinfeld“
+        "Medium", //"Abwasser", "Fortluft" oder "Abwasser/Fortluft",
+        "ReiLegalBases", // REI-E, REI-I oder REI-E/REI-I
+        "Origin", // "Genehmigungsinhaber"
+        "MStIDs", // "1234", "ABCD"
+        "Authority", // z.B. „Bayern“
         "PDFVersion",  // PDF/A-1b
         "SigningDate",
         "SigningComment",
@@ -408,7 +406,8 @@ public final class DokpoolUtils {
         JSONObject reiMetaObj = metaObj.getJSONObject("Rei");
         List<String> dateParams = Arrays.asList("SigningDate");
         List<String> boolParams = Arrays.asList("Signed");
-        List<String> numParams = Arrays.asList("Year", "Quarter", "Revision");
+        List<String> numParams = Arrays.asList("Year", "Revision");
+        List<String> listParams = Arrays.asList("ReiLegalBases", "MStIDs");
         for (String field: REI_FIELDS) {
             if (!reiMetaObj.has(field)) {
                 continue;
@@ -442,6 +441,8 @@ public final class DokpoolUtils {
                             BigInteger.class
                     );
                     numMethod.invoke(rei, numval);
+                } else if (listParams.contains(field)) {
+                    addReiListParam(reiMetaObj, rei, field);
                 } else {
                     String value = reiMetaObj
                             .getString(field);
@@ -459,6 +460,43 @@ public final class DokpoolUtils {
             }
         }
         meta.setREI(rei);
+    }
+
+    /**
+     * Add an list params to the Report containing the
+     * ReiDokpoolMeta data fields.
+     *
+     * @param rei The rei part of the report to add the listParam meta to.
+     * @param reiMetaObj The REI metaJsonObject of the request.
+     * @param field The key holding the list
+     */
+    public static void addReiListParam(
+            JSONObject reiMetaObj,
+            REI rei,
+            String field) {
+        if (field.equals("ReiLegalBases")) {
+            if (reiMetaObj.has("ReiLegalBases")) {
+                REI.ReiLegalBases reilegalbases = new REI.ReiLegalBases();
+                JSONArray reiLegalBasesMetaJson = reiMetaObj
+                        .getJSONArray(field);
+                List<String> reilegalbaseList = reilegalbases
+                        .getReiLegalBase();
+                for (int i = 0; i < reiLegalBasesMetaJson.length(); i++) {
+                    reilegalbaseList.add(reiLegalBasesMetaJson.getString(i));
+                }
+                rei.setReiLegalBases(reilegalbases);
+            }
+        } else if (field.equals("MStIDs")) {
+            if (reiMetaObj.has("MStIDs")) {
+                REI.MStIDs reimstids = new REI.MStIDs();
+                JSONArray reiMstidsMetaJson = reiMetaObj.getJSONArray(field);
+                List<String> reimstidsList = reimstids.getMStID();
+                for (int i = 0; i < reiMstidsMetaJson.length(); i++) {
+                    reimstidsList.add(reiMstidsMetaJson.getString(i));
+                }
+                rei.setMStIDs(reimstids);
+            }
+        }
     }
 
     /**
