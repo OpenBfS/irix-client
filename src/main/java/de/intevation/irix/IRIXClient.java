@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import java.net.URISyntaxException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -101,6 +102,14 @@ public class IRIXClient extends HttpServlet {
      */
     protected URL irixServiceUrl;
     /**
+     * String of Header username - e.g. set by Shibboleth
+     */
+    protected String userHeaderString;
+    /**
+     * String of Header roles - e.g. set by Shibboleth
+     */
+    protected String rolesHeaderString;
+    /**
      * forward Headers (incl. auth Headers).
      */
     protected Boolean keepRequestHeaders;
@@ -149,6 +158,17 @@ public class IRIXClient extends HttpServlet {
                     "Bad configuration value for: irix-webservice-url", e);
         }
 
+        userHeaderString = getInitParameter("user-header");
+        if (userHeaderString == null) {
+            log.debug("No user-header set.");
+        }
+        rolesHeaderString = getInitParameter("roles-header");
+        if (rolesHeaderString == null) {
+            log.debug("No roles-header set.");
+        }
+
+
+
         ServletContext sc = getServletContext();
 
         irixSchemaFile = new File(sc.getRealPath(IRIX_SCHEMA_LOC));
@@ -176,6 +196,27 @@ public class IRIXClient extends HttpServlet {
         try {
             if (keepRequestHeaders) {
                 this.keptRequest = request;
+            }
+            return new JSONObject(new JSONTokener(request.getReader()));
+        } catch (IOException e) {
+            log.warn("Request did not contain valid json: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Parse the header of the request into a json object.
+     *
+     * @param request the request.
+     * @return a {@link org.json.JSONObject} object with parts of
+     * the header of the request.
+     */
+    protected JSONObject parseHeader(HttpServletRequest request) {
+        JSONObject uidHeaders = new JSONObject();
+        try {
+            if (userHeaderString != null && rolesHeaderString != null) {
+                String uid = request.getHeader(userHeaderString);
+                Enumeration<String> roles = request.getHeaders(rolesHeaderString);
             }
             return new JSONObject(new JSONTokener(request.getReader()));
         } catch (IOException e) {
@@ -495,6 +536,7 @@ public class IRIXClient extends HttpServlet {
             throws ServletException, IOException {
 
         JSONObject jsonObject = parseRequest(request);
+        JSONObject userJsonObject = parseHeader(request);
         if (jsonObject == null) {
             throw new ServletException(
                     "Could not read jsonObject from request.");

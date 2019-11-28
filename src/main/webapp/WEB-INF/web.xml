@@ -34,6 +34,16 @@
              <param-name>keep-request-headers</param-name>
              <param-value>true</param-value>
          </init-param>
+         <init-param>
+             <!-- Header for userid -->
+             <param-name>user-header</param-name>
+             <param-value>X-SHIB-user</param-value>
+         </init-param>
+         <init-param>
+             <!-- Header for roles -->
+             <param-name>roles-header</param-name>
+             <param-value>X-SHIB-roles</param-value>
+         </init-param>
      </servlet>
 
      <servlet-mapping>
