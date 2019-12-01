@@ -18,10 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import java.net.URISyntaxException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.stream.Collectors;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -110,6 +111,10 @@ public class IRIXClient extends HttpServlet {
      */
     protected String rolesHeaderString;
     /**
+     * List of permitted roles.
+     */
+    protected List<String> rolesPermission;
+    /**
      * forward Headers (incl. auth Headers).
      */
     protected Boolean keepRequestHeaders;
@@ -162,12 +167,23 @@ public class IRIXClient extends HttpServlet {
         if (userHeaderString == null) {
             log.debug("No user-header set.");
         }
+
         rolesHeaderString = getInitParameter("roles-header");
         if (rolesHeaderString == null) {
             log.debug("No roles-header set.");
         }
 
-
+        String rolesPermissionParam = getInitParameter("roles-permission");
+        if (rolesPermissionParam != null) {
+            rolesPermission = Arrays.asList(rolesPermissionParam);
+            if (rolesPermission.isEmpty()) {
+                log.debug("No roles-permission set.");
+                // parseHeaders(request) will check for valid role in Header
+            }
+        } else {
+            rolesPermission = null;
+            log.debug("No init-param roles-permission found.");
+        }
 
         ServletContext sc = getServletContext();
 
@@ -182,7 +198,6 @@ public class IRIXClient extends HttpServlet {
             throw new ServletException(
                     "Missing 'keep-request-headers' parameter.");
         }
-
     }
 
     /**
@@ -194,9 +209,6 @@ public class IRIXClient extends HttpServlet {
      */
     protected JSONObject parseRequest(HttpServletRequest request) {
         try {
-            if (keepRequestHeaders) {
-                this.keptRequest = request;
-            }
             return new JSONObject(new JSONTokener(request.getReader()));
         } catch (IOException e) {
             log.warn("Request did not contain valid json: " + e.getMessage());
@@ -212,15 +224,34 @@ public class IRIXClient extends HttpServlet {
      * the header of the request.
      */
     protected JSONObject parseHeader(HttpServletRequest request) {
+        //FIXME make sure that this doesn't crash if properties are not set
+        if (keepRequestHeaders) {
+            this.keptRequest = request;
+        }
+
         JSONObject uidHeaders = new JSONObject();
-        try {
-            if (userHeaderString != null && rolesHeaderString != null) {
-                String uid = request.getHeader(userHeaderString);
-                Enumeration<String> roles = request.getHeaders(rolesHeaderString);
+        if (userHeaderString != null) {
+            String uid = request.getHeader(userHeaderString);
+            uidHeaders.put("uid", uid);
+            log.debug("Found User " + uidHeaders.get("uid"));
+        }
+        if (rolesHeaderString != null) {
+            List<String> roles = Arrays.asList(request
+                    .getHeader(rolesHeaderString).split("[\\s,]+"));
+            if (rolesPermission != null) {
+                List<String> validRolesList = rolesPermission.stream()
+                        .filter(roles::contains)
+                        .collect(Collectors.toList());
+                if (validRolesList.isEmpty()) {
+                    log.debug("No valid roles found for user "
+                            + uidHeaders.get("uid"));
+                    return null;
+                } else {
+                    //FIXME should we use the whole roles list instead?
+                    uidHeaders.put("roles", validRolesList);
+                }
             }
-            return new JSONObject(new JSONTokener(request.getReader()));
-        } catch (IOException e) {
-            log.warn("Request did not contain valid json: " + e.getMessage());
+            return uidHeaders;
         }
         return null;
     }
@@ -536,10 +567,14 @@ public class IRIXClient extends HttpServlet {
             throws ServletException, IOException {
 
         JSONObject jsonObject = parseRequest(request);
-        JSONObject userJsonObject = parseHeader(request);
         if (jsonObject == null) {
             throw new ServletException(
                     "Could not read jsonObject from request.");
+        }
+        JSONObject userJsonObject = parseHeader(request);
+        if (userJsonObject == null) {
+            throw new ServletException(
+                    "Could not parse Header from request.");
         }
 
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
@@ -570,6 +605,8 @@ public class IRIXClient extends HttpServlet {
             baseurl = jsonObject.getString("baseurl");
         }
         try {
+            // FIXME do we have to send userJsonObject as well?
+            // better to use a Java Object?
             report = ReportUtils.prepareReport(jsonObject);
             DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
             if (!printSpecs.isEmpty()) {

@@ -1,9 +1,9 @@
 {
   "request-type": "respond",
   "irix": {
-    "Title": "IMIS-GIS Kartendokument",
-    "User": "IMIS Testbenutzer",
-    "Text": "",
+    "Title": "REI Berichtsdokument",
+    "User": "Hans Dampf",
+    "Text": "erster Teßtbericht mit Ümlauten",
     "Identification": {
       "OrganisationReporting": "imis.bfs.de",
       "ReportingBases": {
@@ -22,6 +22,7 @@
       "DokpoolName": "bund",
       "DokpoolGroupFolder": "bund_bfs-messungen/von-gis",
       "DokpoolContentType": "gammadoserate",
+      "DokpoolDocumentOwner": "foo-ber",
       "IsElan": false,
       "IsDoksys": false,
       "IsRei": true,

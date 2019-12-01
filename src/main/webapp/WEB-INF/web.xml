@@ -44,6 +44,13 @@
              <param-name>roles-header</param-name>
              <param-value>X-SHIB-roles</param-value>
          </init-param>
+         <init-param>
+              Roles from roles-header with access permission
+             <param-name>roles-permission</param-name>
+             <param-value>
+                 irix
+             </param-value>
+         </init-param>
      </servlet>
 
      <servlet-mapping>
