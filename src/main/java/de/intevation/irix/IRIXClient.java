@@ -111,6 +111,10 @@ public class IRIXClient extends HttpServlet {
      */
     protected String rolesHeaderString;
     /**
+     * String of Header user displayname - e.g. set by Shibboleth
+     */
+    protected String displaynameHeaderString;
+    /**
      * List of permitted roles.
      */
     protected List<String> rolesPermission;
@@ -166,6 +170,11 @@ public class IRIXClient extends HttpServlet {
         userHeaderString = getInitParameter("user-header");
         if (userHeaderString == null) {
             log.debug("No user-header set.");
+        }
+
+        displaynameHeaderString = getInitParameter("user-displayname-header");
+        if (displaynameHeaderString == null) {
+            log.debug("No user-displayname-header set.");
         }
 
         rolesHeaderString = getInitParameter("roles-header");
@@ -232,28 +241,41 @@ public class IRIXClient extends HttpServlet {
         JSONObject uidHeaders = new JSONObject();
         if (userHeaderString != null) {
             String uid = request.getHeader(userHeaderString);
-            uidHeaders.put("uid", uid);
-            log.debug("Found User " + uidHeaders.get("uid"));
+            if (uid != null) {
+                uidHeaders.put("uid", uid);
+                log.debug("Found User " + uidHeaders.get("uid").toString());
+            }
+        }
+        if (displaynameHeaderString != null) {
+            String displayname = request.getHeader(displaynameHeaderString);
+            if (displayname != null) {
+                uidHeaders.put("displayname", displayname);
+                log.debug("Found Displayname for User "
+                        + uidHeaders.get("uid").toString()
+                        + ": " + uidHeaders.get("displayname").toString()
+                );
+            }
         }
         if (rolesHeaderString != null) {
-            List<String> roles = Arrays.asList(request
-                    .getHeader(rolesHeaderString).split("[\\s,]+"));
-            if (rolesPermission != null) {
-                List<String> validRolesList = rolesPermission.stream()
-                        .filter(roles::contains)
-                        .collect(Collectors.toList());
-                if (validRolesList.isEmpty()) {
-                    log.debug("No valid roles found for user "
-                            + uidHeaders.get("uid"));
-                    return null;
-                } else {
-                    //FIXME should we use the whole roles list instead?
-                    uidHeaders.put("roles", validRolesList);
+            if (request.getHeader(rolesHeaderString) != null) {
+                List<String> roles = Arrays.asList(request
+                        .getHeader(rolesHeaderString).split("[\\s,]+"));
+                if (rolesPermission != null) {
+                    List<String> validRolesList = rolesPermission.stream()
+                            .filter(roles::contains)
+                            .collect(Collectors.toList());
+                    if (validRolesList.isEmpty()) {
+                        log.debug("No valid roles found for user "
+                                + uidHeaders.get("uid").toString());
+                    } else {
+                        //FIXME should we use the whole roles list instead?
+                        uidHeaders.put("roles", validRolesList);
+                    }
                 }
+
             }
-            return uidHeaders;
         }
-        return null;
+        return uidHeaders;
     }
 
     /**
@@ -572,9 +594,9 @@ public class IRIXClient extends HttpServlet {
                     "Could not read jsonObject from request.");
         }
         JSONObject userJsonObject = parseHeader(request);
-        if (userJsonObject == null) {
+        if (userJsonObject.length() == 0) {
             throw new ServletException(
-                    "Could not parse Header from request.");
+                    "Could not parse Header from request. Empty JSON returned");
         }
 
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
@@ -607,8 +629,9 @@ public class IRIXClient extends HttpServlet {
         try {
             // FIXME do we have to send userJsonObject as well?
             // better to use a Java Object?
-            report = ReportUtils.prepareReport(jsonObject);
-            DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile);
+            report = ReportUtils.prepareReport(jsonObject, userJsonObject);
+            DokpoolUtils.addAnnotation(jsonObject, report, dokpoolSchemaFile,
+                    userJsonObject);
             if (!printSpecs.isEmpty()) {
                 if (printSpecs.get(0).has("jobKey")
                         && printSpecs.get(0).get("jobKey")

@@ -171,6 +171,7 @@ public final class DokpoolUtils {
         // hidden constructor to avoid instantiation.
     }
 
+
     /**
      * Add an annotation to the Report containing the DokpoolMeta data fields.
      *
@@ -185,7 +186,28 @@ public final class DokpoolUtils {
      * else went wrong.
      */
     public static void addAnnotation(JSONObject jsonObject, ReportType report,
-            File schemaFile)
+                                     File schemaFile)
+            throws JSONException, SAXException, JAXBException {
+        JSONObject userJsonObject = new JSONObject();
+        addAnnotation(jsonObject, report, schemaFile, userJsonObject);
+    }
+
+    /**
+     * Add an annotation to the Report containing the DokpoolMeta data fields.
+     *
+     * @param report The report to add the annoation to.
+     * @param jsonObject The full jsonObject of the request.
+     * @param schemaFile Optional. Schema to validate against.
+     * @param userJsonObject The userJsonObject created from headers.
+     * @throws JSONException If the JSONObject does not match
+     * expectations.
+     * @throws SAXException In case there is a problem with
+     * the schema.
+     * @throws JAXBException if validation failed or something
+     * else went wrong.
+     */
+    public static void addAnnotation(JSONObject jsonObject, ReportType report,
+            File schemaFile, JSONObject userJsonObject)
         throws JSONException, SAXException, JAXBException {
         JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
 
@@ -211,6 +233,15 @@ public final class DokpoolUtils {
             }
             String methodName = "set" + field;
             String value = metaObj.get(field).toString();
+            if (field.equals("DokpoolDocumentOwner") && userJsonObject
+                    .has("uid")) {
+                String uid = userJsonObject.getString("uid");
+                if (uid.length() > 0) {
+                    value = uid;
+                    log.info("Using DokpoolDocumentOwner from Header "
+                            + "instead of request");
+                }
+            }
             try {
                 if (field.startsWith("Is")) {
                     Method method = meta.getClass().getMethod(methodName,

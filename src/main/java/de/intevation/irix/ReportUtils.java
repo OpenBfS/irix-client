@@ -264,7 +264,28 @@ public final class ReportUtils {
      * @throws org.json.JSONException in case a key is missing or invalid.
      */
     public static ReportType prepareReport(JSONObject jsonObject)
-        throws JSONException {
+            throws JSONException {
+        JSONObject userJsonObject = new JSONObject();
+        return prepareReport(jsonObject, userJsonObject);
+    }
+
+    /**
+     * Prepare the IRIX report to take the PDF attachments.
+     *
+     * The irix information is taken from the Object specified
+     * by the IRIX_DATA_KEY name.
+     *
+     * @param jsonObject The full jsonObject of the request.
+     * @param userJsonObject The userJsonObject created from headers.
+     * @return the IRIX report as
+     * {@link org.iaea._2012.irix.format.ReportType}.
+     * @throws org.json.JSONException in case a key is missing or invalid.
+     */
+    public static ReportType prepareReport(
+            JSONObject jsonObject,
+            JSONObject userJsonObject) throws JSONException {
+        log.debug("Preparing Report for " + userJsonObject
+                .getString("uid") + ".");
         ReportType report = new ObjectFactory().createReportType();
         report.setVersion(SCHEMA_VERSION);
         JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
