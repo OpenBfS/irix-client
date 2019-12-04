@@ -50,7 +50,7 @@
              <param-value>X-SHIB-displayname</param-value>
          </init-param>
          <init-param>
-              Roles from roles-header with access permission
+             <!-- Roles from roles-header with access permission -->
              <param-name>roles-permission</param-name>
              <param-value>
                  irix
