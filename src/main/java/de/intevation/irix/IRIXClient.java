@@ -594,7 +594,10 @@ public class IRIXClient extends HttpServlet {
                     "Could not read jsonObject from request.");
         }
         JSONObject userJsonObject = parseHeader(request);
-        if (userJsonObject.length() == 0) {
+        if (userJsonObject.length() == 0
+                && (request.getHeader(userHeaderString) != null
+                || request.getHeader(rolesHeaderString) != null)
+        ) {
             throw new ServletException(
                     "Could not parse Header from request. Empty JSON returned");
         }

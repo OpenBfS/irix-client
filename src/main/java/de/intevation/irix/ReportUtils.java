@@ -284,8 +284,6 @@ public final class ReportUtils {
     public static ReportType prepareReport(
             JSONObject jsonObject,
             JSONObject userJsonObject) throws JSONException {
-        log.debug("Preparing Report for " + userJsonObject
-                .getString("uid") + ".");
         ReportType report = new ObjectFactory().createReportType();
         report.setVersion(SCHEMA_VERSION);
         JSONObject irixObj = jsonObject.getJSONObject(IRIX_DATA_KEY);
