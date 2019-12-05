@@ -334,7 +334,8 @@ public final class ReportUtils {
 
         // displayname in header wins if user-displayname-header is configured
         String user = new String();
-        if (userJsonObject.has("displayname") && userJsonObject.getString("display") != null) {
+        if (userJsonObject.has("displayname")
+                && userJsonObject.getString("display") != null) {
             user = userJsonObject.getString("displayname");
         } else {
             user = irixObj.getString("User");
