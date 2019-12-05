@@ -17,3 +17,20 @@ E.g.:
             @examples/img-test.json http://localhost:8080/irix-client/IRIXClient
 
 The WSDL URL of the irix-webservice needs to be configured in the pom.xml
+
+=======
+
+web.xml Configuration params
+
+<param-name>user-header</param-name>
+If this param is configured, irix-client uses the Header set in param-value as the users id. This value overrides DokpoolDocumentOwner in DokpoolMeta while processing IRIX.!
+
+<param-name>roles-header</param-name>
+If this param is configured, irix-client uses the Header set in param-value as the users roles. the roles are used to check for permissions.
+
+<param-name>user-displayname-header</param-name>
+If this param is configured, irix-client uses the Header set in param-value as the users displayname. This value overrides User in irix to set PersonContactInfo in while processing IRIX.!
+
+<param-name>roles-permission</param-name>
+If this param is configured, irix-client uses the roles set in param-value to check if the user is allowed to use this service by comparing it with the roles in roles-header. This configuration only makes sense, if roles-header is set as well.
+
