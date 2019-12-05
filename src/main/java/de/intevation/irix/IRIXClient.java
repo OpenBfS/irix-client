@@ -243,17 +243,12 @@ public class IRIXClient extends HttpServlet {
             String uid = request.getHeader(userHeaderString);
             if (uid != null) {
                 uidHeaders.put("uid", uid);
-                log.debug("Found User " + uidHeaders.get("uid").toString());
             }
         }
         if (displaynameHeaderString != null) {
             String displayname = request.getHeader(displaynameHeaderString);
             if (displayname != null) {
                 uidHeaders.put("displayname", displayname);
-                log.debug("Found Displayname for User "
-                        + uidHeaders.get("uid").toString()
-                        + ": " + uidHeaders.get("displayname").toString()
-                );
             }
         }
         if (rolesHeaderString != null) {
@@ -268,9 +263,10 @@ public class IRIXClient extends HttpServlet {
                         log.debug("No valid roles found for user "
                                 + uidHeaders.get("uid").toString());
                     } else {
-                        //FIXME should we use the whole roles list instead?
                         uidHeaders.put("roles", validRolesList);
                     }
+                } else {
+                    uidHeaders.put("roles", roles);
                 }
 
             }
@@ -588,11 +584,30 @@ public class IRIXClient extends HttpServlet {
                        HttpServletResponse response)
             throws ServletException, IOException {
 
+        if (rolesPermission != null) {
+            if (request.getHeader(rolesHeaderString) != null) {
+                List<String> roles = Arrays.asList(request
+                        .getHeader(rolesHeaderString).split("[\\s,]+"));
+                List<String> validRolesList = rolesPermission.stream()
+                        .filter(roles::contains)
+                        .collect(Collectors.toList());
+                if (validRolesList.isEmpty()) {
+                    log.debug("No valid roles found for user");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+        }
+
         JSONObject jsonObject = parseRequest(request);
         if (jsonObject == null) {
             throw new ServletException(
                     "Could not read jsonObject from request.");
         }
+        // FIXME may be this test has obsolete conditions?
         JSONObject userJsonObject = parseHeader(request);
         if (userJsonObject.length() == 0
                 && (request.getHeader(userHeaderString) != null

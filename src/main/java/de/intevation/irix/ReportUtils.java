@@ -332,7 +332,14 @@ public final class ReportUtils {
         addOrganization(identifications,
             idObj.getJSONObject("OrganisationContact"));
 
-        addUser(identifications, irixObj.getString("User"));
+        // displayname in header wins if user-displayname-header is configured
+        String user = new String();
+        if (userJsonObject.has("displayname") && userJsonObject.getString("display") != null) {
+            user = userJsonObject.getString("displayname");
+        } else {
+            user = irixObj.getString("User");
+        }
+        addUser(identifications, user);
 
         // setPersonContactInfo and organizationcontactinfo ?
         identification.setReportContext(ReportContextType.fromValue(
