@@ -29,11 +29,19 @@
       "Rei": {
 	    "Year": 2018,
 	    "Period": "Q3",
-	    "NuclearInstallation": "U01B KKW Krümmel",
+	    "NuclearInstallations": ["U01B KKW Krümmel", "ABCD AKW Foobar"],
 	    "Medium": "Abwasser/Fortluft",
 	    "ReiLegalBases": ["REI-E", "REI-I"],
-	    "Origin": "Genehmigungsinhaber",
-	    "MStIDs": ["1234", "ABCD"],
+	    "Origin": ["unabhängige Messstelle", "Genehmigungsinhaber"],
+	    "MStIDs": [
+            {
+                "MstID": "i1234",
+                "MStName": "Messstelle 1234"
+            },{
+                "MstID": "xABCD",
+                "MStName": "Messstelle ABCD"
+            }
+        ],
 	    "Authority": "Bayern",
 	    "PDFVersion": "PDF/A-1b"
 	  }
