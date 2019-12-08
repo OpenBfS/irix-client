@@ -520,10 +520,22 @@ public final class DokpoolUtils {
         } else if (field.equals("MStIDs")) {
             if (reiMetaObj.has("MStIDs")) {
                 REI.MStIDs reimstids = new REI.MStIDs();
+                List<REI.MStIDs.MSt> reimstList = reimstids.getMSt();
                 JSONArray reiMstidsMetaJson = reiMetaObj.getJSONArray(field);
-                List<String> reimstidsList = reimstids.getMStID();
                 for (int i = 0; i < reiMstidsMetaJson.length(); i++) {
-                    reimstidsList.add(reiMstidsMetaJson.getString(i));
+                    REI.MStIDs.MSt reimst = new REI.MStIDs.MSt();
+                    JSONObject reiMStJson = reiMstidsMetaJson.getJSONObject(i);
+                    if (reiMStJson.has("MStID")) {
+                        reimst.setMStID(reiMStJson.getString("MStID"));
+                    } else {
+                        continue;
+                    }
+                    if (reiMStJson.has("MStName")) {
+                        reimst.setMStName(reiMStJson.getString("MStName"));
+                    } else {
+                        reimst.setMStName(null);
+                    }
+                    reimstList.add(reimst);
                 }
                 rei.setMStIDs(reimstids);
             }
