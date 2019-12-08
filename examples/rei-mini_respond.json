@@ -35,10 +35,10 @@
 	    "Origin": ["unabhängige Messstelle", "Genehmigungsinhaber"],
 	    "MStIDs": [
             {
-                "MstID": "i1234",
+                "MStID": "i1234",
                 "MStName": "Messstelle 1234"
             },{
-                "MstID": "xABCD",
+                "MStID": "xABCD",
                 "MStName": "Messstelle ABCD"
             }
         ],
