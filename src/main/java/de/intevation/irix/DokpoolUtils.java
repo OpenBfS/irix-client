@@ -152,19 +152,21 @@ public final class DokpoolUtils {
     };
 
     private static final String[] REI_FIELDS = new String[] {
-        "Revision", // numeric
-        "Year", // (Mitte Sammelzeitraum): z.B. „2009“
-        "Period", // e.g. Q3 for third Quarter
-        "NuclearInstallation", // z.B. „KKW Grafenrheinfeld“
-        "Medium", //"Abwasser", "Fortluft" oder "Abwasser/Fortluft",
-        "ReiLegalBases", // REI-E, REI-I oder REI-E/REI-I
-        "Origin", // "Genehmigungsinhaber"
-        "MStIDs", // "1234", "ABCD"
-        "Authority", // z.B. „Bayern“
-        "PDFVersion",  // PDF/A-1b
-        "SigningDate",
-        "SigningComment",
-        "Signed" // Bool
+            "Revision", // numeric
+            "Year", // (Mitte Sammelzeitraum): z.B. „2009“
+            "Period", // e.g. Q3 for third Quarter
+            "NuclearInstallation", // z.B. „KKW Grafenrheinfeld“
+            "NuclearInstallations", // List z.B. „KKW Grafenrheinfeld“
+            "Medium", //"Abwasser", "Fortluft" oder "Abwasser/Fortluft",
+            "ReiLegalBases", // REI-E, REI-I oder REI-E/REI-I
+            "Origin", // "Genehmigungsinhaber"
+            "Origins", // List "Genehmigungsinhaber"
+            "MStIDs", // "1234", "ABCD"
+            "Authority", // z.B. „Bayern“
+            "PDFVersion",  // PDF/A-1b
+            "SigningDate",
+            "SigningComment",
+            "Signed" // Bool
 };
 
     private DokpoolUtils() {
@@ -273,16 +275,20 @@ public final class DokpoolUtils {
                     + " on DokpoolMeta object.");
             }
         }
-        if (metaObj.has("Doksys") && meta.isIsDoksys()) {
+        if ((metaObj.has("Doksys") || metaObj.has("DOKSYS"))
+                && meta.isIsDoksys()) {
             addDoksysMeta(metaObj, meta);
         }
-        if (metaObj.has("Elan") && meta.isIsElan()) {
+        if ((metaObj.has("Elan") || metaObj.has("ELAN"))
+                && meta.isIsElan()) {
             addElanMeta(metaObj, meta);
         }
-        if (metaObj.has("Rodos") && meta.isIsRodos()) {
+        if ((metaObj.has("Rodos") || metaObj.has("RODOS"))
+                && meta.isIsRodos()) {
             addRodosMeta(metaObj, meta);
         }
-        if (metaObj.has("Rei") && meta.isIsRei()) {
+        if ((metaObj.has("Rei") || metaObj.has("REI"))
+                && meta.isIsRei()) {
             addReiMeta(metaObj, meta);
         }
 
@@ -314,7 +320,14 @@ public final class DokpoolUtils {
      */
     public static void addDoksysMeta(JSONObject metaObj, DokpoolMeta meta) {
         DOKSYS doksys = new DOKSYS();
-        JSONObject doksysMetaObj = metaObj.getJSONObject("Doksys");
+        JSONObject doksysMetaObj;
+        if (metaObj.has("Doksys")) {
+            doksysMetaObj = metaObj.getJSONObject("Doksys");
+        } else if (metaObj.has("DOKSYS")) {
+            doksysMetaObj = metaObj.getJSONObject("DOKSYS");
+        } else {
+            return;
+        }
         List<String> dateParams = Arrays.asList(
                 "SamplingBegin",
                 "SamplingEnd",
@@ -363,10 +376,18 @@ public final class DokpoolUtils {
      */
     public static void addElanMeta(JSONObject metaObj, DokpoolMeta meta) {
         ELAN elan = new ELAN();
-        if (metaObj.getJSONObject("Elan").has("Scenarios")) {
+        JSONObject elanMetaObj;
+        if (metaObj.has("Elan")) {
+            elanMetaObj = metaObj.getJSONObject("Elan");
+        } else if (metaObj.has("ELAN")) {
+            elanMetaObj = metaObj.getJSONObject("ELAN");
+        } else {
+            return;
+        }
+        if (elanMetaObj.has("Scenarios")) {
             //ELAN.Scenarios elanscenarios = elan.getScenarios();
             ELAN.Scenarios elanscenarios = new ELAN.Scenarios();
-            JSONArray elanScenariosMetaJson = metaObj.getJSONObject("Elan")
+            JSONArray elanScenariosMetaJson = elanMetaObj
                     .getJSONArray("Scenarios");
             List<String> elanscenarioList = elanscenarios.getScenario();
             for (int i = 0; i < elanScenariosMetaJson.length(); i++) {
@@ -386,7 +407,14 @@ public final class DokpoolUtils {
      */
     public static void addRodosMeta(JSONObject metaObj, DokpoolMeta meta) {
         RODOS rodos = new RODOS();
-        JSONObject rodosMetaObj = metaObj.getJSONObject("Rodos");
+        JSONObject rodosMetaObj;
+        if (metaObj.has("Rodos")) {
+            rodosMetaObj = metaObj.getJSONObject("Rodos");
+        } else if (metaObj.has("RODOS")) {
+            rodosMetaObj = metaObj.getJSONObject("RODOS");
+        } else {
+            return;
+        }
         for (String field: RODOS_FIELDS) {
             if (!rodosMetaObj.has(field)) {
                 continue;
@@ -432,18 +460,33 @@ public final class DokpoolUtils {
      * @param metaObj The full metaJsonObject of the request.
      */
     public static void addReiMeta(JSONObject metaObj, DokpoolMeta meta) {
-
         REI rei = new REI();
-        JSONObject reiMetaObj = metaObj.getJSONObject("Rei");
+        JSONObject reiMetaObj;
+        if (metaObj.has("Rei")) {
+            reiMetaObj = metaObj.getJSONObject("Rei");
+        } else if (metaObj.has("REI")) {
+            reiMetaObj = metaObj.getJSONObject("REI");
+        } else {
+            return;
+        }
         List<String> dateParams = Arrays.asList("SigningDate");
         List<String> boolParams = Arrays.asList("Signed");
         List<String> numParams = Arrays.asList("Year", "Revision");
-        List<String> listParams = Arrays.asList("ReiLegalBases", "MStIDs");
+        List<String> listParams = Arrays.asList(
+                "ReiLegalBases",
+                "MStIDs",
+                "Origin",
+                "Origins",
+                "NuclearInstallation",
+                "NuclearInstallations"
+        );
         for (String field: REI_FIELDS) {
             if (!reiMetaObj.has(field)) {
                 continue;
             }
             String methodName = "set" + field;
+            // TODO add generic list handling as well!
+            // TODO allow string if list has only one value for JSON
             try {
 
                 if (dateParams.contains(field)) {
@@ -505,17 +548,41 @@ public final class DokpoolUtils {
             JSONObject reiMetaObj,
             REI rei,
             String field) {
-        if (field.equals("ReiLegalBases")) {
-            if (reiMetaObj.has("ReiLegalBases")) {
+        if (field.equals("ReiLegalBases") || field.equals("ReiLegalBase")) {
+            if (reiMetaObj.has(field)) {
                 REI.ReiLegalBases reilegalbases = new REI.ReiLegalBases();
-                JSONArray reiLegalBasesMetaJson = reiMetaObj
+                JSONArray fieldMetaJson = reiMetaObj
                         .getJSONArray(field);
                 List<String> reilegalbaseList = reilegalbases
                         .getReiLegalBase();
-                for (int i = 0; i < reiLegalBasesMetaJson.length(); i++) {
-                    reilegalbaseList.add(reiLegalBasesMetaJson.getString(i));
+                for (int i = 0; i < fieldMetaJson.length(); i++) {
+                    reilegalbaseList.add(fieldMetaJson.getString(i));
                 }
                 rei.setReiLegalBases(reilegalbases);
+            }
+        } else if (field.equals("Origins") || field.equals("Origin")) {
+            if (reiMetaObj.has(field)) {
+                REI.Origins origins = new REI.Origins();
+                JSONArray fieldMetaJson = reiMetaObj
+                        .getJSONArray(field);
+                List<String> originList = origins.getOrigin();
+                for (int i = 0; i < fieldMetaJson.length(); i++) {
+                    originList.add(fieldMetaJson.getString(i));
+                }
+                rei.setOrigins(origins);
+            }
+        } else if (field.equals("NuclearInstallations")
+                || field.equals("NuclearInstallation")) {
+            if (reiMetaObj.has(field)) {
+                REI.NuclearInstallations nuclearinstallations
+                        = new REI.NuclearInstallations();
+                JSONArray fieldMetaJson = reiMetaObj.getJSONArray(field);
+                List<String> nuclearinstallationList = nuclearinstallations
+                        .getNuclearInstallation();
+                for (int i = 0; i < fieldMetaJson.length(); i++) {
+                    nuclearinstallationList.add(fieldMetaJson.getString(i));
+                }
+                rei.setNuclearInstallations(nuclearinstallations);
             }
         } else if (field.equals("MStIDs")) {
             if (reiMetaObj.has("MStIDs")) {
