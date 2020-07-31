@@ -59,6 +59,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 //import java.math.BigInteger;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -101,8 +102,8 @@ public final class DokpoolUtils {
     private static final String[] DOKSYS_FIELDS = new String[] {
         "Purpose",
         "NetworkOperator",
-        "SampleTypeId",
         "SampleType",
+        "MeasurementCategory",
         "Dom",
         "DataType",
         "LegalBase",
@@ -168,6 +169,7 @@ public final class DokpoolUtils {
             "SigningComment",
             "Signed" // Bool
 };
+    private DOKSYS methodClass;
 
     private DokpoolUtils() {
         // hidden constructor to avoid instantiation.
@@ -251,22 +253,15 @@ public final class DokpoolUtils {
                     boolean bValue = value.toLowerCase().equals("true");
                     method.invoke(meta, bValue);
                     hasType = bValue || hasType;
-                //FIXME add Subjects handling
-                } else if (field.equals("Subjects")) {
-                    if (metaObj.has("Subjects")) {
-                        JSONArray dpSubjectsJson
-                                = metaObj.getJSONArray("Subjects");
-                        DokpoolMeta.Subjects subjects
-                                = new DokpoolMeta.Subjects();
-                        List<String> subjectsList = subjects.getSubject();
+                } else if (field.equals("Subject")) {
+                    if (metaObj.has("Subject")) {
+                        JSONArray dpSubjectsJson = metaObj.getJSONArray("Subject");
                         for (int i = 0; i < dpSubjectsJson.length(); i++) {
-                            subjectsList.add(dpSubjectsJson.getString(i));
+                            meta.getSubject().add(dpSubjectsJson.getString(i));
                         }
-                        meta.setSubjects(subjects);
                     }
                 } else {
-                    Method method = meta.getClass().getMethod(methodName,
-                        String.class);
+                    Method method = meta.getClass().getMethod(methodName, String.class);
                     method.invoke(meta, value);
                 }
             } catch (Exception e) {
@@ -338,7 +333,9 @@ public final class DokpoolUtils {
             if (!doksysMetaObj.has(field)) {
                 continue;
             }
-            String methodName = "set" + field;
+            String setMethodName = "set" + field;
+            String getMethodName = "get" + field;
+            Method[] methods = doksys.getClass().getDeclaredMethods();
             try {
                 if (dateParams.contains(field)) {
                     String value = doksysMetaObj
@@ -346,21 +343,68 @@ public final class DokpoolUtils {
                     XMLGregorianCalendar calval;
                     calval = ReportUtils.xmlCalendarFromString(value);
                     Method method = doksys.getClass().getMethod(
-                            methodName,
+                            setMethodName,
                             XMLGregorianCalendar.class
                     );
                     method.invoke(doksys, calval);
                 } else {
-                    String value = doksysMetaObj.get(field).toString();
-                    Method method = doksys.getClass().getMethod(
-                            methodName,
-                            String.class
-                    );
-                    method.invoke(doksys, value);
+                    boolean hasGetMethod = false;
+                    boolean hasSetMethod = false;
+                    if (doksysMetaObj.get(field) instanceof String) {
+                        String value = doksysMetaObj.get(field).toString();
+                        for (Method m : methods) {
+                            if (m.getName().equals(getMethodName)) {
+                                hasGetMethod = true;
+                            }
+                            if (m.getName().equals(setMethodName)) {
+                                hasSetMethod = true;
+                            }
+                        }
+                        if (hasSetMethod) {
+                            Method method = doksys.getClass().getMethod(
+                                    setMethodName,
+                                    String.class
+                            );
+                            method.invoke(doksys, value);
+                        }
+                        if (hasGetMethod) {
+                            Method method = doksys.getClass().getMethod(getMethodName);
+                            try {
+                                ArrayList methodArray = (ArrayList) method.invoke(doksys);
+                                methodArray.add(value);
+                            } catch (Exception e) {
+                                log.error(e);
+                            }
+                        }
+                    } else if (doksysMetaObj.get(field) instanceof JSONArray) {
+                        JSONArray values = doksysMetaObj.getJSONArray(field);
+                        for (Method m : methods) {
+                            if (m.getName().equals(getMethodName)) {
+                                hasGetMethod = true;
+                            }
+                            if (m.getName().equals(setMethodName)) {
+                                hasSetMethod = true;
+                            }
+                        }
+                        if (hasGetMethod) {
+                            Method method = doksys.getClass().getMethod(getMethodName);
+                            try {
+                                ArrayList methodArray = (ArrayList) method.invoke(doksys);
+                                for (int i = 0; i < values.length(); i++) {
+                                    methodArray.add(values.get(i));
+                                }
+                            } catch (Exception e) {
+                                log.error(e);
+                            }
+                        }
+                        if (hasSetMethod) {
+                            log.debug(setMethodName + " shouldn't exist here.");
+                        }
+                    }
                 }
             } catch (Exception e) {
                 log.error(e.getClass().getName()
-                        + " exception while trying to access " + methodName
+                        + " exception while trying to access methods for " + field
                         + " on DokpoolDoksysMeta object.");
             }
         }
@@ -384,16 +428,16 @@ public final class DokpoolUtils {
         } else {
             return;
         }
-        if (elanMetaObj.has("Scenarios")) {
-            //ELAN.Scenarios elanscenarios = elan.getScenarios();
-            ELAN.Scenarios elanscenarios = new ELAN.Scenarios();
-            JSONArray elanScenariosMetaJson = elanMetaObj
-                    .getJSONArray("Scenarios");
-            List<String> elanscenarioList = elanscenarios.getScenario();
-            for (int i = 0; i < elanScenariosMetaJson.length(); i++) {
-                elanscenarioList.add(elanScenariosMetaJson.getString(i));
+        if (elanMetaObj.has("Scenario")) {
+            //ELAN.Scenario elanscenario = new ELAN.Scenario();
+            JSONArray elanScenarioMetaJson = elanMetaObj
+                    .getJSONArray("Scenario");
+            //List<String> elanscenario = ELAN.getScenario();
+            for (int i = 0; i < elanScenarioMetaJson.length(); i++) {
+                //elanscenario.add(elanScenarioMetaJson.getString(i));
+                elan.getScenario().add(elanScenarioMetaJson.getString(i));
             }
-            elan.setScenarios(elanscenarios);
+            //elan.setScenarios(elanscenarios);
             meta.setELAN(elan);
         }
     }
