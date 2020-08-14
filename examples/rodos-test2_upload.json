@@ -23,7 +23,6 @@
             }
         },
         "DokpoolMeta": {
-            "Purpose": "Standard-Info",
             "DokpoolContentType": "rodosFooBar",
             "DokpoolName": "bund",
             "DokpoolGroupFolder": "bund_e-messzentrale-bfs/messungen/automatisch",
@@ -31,18 +30,16 @@
             "DokpoolTransferFolder": "",
             "IsElan": true,
             "IsDoksys": "false",
-            "IsRodos": false,
+            "IsRodos": true,
             "IsRei": "false",
-            "Elan": {
-                "ElanScenarios": {
-                    "ElanScenario": [
-                        "routinemode",
-                        "ereignis-abc"
-                    ]
-                }
+            "ELAN": {
+                "Scenario": [
+                    "routinemode",
+                    "ereignis-abc"
+                ]
             },
-            "Doksys": {},
-            "Rodos": {
+            "DOKSYS": {},
+            "RODOS": {
                 "ProjectComment": "foo",
                 "Site": "BARAKW",
                 "ReportRunID": "a0cd758c-0aa9-155b-685e-bbe7048a57a5",

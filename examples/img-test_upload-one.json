@@ -23,22 +23,20 @@
             }
         },
         "DokpoolMeta": {
-            "Purpose": "Standard-Info",
             "DokpoolContentType": "gammadoserate",
             "DokpoolName": "bund",
             "DokpoolGroupFolder": "bund_auto-messungen/automatisch-intern",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
-            "ElanScenarios": {
-              "ElanScenario": [
+            "Scenario": [
                 "routinemode",
                 "ereignis-abc"
-              ]
-            },
+            ],
             "IsElan": true,
             "IsDoksys": "false",
             "IsRodos": false,
             "IsRei": "false",
+            "Purpose": ["Standard-Info"],
             "NetworkOperator": "U - BFS (ABI)",
             "SampleTypeId": "L5",
             "SampleType": "L5 - Niederschlag",

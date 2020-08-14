@@ -33,25 +33,25 @@
             "IsDoksys": "true",
             "IsRodos": true,
             "IsRei": "true",
-            "Subjects": [
+            "Subject": [
                 "FooSubject",
                 "Bar subject"
             ],
-            "Elan": {
-                "Scenarios": [
+            "ELAN": {
+                "Scenario": [
                     "routinemode",
                     "ereignis-abc"
                 ]
             },
-            "Doksys": {
-                "Purpose": "Standard-Info",
-                "NetworkOperator": "U - BFS (ABI)",
-                "SampleTypeId": "L5",
-                "SampleType": "L5 - Niederschlag",
-                "Dom": "Gamma-Spektrometrie",
-                "DataType": "LaDa",
-                "LegalBase": "AVV IMIS",
-                "MeasuringProgram": "Intensivmessprogramm",
+            "DOKSYS": {
+                "Purpose": ["Standard-Info", "PEP"],
+                "NetworkOperator": ["U", "X"],
+                "SampleType": ["L5", "L51"],
+                "Dom": ["105", "110"],
+                "DataSource": ["IMIS", "IRSN"],
+                "LegalBase": ["AVV IMIS", "§162"],
+                "MeasuringProgram": ["Intensivmessprogramm", "REI"],
+                "MeasurementCategory": ["AU", "I1", "M0"],
                 "Status": "nicht plausibel",
                 "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
                 "SamplingEnd":"2015-05-28T15:52:52.128+02:00",
@@ -60,7 +60,7 @@
                 "TrajectoryStartTime": "2016-05-28T15:35:54.168+02:00",
                 "TrajectoryEndTime": "2016-05-28T15:52:52.128+02:00"
             },
-            "Rodos": {
+            "RODOS": {
                 "ProjectComment": "foo",
                 "Site": "BARAKW",
                 "ReportRunID": "a0cd758c-0aa9-155b-685e-bbe7048a57a5",
@@ -71,7 +71,7 @@
                 "Projectname": "notfallstation-0,25-barakw-nodwd",
                 "ProjectChain": "EmergencyLite",
                 "WorkingMode": "Exercise",
-                "Sourceterms": [
+                "Sourceterm": [
                     {
                         "StartRelease": "2018-11-16T18:00:00Z",
                         "EndRelease": "2018-11-18T10:00:00Z",
@@ -124,16 +124,25 @@
                     ]
                 }
             },
-            "Rei": {
+            "REI": {
                 "Revision": 7,
                 "Year": 2009,
-                "Quarter": 3,
                 "Period": "Q3",
-                "Media": [
-                    "Abwasser",
-                    "Fortuft"
+                "NuclearInstallation": ["KKW Grafenrheinfeld", "KWG Grohnde"],
+                "Medium": "Abwasser/Fortuft",
+                "ReiLegalBase": ["REI-I", "REI-E"],
+                "Origin": ["Genehmigungsinhaber", "unabhängige Messstelle"],
+                "MSt": [
+                    {
+                        "MStID": "12345",
+                        "MStName": "Messstelle 99"
+                    },
+                    {
+                        "MStID": "54321",
+                        "MStName": "Messstelle 66"
+                    }
                 ],
-                "Location": "KKW Grafenrheinfeld",
+                "Authority": "Bayern",
                 "PDFVersion": "PDF/A-1b",
                 "SigningDate": "2018-11-16T16:19:55Z",
                 "SigningComment": "REI signing comment after validation",

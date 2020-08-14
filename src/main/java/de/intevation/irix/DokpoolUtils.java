@@ -14,21 +14,9 @@ import de.bfs.irix.extensions.dokpool.DokpoolMeta.RODOS;
 import de.bfs.irix.extensions.dokpool.DokpoolMeta.DOKSYS;
 import de.bfs.irix.extensions.dokpool.DokpoolMeta.REI;
 import org.apache.log4j.Logger;
-//import org.iaea._2012.irix.format.ObjectFactory;
 import org.iaea._2012.irix.format.ReportType;
-//import org.iaea._2012.irix.format.annexes.AnnexesType;
 import org.iaea._2012.irix.format.annexes.AnnotationType;
-//import org.iaea._2012.irix.format.annexes.FileEnclosureType;
-//import org.iaea._2012.irix.format.annexes.FileHashType;
 import org.iaea._2012.irix.format.base.FreeTextType;
-/*import org.iaea._2012.irix.format.base.OrganisationContactType;
-import org.iaea._2012.irix.format.base.PersonContactType;
-import org.iaea._2012.irix.format.base.YesNoType;
-import org.iaea._2012.irix.format.eventinformation.DateAndTimeOfEventType;
-import org.iaea._2012.irix.format.eventinformation.EventInformationType;
-import org.iaea._2012.irix.format.eventinformation.TypeOfEventType;
-import org.iaea._2012.irix.format.identification.*;
-import org.iaea._2012.irix.format.locations.LocationOrLocationRefType;*/
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,24 +28,14 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-//import javax.xml.datatype.DatatypeConfigurationException;
-//import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-//import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.dom.DOMResult;
-//import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
-//import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-//import java.math.BigInteger;
-//import java.security.MessageDigest;
-//import java.security.NoSuchAlgorithmException;
-//import java.util.ArrayList;
 import java.math.BigDecimal;
-//import java.math.BigInteger;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,7 +70,7 @@ public final class DokpoolUtils {
         "DokpoolPrivateFolder",
         "DokpoolTransferFolder",
         "DokpoolDocumentOwner",
-        "Subjects",
+        "Subject",
         "IsElan",
         "IsDoksys",
         "IsRodos",
@@ -105,7 +83,7 @@ public final class DokpoolUtils {
         "SampleType",
         "MeasurementCategory",
         "Dom",
-        "DataType",
+        "DataSource",
         "LegalBase",
         "MeasuringProgram",
         "Status",
@@ -128,7 +106,7 @@ public final class DokpoolUtils {
         "Projectname",
         "ProjectChain",
         "WorkingMode",
-        "Sourceterms",
+        "Sourceterm",
         "Prognosis"
     };
 
@@ -157,12 +135,10 @@ public final class DokpoolUtils {
             "Year", // (Mitte Sammelzeitraum): z.B. „2009“
             "Period", // e.g. Q3 for third Quarter
             "NuclearInstallation", // z.B. „KKW Grafenrheinfeld“
-            "NuclearInstallations", // List z.B. „KKW Grafenrheinfeld“
             "Medium", //"Abwasser", "Fortluft" oder "Abwasser/Fortluft",
-            "ReiLegalBases", // REI-E, REI-I oder REI-E/REI-I
+            "ReiLegalBase", // REI-E, REI-I oder REI-E/REI-I
             "Origin", // "Genehmigungsinhaber"
-            "Origins", // List "Genehmigungsinhaber"
-            "MStIDs", // "1234", "ABCD"
+            "MSt", // "1234", "ABCD"
             "Authority", // z.B. „Bayern“
             "PDFVersion",  // PDF/A-1b
             "SigningDate",
@@ -517,12 +493,10 @@ public final class DokpoolUtils {
         List<String> boolParams = Arrays.asList("Signed");
         List<String> numParams = Arrays.asList("Year", "Revision");
         List<String> listParams = Arrays.asList(
-                "ReiLegalBases",
-                "MStIDs",
+                "ReiLegalBase",
+                "MSt",
                 "Origin",
-                "Origins",
-                "NuclearInstallation",
-                "NuclearInstallations"
+                "NuclearInstallation"
         );
         for (String field: REI_FIELDS) {
             if (!reiMetaObj.has(field)) {
@@ -594,48 +568,51 @@ public final class DokpoolUtils {
             String field) {
         if (field.equals("ReiLegalBases") || field.equals("ReiLegalBase")) {
             if (reiMetaObj.has(field)) {
-                REI.ReiLegalBases reilegalbases = new REI.ReiLegalBases();
+                //REI.ReiLegalBase reilegalbase = new REI.ReiLegalBase();
                 JSONArray fieldMetaJson = reiMetaObj
                         .getJSONArray(field);
-                List<String> reilegalbaseList = reilegalbases
-                        .getReiLegalBase();
+                //List<String> reilegalbaseList = reilegalbases.getReiLegalBase();
                 for (int i = 0; i < fieldMetaJson.length(); i++) {
-                    reilegalbaseList.add(fieldMetaJson.getString(i));
+                    rei.getReiLegalBase().add(fieldMetaJson.getString(i));
+                    //reilegalbaseList.add(fieldMetaJson.getString(i));
                 }
-                rei.setReiLegalBases(reilegalbases);
+                //rei.setReiLegalBases(reilegalbases);
             }
         } else if (field.equals("Origins") || field.equals("Origin")) {
             if (reiMetaObj.has(field)) {
-                REI.Origins origins = new REI.Origins();
+                //REI.Origins origins = new REI.Origins();
                 JSONArray fieldMetaJson = reiMetaObj
                         .getJSONArray(field);
-                List<String> originList = origins.getOrigin();
+                //List<String> originList = origins.getOrigin();
                 for (int i = 0; i < fieldMetaJson.length(); i++) {
-                    originList.add(fieldMetaJson.getString(i));
+                    //originList.add(fieldMetaJson.getString(i));
+                    rei.getOrigin().add(fieldMetaJson.getString(i));
                 }
-                rei.setOrigins(origins);
+                //rei.setOrigins(origins);
             }
         } else if (field.equals("NuclearInstallations")
                 || field.equals("NuclearInstallation")) {
             if (reiMetaObj.has(field)) {
-                REI.NuclearInstallations nuclearinstallations
-                        = new REI.NuclearInstallations();
+                //REI.NuclearInstallations nuclearinstallations
+                //        = new REI.NuclearInstallations();
                 JSONArray fieldMetaJson = reiMetaObj.getJSONArray(field);
-                List<String> nuclearinstallationList = nuclearinstallations
-                        .getNuclearInstallation();
+                //List<String> nuclearinstallationList = nuclearinstallations
+                //        .getNuclearInstallation();
                 for (int i = 0; i < fieldMetaJson.length(); i++) {
-                    nuclearinstallationList.add(fieldMetaJson.getString(i));
+                    //nuclearinstallationList.add(fieldMetaJson.getString(i));
+                    rei.getNuclearInstallation().add(fieldMetaJson.getString(i));
                 }
-                rei.setNuclearInstallations(nuclearinstallations);
+                //rei.setNuclearInstallations(nuclearinstallations);
             }
-        } else if (field.equals("MStIDs")) {
-            if (reiMetaObj.has("MStIDs")) {
-                REI.MStIDs reimstids = new REI.MStIDs();
-                List<REI.MStIDs.MSt> reimstList = reimstids.getMSt();
+        } else if (field.equals("MSt")) {
+            if (reiMetaObj.has("MSt")) {
+                //REI.MStIDs reimstids = new REI.MStIDs();
+                //List<REI.MStIDs.MSt> reimstList = reimstids.getMSt();
                 JSONArray reiMstidsMetaJson = reiMetaObj.getJSONArray(field);
                 for (int i = 0; i < reiMstidsMetaJson.length(); i++) {
-                    REI.MStIDs.MSt reimst = new REI.MStIDs.MSt();
+                    //REI.MStIDs.MSt reimst = new REI.MStIDs.MSt();
                     JSONObject reiMStJson = reiMstidsMetaJson.getJSONObject(i);
+                    REI.MSt reimst = new REI.MSt();
                     if (reiMStJson.has("MStID")) {
                         reimst.setMStID(reiMStJson.getString("MStID"));
                     } else {
@@ -646,9 +623,10 @@ public final class DokpoolUtils {
                     } else {
                         reimst.setMStName(null);
                     }
-                    reimstList.add(reimst);
+                    rei.getMSt().add(reimst);
+                    //reimstList.add(reimst);
                 }
-                rei.setMStIDs(reimstids);
+                //rei.setMStIDs(reimstids);
             }
         }
     }
@@ -665,9 +643,13 @@ public final class DokpoolUtils {
             JSONObject rodosMetaObj,
             RODOS rodos,
             String field) {
-        RODOS.Sourceterms sourceterms = new RODOS.Sourceterms();
+        /*RODOS.Sourceterms sourceterms = new RODOS.Sourceterms();
         List<RODOS.Sourceterms.Sourceterm> sourcetermList =
-                sourceterms.getSourceterm();
+                sourceterms.getSourceterm();*/
+
+        List<RODOS.Sourceterm> newSourcetermList = rodos.getSourceterm();
+
+
         JSONArray rodosSourcetermsMetaObj = rodosMetaObj
                 .getJSONArray(field);
         List<String> dateParams = Arrays.asList("StartRelease", "EndRelease");
@@ -675,8 +657,9 @@ public final class DokpoolUtils {
         for (int i = 0; i < rodosSourcetermsMetaObj.length(); i++) {
             JSONObject rodosSourcetermMetaObj =
                     rodosSourcetermsMetaObj.getJSONObject(i);
-            RODOS.Sourceterms.Sourceterm sourceterm
-                    = new RODOS.Sourceterms.Sourceterm();
+            //RODOS.Sourceterms.Sourceterm sourceterm
+            //        = new RODOS.Sourceterms.Sourceterm();
+            RODOS.Sourceterm rodossourceterm = new RODOS.Sourceterm();
             for (String rsfield: RODOS_SOURCETERM_FIELDS) {
                 if (!rodosSourcetermMetaObj.has(rsfield)) {
                     continue;
@@ -688,21 +671,20 @@ public final class DokpoolUtils {
                                 .get(rsfield).toString();
                         XMLGregorianCalendar calval;
                         calval = ReportUtils.xmlCalendarFromString(value);
-                        Method method = sourceterm.getClass().getMethod(
+                        Method method = rodossourceterm.getClass().getMethod(
                                 methodName,
                                 XMLGregorianCalendar.class
                         );
-                        method.invoke(sourceterm, calval);
+                        method.invoke(rodossourceterm, calval);
                     } else if (complexParams.contains(rsfield)) {
                         if (rsfield.equals("Activity")) {
-                            RODOS.Sourceterms.Sourceterm.Activity activity
-                                    = new RODOS.Sourceterms.Sourceterm
+                            RODOS.Sourceterm.Activity activity
+                                   = new RODOS.Sourceterm
                                     .Activity();
                             JSONObject rodosSourcetermActivityMetaObj
                                     = rodosSourcetermMetaObj
                                     .getJSONObject(rsfield);
-                            for (Field afield: RODOS.Sourceterms
-                                    .Sourceterm.Activity.class
+                            for (Field afield: RODOS.Sourceterm.Activity.class
                                     .getDeclaredFields()) {
                                 String aFieldName = afield.getName()
                                         .substring(0, 1).toUpperCase()
@@ -713,24 +695,22 @@ public final class DokpoolUtils {
                                         rodosSourcetermActivityMetaObj
                                         .getDouble(aFieldName))
                                         .floatValue();
-                                Method aMethod = RODOS.Sourceterms
-                                        .Sourceterm.Activity.class
+                                Method aMethod = RODOS.Sourceterm.Activity.class
                                         .getMethod(
                                                 aMethodName,
                                         float.class
                                 );
                                 aMethod.invoke(activity, numval);
                             }
-                            sourceterm.setActivity(activity);
+                            rodossourceterm.setActivity(activity);
                         }
                         if (rsfield.equals("Block")) {
-                            RODOS.Sourceterms.Sourceterm.Block block
-                                    = new RODOS.Sourceterms.Sourceterm.Block();
+                            RODOS.Sourceterm.Block block
+                                    = new RODOS.Sourceterm.Block();
                             JSONObject rodosSourcetermBlockMetaObj
                                     = rodosSourcetermMetaObj
                                     .getJSONObject(rsfield);
-                            for (Field afield: RODOS.Sourceterms
-                                    .Sourceterm.Block.class
+                            for (Field afield: RODOS.Sourceterm.Block.class
                                     .getDeclaredFields()) {
                                 String aFieldName = afield.getName()
                                         .substring(0, 1).toUpperCase()
@@ -740,8 +720,7 @@ public final class DokpoolUtils {
                                 if (afield.getType() == String.class) {
                                     String value = rodosSourcetermBlockMetaObj
                                                     .getString(aFieldName);
-                                    Method aMethod = RODOS.Sourceterms
-                                            .Sourceterm.Block.class
+                                    Method aMethod = RODOS.Sourceterm.Block.class
                                             .getMethod(
                                                     aMethodName,
                                                     String.class
@@ -752,8 +731,7 @@ public final class DokpoolUtils {
                                             rodosSourcetermBlockMetaObj
                                                     .getDouble(aFieldName))
                                             .floatValue();
-                                    Method aMethod = RODOS.Sourceterms
-                                            .Sourceterm.Block.class
+                                    Method aMethod = RODOS.Sourceterm.Block.class
                                             .getMethod(
                                                     aMethodName,
                                                     float.class
@@ -761,16 +739,16 @@ public final class DokpoolUtils {
                                     aMethod.invoke(block, numval);
                                 }
                             }
-                            sourceterm.setBlock(block);
+                            rodossourceterm.setBlock(block);
                         }
                     } else {
                         String value =
                                 rodosSourcetermMetaObj.get(rsfield).toString();
-                        Method method = sourceterm.getClass().getMethod(
+                        Method method = rodossourceterm.getClass().getMethod(
                                 methodName,
                                 String.class
                                 );
-                        method.invoke(sourceterm, value);
+                        method.invoke(rodossourceterm, value);
                     }
                 } catch (Exception e) {
                     log.error(e.getClass().getName()
@@ -778,9 +756,10 @@ public final class DokpoolUtils {
                             + " on DokpoolRodosSourcetermMeta object.");
                 }
             }
-            sourcetermList.add(sourceterm);
+            //sourcetermList.add(sourceterm);
+            rodos.getSourceterm().add(rodossourceterm);
         }
-        rodos.setSourceterms(sourceterms);
+        //rodos.setSourceterms(sourceterms);
     }
 
     /**

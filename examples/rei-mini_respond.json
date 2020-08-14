@@ -1,50 +1,66 @@
 {
-  "request-type": "respond",
-  "irix": {
-    "Title": "REI Berichtsdokument",
-    "User": "Hans Dampf",
-    "Text": "erster Teßtbericht mit Ümlauten",
-    "Identification": {
-      "OrganisationReporting": "imis.bfs.de",
-      "ReportingBases": {
-        "ReportingBasis": "ESD"
-      },
-      "SequenceNumber": "1",
-      "OrganisationContact": {
-        "Name": "Bundesamt für Strahlenschutz",
-        "OrganisationID": "imis.bfs.de",
-        "Country": "DE"
-      },
-      "ReportContext": "Test",
-      "Confidentiality": "For Addressees Use Only"
-    },
-    "DokpoolMeta": {
-      "DokpoolName": "bund",
-      "DokpoolGroupFolder": "bund_bfs-messungen/von-gis",
-      "DokpoolContentType": "gammadoserate",
-      "DokpoolDocumentOwner": "foo-ber",
-      "IsElan": false,
-      "IsDoksys": false,
-      "IsRei": true,
-      "Rei": {
-	    "Year": 2018,
-	    "Period": "Q3",
-	    "NuclearInstallations": ["U01B KKW Krümmel", "ABCD AKW Foobar"],
-	    "Medium": "Abwasser/Fortluft",
-	    "ReiLegalBases": ["REI-E", "REI-I"],
-	    "Origin": ["unabhängige Messstelle", "Genehmigungsinhaber"],
-	    "MStIDs": [
-            {
-                "MStID": "i1234",
-                "MStName": "Messstelle 1234"
-            },{
-                "MStID": "xABCD",
-                "MStName": "Messstelle ABCD"
+    "request-type": "respond",
+    "irix": {
+        "Title": "REI Berichtsdokument",
+        "User": "Hans Dampf",
+        "Text": "erster Teßtbericht mit Ümlauten",
+        "Identification": {
+            "OrganisationReporting": "imis.bfs.de",
+            "ReportingBases": {
+                "ReportingBasis": "ESD"
+            },
+            "SequenceNumber": "1",
+            "OrganisationContact": {
+                "Name": "Bundesamt für Strahlenschutz",
+                "OrganisationID": "imis.bfs.de",
+                "Country": "DE"
+            },
+            "ReportContext": "Test",
+            "Confidentiality": "For Addressees Use Only"
+        },
+        "DokpoolMeta": {
+            "DokpoolName": "bund",
+            "DokpoolGroupFolder": "bund_bfs-messungen/von-gis",
+            "DokpoolContentType": "gammadoserate",
+            "DokpoolDocumentOwner": "foo-ber",
+            "IsElan": false,
+            "IsDoksys": false,
+            "IsRei": true,
+            "REI": {
+                "Revision": 3,
+                "Year": 2018,
+                "Period": "Q3",
+                "NuclearInstallation": [
+                    "U01B KKW Krümmel",
+                    "ABCD AKW Foobar"
+                ],
+                "Medium": [
+                    "Abwasser/Fortluft"
+                ],
+                "ReiLegalBase": [
+                    "REI-E",
+                    "REI-I"
+                ],
+                "Origin": [
+                    "unabhängige Messstelle",
+                    "Genehmigungsinhaber"
+                ],
+                "MSt": [
+                    {
+                        "MStID": "i1234",
+                        "MStName": "Messstelle 1234"
+                    },
+                    {
+                        "MStID": "xABCD",
+                        "MStName": "Messstelle ABCD"
+                    }
+                ],
+                "Authority": "Bayern",
+                "PDFVersion": "PDF/A-1b",
+                "SigningDate": "2018-11-16T16:19:55Z",
+                "SigningComment": "REI signing comment after validation",
+                "Signed": true
             }
-        ],
-	    "Authority": "Bayern",
-	    "PDFVersion": "PDF/A-1b"
-	  }
+        }
     }
-  }
 }

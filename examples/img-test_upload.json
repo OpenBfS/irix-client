@@ -23,30 +23,27 @@
             }
         },
         "DokpoolMeta": {
-            "Purpose": "Standard-Info",
+            "Purpose": ["Standard-Info"],
             "DokpoolContentType": "gammadoserate",
             "DokpoolName": "bund",
             "DokpoolGroupFolder": "bund_e-messzentrale-bfs/messungen/automatisch",
             "DokpoolPrivateFolder": "rb-fr",
             "DokpoolTransferFolder": "",
-            "ElanScenarios": {
-              "ElanScenario": [
+            "Scenario": [
                 "routinemode",
                 "ereignis-abc"
-              ]
-            },
+            ],
             "IsElan": true,
             "IsDoksys": "false",
             "IsRodos": false,
             "IsRei": "false",
-            "NetworkOperator": "U - BFS (ABI)",
-            "SampleTypeId": "L5",
-            "SampleType": "L5 - Niederschlag",
-            "Dom": "Gamma-Spektrometrie",
-            "DataType": "LaDa",
-            "LegalBase": "Europa",
-            "MeasuringProgram": "Intensivmessprogramm",
-            "Status": "3 - nicht plausibel",
+            "NetworkOperator": ["U"],
+            "SampleType": ["L5"],
+            "Dom": ["104"],
+            "DataSource": ["IMIS"],
+            "LegalBase": ["Europa"],
+            "MeasuringProgram": ["Intensivmessprogramm"],
+            "Status": "nicht plausibel",
             "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
             "SamplingEnd": "2015-05-28T15:52:52.128+02:00"
         }

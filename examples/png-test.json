@@ -22,22 +22,30 @@
             }
         },
         "DokpoolMeta": {
-            "Purpose": "Standard-Info",
             "DokpoolContentType": "eventinformation",
             "IsElan": "true",
-            "IsDoksys": "false",
+            "IsDoksys": "true",
             "IsRodos": "false",
             "IsRei": "false",
-            "NetworkOperator": "U - BFS (ABI)",
-            "SampleTypeId": "L5",
-            "SampleType": "L5 - Niederschlag",
-            "Dom": "Gamma-Spektrometrie",
-            "DataType": "LaDa",
-            "LegalBase": "Europa",
-            "MeasuringProgram": "Intensivmessprogramm",
-            "Status": "3 - nicht plausibel",
-            "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
-            "SamplingEnd":"2015-05-28T15:52:52.128+02:00"
+            "ELAN": {
+                "Scenario": [
+                    "routinemode",
+                    "ereignis-abc"
+                ]
+            },
+            "DOKSYS": {
+                "Purpose": ["Standard-Info"],
+                "NetworkOperator": ["X"],
+                "SampleType": ["L5"],
+                "Dom": ["Gamma-Spektrometrie"],
+                "DataSource": ["IMIS"],
+                "LegalBase": ["AVV IMIS"],
+                "MeasuringProgram": ["Intensivmessprogramm"],
+                "MeasurementCategory": ["AU"],
+                "Status": "nicht plausibel",
+                "SamplingBegin": "2015-05-28T15:35:54.168+02:00",
+                "SamplingEnd":"2015-05-28T15:52:52.128+02:00",
+            }
         }
     },
     "img-print": [
