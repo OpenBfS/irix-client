@@ -566,6 +566,27 @@ public class IRIXClient extends HttpServlet {
         }
         log.debug("Report successfully sent.");
     }
+    /**
+     * Handle GET request.
+     * <p>
+     * So far return only Version information
+     *
+     * @param request  object that contains the request the client has made
+     *                 of the servlet
+     * @param response object that contains the response the servlet sends
+     *                 to the client
+     * @throws ServletException in case of errors with schema.
+     * @throws IOException      if the request is invalid.
+     */
+    @Override
+    public void doGet(HttpServletRequest request,
+                       HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        //getServletConfig().getServletName();
+        return;
+    }
+
 
     /**
      * Handle POST request.
