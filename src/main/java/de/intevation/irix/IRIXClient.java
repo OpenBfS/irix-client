@@ -456,7 +456,7 @@ public class IRIXClient extends HttpServlet {
             }
 
             // legend without map
-            if (printLayoutsList.contains(baseLayout + mapSuffix)) {
+            if (printLayoutsList.contains(baseLayout + legendSuffix)) {
                 spec.put("layout", baseLayout + legendSuffix);
                 byte[] content = PrintClient.getReport(printUrl + ".png",
                         spec.toString());

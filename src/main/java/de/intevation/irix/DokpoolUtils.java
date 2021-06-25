@@ -397,6 +397,7 @@ public final class DokpoolUtils {
     public static void addElanMeta(JSONObject metaObj, DokpoolMeta meta) {
         ELAN elan = new ELAN();
         JSONObject elanMetaObj;
+        JSONArray elanScenarioMetaJson = new JSONArray();
         if (metaObj.has("Elan")) {
             elanMetaObj = metaObj.getJSONObject("Elan");
         } else if (metaObj.has("ELAN")) {
@@ -405,17 +406,26 @@ public final class DokpoolUtils {
             return;
         }
         if (elanMetaObj.has("Scenario")) {
-            //ELAN.Scenario elanscenario = new ELAN.Scenario();
-            JSONArray elanScenarioMetaJson = elanMetaObj
-                    .getJSONArray("Scenario");
-            //List<String> elanscenario = ELAN.getScenario();
-            for (int i = 0; i < elanScenarioMetaJson.length(); i++) {
-                //elanscenario.add(elanScenarioMetaJson.getString(i));
-                elan.getScenario().add(elanScenarioMetaJson.getString(i));
+            if (elanMetaObj.get("Scenario") instanceof String || elanMetaObj.get("Scenario") instanceof Number) {
+                elanScenarioMetaJson.put(elanMetaObj.get("Scenario").toString());
+            } else if (elanMetaObj.get("Scenario") instanceof JSONArray) {
+                elanScenarioMetaJson = elanMetaObj.getJSONArray("Scenario");
             }
-            //elan.setScenarios(elanscenarios);
-            meta.setELAN(elan);
+        } else if (elanMetaObj.has("Scenarios")) {
+            log.warn("[deprecated] Key 'Scenarios' found in JSON. Please change to 'Scenario': []. "
+                    + "Support for 'Scenarios' will be removed in a future release.");
+            if (elanMetaObj.get("Scenarios") instanceof String || elanMetaObj.get("Scenarios") instanceof Number) {
+                elanScenarioMetaJson.put(elanMetaObj.get("Scenarios").toString());
+            } else if (elanMetaObj.get("Scenarios") instanceof JSONArray) {
+                elanScenarioMetaJson = elanMetaObj.getJSONArray("Scenarios");
+            }
         }
+        if (elanScenarioMetaJson.length() > 0) {
+            for (int i = 0; i < elanScenarioMetaJson.length(); i++) {
+                elan.getScenario().add(elanScenarioMetaJson.get(i).toString());
+            }
+        }
+        meta.setELAN(elan);
     }
 
     /**
