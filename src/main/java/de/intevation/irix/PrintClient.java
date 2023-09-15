@@ -107,14 +107,14 @@ public class PrintClient {
 
         StatusLine status = resp.getStatusLine();
 
-        byte [] retval = null;
+        byte[] retval = null;
         try {
             HttpEntity respEnt = resp.getEntity();
             InputStream in = respEnt.getContent();
             if (in != null) {
                 try {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    byte [] buf = new byte[BYTE_ARRAY_SIZE];
+                    byte[] buf = new byte[BYTE_ARRAY_SIZE];
                     int r;
                     while ((r = in.read(buf)) >= 0) {
                         out.write(buf, 0, r);

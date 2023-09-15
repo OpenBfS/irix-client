@@ -374,7 +374,7 @@ public class ReportUtilsTest {
                 "bar", "foo.bin");
         Assert.assertEquals(
             "foo", report.getAnnexes().getFileEnclosure().get(0).getTitle());
-        byte [] expected  = "testdata".getBytes();
+        byte[] expected  = "testdata".getBytes();
         for (int i = 0; i < expected.length; i++) {
             Assert.assertEquals(expected[i],
                 report.getAnnexes().getFileEnclosure().get(0)
@@ -388,7 +388,7 @@ public class ReportUtilsTest {
         ReportType report = ReportUtils.prepareReport(json);
         ReportUtils.attachFile("foo", "testdata".getBytes(), report,
                 "bar", "foo.bin");
-        byte [] expected = null;
+        byte[] expected = null;
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
             expected = sha1.digest("testdata".getBytes());
