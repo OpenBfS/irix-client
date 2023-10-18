@@ -204,51 +204,6 @@
                     </webAppConfig>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.2.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>generate-rpm</id>
-                        <goals>
-                            <goal>rpm</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <license>GPLv3 (c) 2019, BfS - German Federal Office for Radiation Protection</license>
-                    <distribution>el7</distribution>
-                    <group>Applications/Internet</group>
-                    <description>Print-Client creating IRIX Documents from an extended Mapfish Print3 request and sending them to an IRIX Webservice. IRIX is the International Radiological Information eXchange format standard developed by the IAEA.</description>
-                    <mappings>
-                        <mapping>
-                            <directory>/var/lib/tomcat/webapps/${project.artifactId}</directory>
-                            <filemode>755</filemode>
-                            <username>tomcat</username>
-                            <groupname>tomcat</groupname>
-                            <sources>
-                                <source>
-                                    <location>target/${project.artifactId}</location>
-                                </source>
-                            </sources>
-                        </mapping>
-                    </mappings>
-                    <!--<preinstallScriptlet>
-                        <script>echo "installing ${project.name} now"</script>
-                    </preinstallScriptlet>
-                    <postinstallScriptlet>
-                        <scriptFile>src/main/scripts/postinstall</scriptFile>
-                        <fileEncoding>utf-8</fileEncoding>
-                        <filter>true</filter>
-                    </postinstallScriptlet>
-                    <preremoveScriptlet>
-                        <scriptFile>src/main/scripts/preremove</scriptFile>
-                        <fileEncoding>utf-8</fileEncoding>
-                    </preremoveScriptlet>-->
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <properties>
