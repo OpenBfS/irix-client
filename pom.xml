@@ -4,7 +4,7 @@
     <groupId>de.bfs</groupId>
     <artifactId>irix-client</artifactId>
     <packaging>war</packaging>
-    <version>2.8-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <name>Application to create IRIX reports with map attachments</name>
     <url>http://maven.apache.org</url>
     <dependencies>
@@ -57,15 +57,50 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jws</groupId>
+            <artifactId>javax.jws-api</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.8</version>
+        </dependency>
 
     </dependencies>
     <build>
         <finalName>irix-client</finalName>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.15.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -109,31 +144,31 @@
                 </dependencies>
             </plugin>
             <plugin>
-              <!-- Due to a bug the following does not work to avoid duplicated
-                   generation of the IRIX scheme bindings.
-                   https://github.com/highsource/maven-jaxb2-plugin/issues/41
-              -->
-              <artifactId>exec-maven-plugin</artifactId>
-              <groupId>org.codehaus.mojo</groupId>
-              <version>3.1.0</version>
-              <executions>
-                <execution>
-                  <id>Fix use of episode file</id>
-                  <phase>generate-sources</phase>
-                  <goals>
-                    <goal>exec</goal>
-                  </goals>
-                  <configuration>
-                      <executable>xsltproc</executable>
-                      <arguments>
-                          <argument>-o</argument>
-                          <argument>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb-fixed.episode</argument>
-                          <argument>${basedir}/src/main/webapp/WEB-INF/irix-schema/episode-transform.xsl</argument>
-                          <argument>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb.episode</argument>
-                      </arguments>
-                  </configuration>
-                </execution>
-              </executions>
+                <!-- Due to a bug the following does not work to avoid duplicated
+                     generation of the IRIX scheme bindings.
+                     https://github.com/highsource/maven-jaxb2-plugin/issues/41
+                -->
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>Fix use of episode file</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>xsltproc</executable>
+                            <arguments>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb-fixed.episode</argument>
+                                <argument>${basedir}/src/main/webapp/WEB-INF/irix-schema/episode-transform.xsl</argument>
+                                <argument>${project.build.directory}/generated-sources/xjc/META-INF/sun-jaxb.episode</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -163,29 +198,29 @@
                 </executions>
             </plugin>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-checkstyle-plugin</artifactId>
-              <version>2.15</version>
-              <executions>
-                <execution>
-                  <id>validate</id>
-                  <phase>validate</phase>
-                  <configuration>
-                    <encoding>UTF-8</encoding>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                  </configuration>
-                  <goals>
-                    <goal>check</goal>
-                  </goals>
-                </execution>
-              </executions>
-              <configuration>
-                <configLocation>checkstyle.xml</configLocation>
-                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-                <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-              </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>true</failsOnError>
+                        </configuration>
+                        <goals>
+                          <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+                    <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
@@ -197,55 +232,10 @@
                     </webAppConfig>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.2.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>generate-rpm</id>
-                        <goals>
-                            <goal>rpm</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <license>GPLv3 (c) 2019, BfS - German Federal Office for Radiation Protection</license>
-                    <distribution>el7</distribution>
-                    <group>Applications/Internet</group>
-                    <description>Print-Client creating IRIX Documents from an extended Mapfish Print3 request and sending them to an IRIX Webservice. IRIX is the International Radiological Information eXchange format standard developed by the IAEA.</description>
-                    <mappings>
-                        <mapping>
-                            <directory>/var/lib/tomcat/webapps/${project.artifactId}</directory>
-                            <filemode>755</filemode>
-                            <username>tomcat</username>
-                            <groupname>tomcat</groupname>
-                            <sources>
-                                <source>
-                                    <location>target/${project.artifactId}</location>
-                                </source>
-                            </sources>
-                        </mapping>
-                    </mappings>
-                    <!--<preinstallScriptlet>
-                        <script>echo "installing ${project.name} now"</script>
-                    </preinstallScriptlet>
-                    <postinstallScriptlet>
-                        <scriptFile>src/main/scripts/postinstall</scriptFile>
-                        <fileEncoding>utf-8</fileEncoding>
-                        <filter>true</filter>
-                    </postinstallScriptlet>
-                    <preremoveScriptlet>
-                        <scriptFile>src/main/scripts/preremove</scriptFile>
-                        <fileEncoding>utf-8</fileEncoding>
-                    </preremoveScriptlet>-->
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <properties>
-        <project.custom.java.version>1.8</project.custom.java.version>
+        <project.custom.java.version>11</project.custom.java.version>
         <maven.compiler.source>${project.custom.java.version}</maven.compiler.source>
         <maven.compiler.target>${project.custom.java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
