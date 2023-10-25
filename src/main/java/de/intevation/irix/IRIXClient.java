@@ -11,11 +11,11 @@ package de.intevation.irix;
 import java.io.IOException;
 import java.io.File;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -547,7 +547,7 @@ public class IRIXClient extends HttpServlet {
      * Sends a report to the configured UploadReport service.
      *
      * @param report The report to send.
-     * @throws javax.servlet.ServletException if uploading failed.
+     * @throws jakarta.servlet.ServletException if uploading failed.
      */
     protected void sendReportToService(ReportType report)
             throws ServletException {

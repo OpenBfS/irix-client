@@ -25,12 +25,12 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
@@ -413,7 +413,7 @@ public final class ReportUtils {
      * @param report The report to marshall.
      * @param out The output stream.
      * @param irixSchema The schema to validate against. Or null.
-     * @throws javax.xml.bind.JAXBException if an error was
+     * @throws jakarta.xml.bind.JAXBException if an error was
      * encountered while creating the JAXBContext
      * @throws org.xml.sax.SAXException in case of errors during
      * parsing of the schema.
@@ -443,7 +443,7 @@ public final class ReportUtils {
      * @param in The input stream.
      * @param irixSchema The schema to validate against. Or null.
      * @return report object returned
-     * @throws javax.xml.bind.JAXBException if an error was
+     * @throws jakarta.xml.bind.JAXBException if an error was
      * encountered while creating the JAXBContext
      * @throws org.xml.sax.SAXException in case of errors during
      * parsing of the schema.
@@ -477,7 +477,7 @@ public final class ReportUtils {
      * @param file The input file.
      * @param irixSchema The schema to validate against. Or null.
      * @return report object returned
-     * @throws javax.xml.bind.JAXBException if an error was
+     * @throws jakarta.xml.bind.JAXBException if an error was
      * encountered while creating the JAXBContext
      * @throws org.xml.sax.SAXException in case of errors during
      * parsing of the schema.
