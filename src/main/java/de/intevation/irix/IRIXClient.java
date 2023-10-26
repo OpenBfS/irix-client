@@ -27,7 +27,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
 

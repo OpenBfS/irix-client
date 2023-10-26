@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 import de.intevation.irix.DokpoolUtils;
 import de.intevation.irix.ReportUtils;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

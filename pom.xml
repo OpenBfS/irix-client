@@ -19,19 +19,19 @@
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>4.0.1</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+        <!--log4j update should be planned-->
         <!--<dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.21.0</version>
@@ -40,12 +40,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.21.0</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-1.2-api</artifactId>
             <version>2.21.0</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -68,11 +67,6 @@
             <version>1.1</version>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
             <version>4.0.3</version>
@@ -83,16 +77,10 @@
             <version>4.0.3</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>2.3.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.8</version>
         </dependency>
-
     </dependencies>
     <build>
         <finalName>irix-client</finalName>
@@ -104,12 +92,13 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>schemagen</goal>
+                            <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
                     <extension>true</extension>
+                    <locale>en</locale>
                     <schemaDirectory>${basedir}/src/main/webapp/WEB-INF/irix-schema</schemaDirectory>
                     <schemaIncludes>
                         <include>IRIX.xsd</include>
@@ -137,9 +126,9 @@
 
                 <dependencies>
                     <dependency>
-                        <groupId>org.jvnet.jaxbcommons</groupId>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
                         <artifactId>jaxb2-namespace-prefix</artifactId>
-                        <version>2.0</version>
+                        <version>1.3</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -221,7 +210,19 @@
                     <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
                     <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
                 </configuration>
-            </plugin>
+	    </plugin>
+	    <plugin>
+		<groupId>org.owasp</groupId>
+		<artifactId>dependency-check-maven</artifactId>
+		<version>8.4.0</version>
+		<executions>
+		    <execution>
+			<goals>
+			    <goal>check</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<jxb:bindings version="3.0"
-              xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
+<jxb:bindings version="1.0"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
-              xsi:schemaLocation="https://jakarta.ee/xml/ns/jaxb http://jakarta.ee/xml/ns/jaxb/bindingschema_2_0.xsd
+              xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
               http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
     <!-- Raise theEnumMemberSizeCap limit -->
     <jxb:globalBindings typesafeEnumMaxMembers="1000"/>

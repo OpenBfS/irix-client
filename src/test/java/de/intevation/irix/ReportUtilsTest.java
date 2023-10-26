@@ -34,7 +34,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 public class ReportUtilsTest {
 
     private static final String REQUEST =
