@@ -254,7 +254,7 @@ public class IRIXClient extends HttpServlet {
         if (rolesHeaderString != null) {
             if (request.getHeader(rolesHeaderString) != null) {
                 List<String> roles = Arrays.asList(request
-                        .getHeader(rolesHeaderString).split("[\\s,]+"));
+                        .getHeader(rolesHeaderString).split("[\\s,;]+"));
                 if (rolesPermission != null) {
                     List<String> validRolesList = rolesPermission.stream()
                             .filter(roles::contains)
@@ -608,7 +608,7 @@ public class IRIXClient extends HttpServlet {
         if (rolesPermission != null) {
             if (request.getHeader(rolesHeaderString) != null) {
                 List<String> roles = Arrays.asList(request
-                        .getHeader(rolesHeaderString).split("[\\s,]+"));
+                        .getHeader(rolesHeaderString).split("[\\s,;]+"));
                 List<String> validRolesList = rolesPermission.stream()
                         .filter(roles::contains)
                         .collect(Collectors.toList());
