@@ -11,11 +11,11 @@ package de.intevation.irix;
 import java.io.IOException;
 import java.io.File;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -132,7 +132,7 @@ public class IRIXClient extends HttpServlet {
      * Get configuration parameters from web.xml and initialize servlet
      * context.
      *
-     * @throws javax.servlet.ServletException if a configuration
+     * @throws jakarta.servlet.ServletException if a configuration
      *                                        parameter is missing.
      */
     @Override
@@ -316,7 +316,7 @@ public class IRIXClient extends HttpServlet {
      * Wrapper to forward a print error response.
      *
      * @param err      the PrintException.
-     * @param response the javax.servlet.http.HttpServletResponse
+     * @param response the jakarta.servlet.http.HttpServletResponse
      *                 to be used for returning the error.
      * @throws IOException if such occured on the output stream.
      */
@@ -334,7 +334,7 @@ public class IRIXClient extends HttpServlet {
      * Wrapper to forward a image error response.
      *
      * @param err      the ImageException.
-     * @param response the javax.servlet.http.HttpServletResponse
+     * @param response the jakarta.servlet.http.HttpServletResponse
      *                 to be used for returning the error.
      * @throws IOException if such occured on the output stream.
      */
