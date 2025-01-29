@@ -8,10 +8,7 @@
 
 package de.intevation.test.irix;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+
 import org.iaea._2012.irix.format.ReportType;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class DokpoolUtilsTest {
 
-    // TODOD add Rodos and Rei in REQUEST string
+    // TODO: add Rodos and Rei in REQUEST string
     private static final String REQUEST =
       "{"
         + "  \"request-type\": \"upload/respond\","
@@ -207,12 +204,6 @@ public class DokpoolUtilsTest {
 
     @Before
     public void setupLogging() {
-        ConsoleAppender console = new ConsoleAppender(); //create appender
-        String pattern = "[%p|%C{1}] %m%n";
-        console.setLayout(new PatternLayout(pattern));
-        console.setThreshold(Level.ERROR); // Change here for testing ;-)
-        console.activateOptions();
-        Logger.getRootLogger().addAppender(console);
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -12,8 +12,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import static java.lang.System.Logger.Level.DEBUG;
 
 /**
  * Listener class for the IRIX-Client to be configured in web.xml.
@@ -21,8 +20,8 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class BaseServletContextListener implements ServletContextListener {
 
-    private static Logger log =
-        Logger.getLogger(BaseServletContextListener.class);
+    private static System.Logger log =
+        System.getLogger(BaseServletContextListener.class.getName());
 
     /** {@inheritDoc} */
     @Override
@@ -38,12 +37,6 @@ public class BaseServletContextListener implements ServletContextListener {
     }
 
     private void initLogging(ServletContext sc) {
-        String file = sc.getInitParameter("log4j-properties");
-
-        if (file != null && file.length() > 0) {
-            String log4jProperties = sc.getRealPath(file);
-            PropertyConfigurator.configure(log4jProperties);
-            log.debug("Logging initalized");
-        }
+        log.log(DEBUG, "Logging initalized");
     }
 }

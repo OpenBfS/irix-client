@@ -8,7 +8,7 @@
 
 package de.intevation.irix;
 
-import org.apache.log4j.Logger;
+import static java.lang.System.Logger.Level.DEBUG;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import java.nio.charset.Charset;
  *
  */
 public class PrintClient {
-    private static Logger log = Logger.getLogger(PrintClient.class);
+    private static System.Logger log = System.getLogger(PrintClient.class.getName());
 
     private static final int CONNECTION_TIMEOUT = 5000;
 

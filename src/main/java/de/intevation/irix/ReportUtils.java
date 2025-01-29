@@ -41,7 +41,7 @@ import javax.xml.XMLConstants;
 import org.json.JSONArray;
 import org.xml.sax.SAXException;
 
-import org.apache.log4j.Logger;
+import static java.lang.System.Logger.Level.ERROR;
 
 import org.iaea._2012.irix.format.ReportType;
 import org.iaea._2012.irix.format.ObjectFactory;
@@ -74,7 +74,7 @@ import org.json.JSONException;
  *
  */
 public final class ReportUtils {
-    private static Logger log = Logger.getLogger(ReportUtils.class);
+    private static System.Logger log = System.getLogger(ReportUtils.class.getName());
 
     /** The name of the json object containing the irix information. */
     private static final String IRIX_DATA_KEY = "irix";
@@ -139,7 +139,7 @@ public final class ReportUtils {
             date.setFractionalSecond(null);
             return date;
         } catch (DatatypeConfigurationException e) {
-            log.error("Exception converting to XMLGregorianCalendar");
+            log.log(ERROR, "Exception converting to XMLGregorianCalendar");
             return null;
         }
     }

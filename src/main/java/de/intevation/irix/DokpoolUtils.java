@@ -13,7 +13,6 @@ import de.bfs.irix.extensions.dokpool.DokpoolMeta.ELAN;
 import de.bfs.irix.extensions.dokpool.DokpoolMeta.RODOS;
 import de.bfs.irix.extensions.dokpool.DokpoolMeta.DOKSYS;
 import de.bfs.irix.extensions.dokpool.DokpoolMeta.REI;
-import org.apache.log4j.Logger;
 import org.iaea._2012.irix.format.ReportType;
 import org.iaea._2012.irix.format.annexes.AnnotationType;
 import org.iaea._2012.irix.format.base.FreeTextType;
@@ -41,6 +40,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.WARNING;
+import static java.lang.System.Logger.Level.INFO;
+
 /**
  * Static helper methods to work with an IRIX Report.
  *
@@ -50,7 +54,7 @@ import java.util.List;
  *
  */
 public final class DokpoolUtils {
-    private static Logger log = Logger.getLogger(DokpoolUtils.class);
+    private static System.Logger log = System.getLogger(DokpoolUtils.class.getName());
 
     /** The name of the json object containing the irix information. */
     private static final String IRIX_DATA_KEY = "irix";
@@ -218,7 +222,7 @@ public final class DokpoolUtils {
                 String uid = userJsonObject.getString("uid");
                 if (uid.length() > 0) {
                     value = uid;
-                    log.info("Using DokpoolDocumentOwner from Header "
+                    log.log(INFO, "Using DokpoolDocumentOwner from Header "
                             + "instead of request");
                 }
             }
@@ -241,7 +245,7 @@ public final class DokpoolUtils {
                     method.invoke(meta, value);
                 }
             } catch (Exception e) {
-                log.error(e.getClass().getName()
+                log.log(ERROR, e.getClass().getName()
                     + " exception while trying to access " + methodName
                     + " on DokpoolMeta object.");
             }
@@ -349,7 +353,7 @@ public final class DokpoolUtils {
                                 ArrayList methodArray = (ArrayList) method.invoke(doksys);
                                 methodArray.add(value);
                             } catch (Exception e) {
-                                log.error(e);
+                                log.log(ERROR, e);
                             }
                         }
                     } else if (doksysMetaObj.get(field) instanceof JSONArray) {
@@ -370,16 +374,16 @@ public final class DokpoolUtils {
                                     methodArray.add(values.get(i));
                                 }
                             } catch (Exception e) {
-                                log.error(e);
+                                log.log(ERROR, e);
                             }
                         }
                         if (hasSetMethod) {
-                            log.debug(setMethodName + " shouldn't exist here.");
+                            log.log(DEBUG, setMethodName + " shouldn't exist here.");
                         }
                     }
                 }
             } catch (Exception e) {
-                log.error(e.getClass().getName()
+                log.log(ERROR, e.getClass().getName()
                         + " exception while trying to access methods for " + field
                         + " on DokpoolDoksysMeta object.");
             }
@@ -412,7 +416,7 @@ public final class DokpoolUtils {
                 elanScenarioMetaJson = elanMetaObj.getJSONArray("Scenario");
             }
         } else if (elanMetaObj.has("Scenarios")) {
-            log.warn("[deprecated] Key 'Scenarios' found in JSON. Please change to 'Scenario': []. "
+            log.log(WARNING, "[deprecated] Key 'Scenarios' found in JSON. Please change to 'Scenario': []. "
                     + "Support for 'Scenarios' will be removed in a future release.");
             if (elanMetaObj.get("Scenarios") instanceof String || elanMetaObj.get("Scenarios") instanceof Number) {
                 elanScenarioMetaJson.put(elanMetaObj.get("Scenarios").toString());
@@ -474,7 +478,7 @@ public final class DokpoolUtils {
                     method.invoke(rodos, value);
                 }
             } catch (Exception e) {
-                log.error(e.getClass().getName()
+                log.log(ERROR, e.getClass().getName()
                         + " exception while trying to access " + methodName
                         + " on DokpoolRodosMeta object.");
             }
@@ -556,7 +560,7 @@ public final class DokpoolUtils {
                     aMethod.invoke(rei, value);
                 }
             } catch (Exception e) {
-                log.error(e.getClass().getName()
+                log.log(ERROR, e.getClass().getName()
                         + " exception while trying to access " + methodName
                         + " on DokpoolReiMeta object.");
             }
@@ -761,7 +765,7 @@ public final class DokpoolUtils {
                         method.invoke(rodossourceterm, value);
                     }
                 } catch (Exception e) {
-                    log.error(e.getClass().getName()
+                    log.log(ERROR, e.getClass().getName()
                             + " exception while trying to access " + methodName
                             + " on DokpoolRodosSourcetermMeta object.");
                 }
@@ -826,7 +830,7 @@ public final class DokpoolUtils {
                     method.invoke(prognosis, value);
                 }
             } catch (Exception e) {
-                log.error(e.getClass().getName()
+                log.log(ERROR, e.getClass().getName()
                         + " exception while trying to access " + methodName
                         + " on DokpoolRodosPrognosisMeta object.");
             }

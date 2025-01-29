@@ -29,11 +29,6 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
-
 import jakarta.xml.bind.JAXBException;
 public class ReportUtilsTest {
 
@@ -148,12 +143,6 @@ public class ReportUtilsTest {
 
     @Before
     public void setupLogging() {
-        ConsoleAppender console = new ConsoleAppender(); //create appender
-        String pattern = "[%p|%C{1}] %m%n";
-        console.setLayout(new PatternLayout(pattern));
-        console.setThreshold(Level.ERROR); // Change here for testing ;-)
-        console.activateOptions();
-        Logger.getRootLogger().addAppender(console);
     }
 
     @Test(expected = IllegalArgumentException.class)

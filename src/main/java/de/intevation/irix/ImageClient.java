@@ -16,7 +16,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,7 +28,7 @@ import java.net.HttpURLConnection;
  *
  */
 public class ImageClient {
-    private static Logger log = Logger.getLogger(ImageClient.class);
+    private static System.Logger log = System.getLogger(ImageClient.class.getName());
 
     private static final int CONNECTION_TIMEOUT = 5000;
 

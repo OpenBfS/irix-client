@@ -29,7 +29,10 @@ import java.net.URI;
 
 import jakarta.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.WARNING;
+import static java.lang.System.Logger.Level.INFO;
 
 import org.iaea._2012.irix.format.ReportType;
 
@@ -50,7 +53,7 @@ import org.xml.sax.SAXException;
  * Process client requests and handle resulting IRIX-reports.
  */
 public class IRIXClient extends HttpServlet {
-    private static Logger log = Logger.getLogger(IRIXClient.class);
+    private static System.Logger log = System.getLogger(IRIXClient.class.getName());
     private static final int BUF_SIZE = 8192;
 
     /**
@@ -169,29 +172,29 @@ public class IRIXClient extends HttpServlet {
 
         userHeaderString = getInitParameter("user-header");
         if (userHeaderString == null) {
-            log.debug("No user-header set.");
+            log.log(DEBUG, "No user-header set.");
         }
 
         displaynameHeaderString = getInitParameter("user-displayname-header");
         if (displaynameHeaderString == null) {
-            log.debug("No user-displayname-header set.");
+            log.log(DEBUG, "No user-displayname-header set.");
         }
 
         rolesHeaderString = getInitParameter("roles-header");
         if (rolesHeaderString == null) {
-            log.debug("No roles-header set.");
+            log.log(DEBUG, "No roles-header set.");
         }
 
         String rolesPermissionParam = getInitParameter("roles-permission");
         if (rolesPermissionParam != null) {
             rolesPermission = Arrays.asList(rolesPermissionParam);
             if (rolesPermission.isEmpty()) {
-                log.debug("No roles-permission set.");
+                log.log(DEBUG, "No roles-permission set.");
                 // parseHeaders(request) will check for valid role in Header
             }
         } else {
             rolesPermission = null;
-            log.debug("No init-param roles-permission found.");
+            log.log(DEBUG, "No init-param roles-permission found.");
         }
 
         ServletContext sc = getServletContext();
@@ -220,7 +223,7 @@ public class IRIXClient extends HttpServlet {
         try {
             return new JSONObject(new JSONTokener(request.getReader()));
         } catch (IOException e) {
-            log.warn("Request did not contain valid json: " + e.getMessage());
+            log.log(WARNING, "Request did not contain valid json: " + e.getMessage());
         }
         return null;
     }
@@ -260,7 +263,7 @@ public class IRIXClient extends HttpServlet {
                             .filter(roles::contains)
                             .collect(Collectors.toList());
                     if (validRolesList.isEmpty()) {
-                        log.debug("No valid roles found for user "
+                        log.log(DEBUG, "No valid roles found for user "
                                 + uidHeaders.get("uid").toString());
                     } else {
                         uidHeaders.put("roles", validRolesList);
@@ -295,7 +298,7 @@ public class IRIXClient extends HttpServlet {
             } else if (jsonObject.has(EVENT_JOB_LIST_KEY)) {
                 jobListKey = EVENT_JOB_LIST_KEY;
             } else {
-                log.warn("Request did not contain valid JOB_LIST_KEY: "
+                log.log(WARNING, "Request did not contain valid JOB_LIST_KEY: "
                         + PRINT_JOB_LIST_KEY + ", " + IMAGE_JOB_LIST_KEY
                         + ", " + DOC_JOB_LIST_KEY);
             }
@@ -307,7 +310,7 @@ public class IRIXClient extends HttpServlet {
                 retval.add(jobDesc);
             }
         } catch (JSONException e) {
-            log.warn("Request did not contain valid json: " + e.getMessage());
+            log.log(WARNING, "Request did not contain valid json: " + e.getMessage());
         }
         return retval;
     }
@@ -437,7 +440,7 @@ public class IRIXClient extends HttpServlet {
                 ReportUtils.attachFile(title + suffix, content, report,
                         "application/pdf", title + suffix + ".pdf");
             } else {
-                log.info("Layout " + spec.get("layout") + " not found at "
+                log.log(INFO, "Layout " + spec.get("layout") + " not found at "
                         +  printCapaUrl);
             }
 
@@ -451,7 +454,7 @@ public class IRIXClient extends HttpServlet {
                         report, "image/png", title + mapSuffix + suffix
                                 + ".png");
             } else {
-                log.info("Layout " + spec.get("layout") + " not found at "
+                log.log(INFO, "Layout " + spec.get("layout") + " not found at "
                         +  printCapaUrl);
             }
 
@@ -465,7 +468,7 @@ public class IRIXClient extends HttpServlet {
                         title + legendSuffix + suffix + ".png"
                 );
             } else {
-                log.info("Layout " + spec.get("layout") + " not found at "
+                log.log(INFO, "Layout " + spec.get("layout") + " not found at "
                         +  printCapaUrl);
             }
         }
@@ -557,14 +560,14 @@ public class IRIXClient extends HttpServlet {
 
         // TODO Add HTTP headers to the web service request
 
-        log.debug("Sending report.");
+        log.log(DEBUG, "Sending report.");
         try {
             irixservice.uploadReport(report);
         } catch (UploadReportException_Exception e) {
             throw new ServletException(
                     "Failed to send report to IRIX service.", e);
         }
-        log.debug("Report successfully sent.");
+        log.log(DEBUG, "Report successfully sent.");
     }
     /**
      * Handle GET request.
@@ -613,7 +616,7 @@ public class IRIXClient extends HttpServlet {
                         .filter(roles::contains)
                         .collect(Collectors.toList());
                 if (validRolesList.isEmpty()) {
-                    log.debug("No valid roles found for user");
+                    log.log(DEBUG, "No valid roles found for user");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     return;
                 }
@@ -641,7 +644,7 @@ public class IRIXClient extends HttpServlet {
         List<JSONObject> printSpecs = getPrintSpecs(jsonObject);
         // FIXME allow empty printSpecs (IRIX without attachements)
         if (printSpecs.isEmpty()) {
-            log.warn("Could not extract any print specs from request.");
+            log.log(WARNING, "Could not extract any print specs from request.");
             //throw new ServletException(
             //        "Could not extract any print specs from request.");
         }
@@ -675,7 +678,7 @@ public class IRIXClient extends HttpServlet {
                 if (printSpecs.get(0).has("jobKey")
                         && printSpecs.get(0).get("jobKey")
                         .hashCode() == EVENT_JOB_LIST_KEY.hashCode()) {
-                    log.debug("Found key for eventinformation.");
+                    log.log(DEBUG, "Found key for eventinformation.");
                 } else if (printSpecs.get(0).has("jobKey")
                         && printSpecs.get(0).get("jobKey")
                         .hashCode() == IMAGE_JOB_LIST_KEY.hashCode()) {
@@ -723,7 +726,7 @@ public class IRIXClient extends HttpServlet {
                 response.getWriter().write(se.toString());
                 response.getWriter().flush();
                 response.getWriter().close();
-                log.error(se);
+                log.log(ERROR, se);
             }
         }
 
@@ -738,7 +741,7 @@ public class IRIXClient extends HttpServlet {
                 response.getWriter().write(se.toString());
                 response.getWriter().flush();
                 response.getWriter().close();
-                log.error(se);
+                log.log(ERROR, se);
             }
         }
 
