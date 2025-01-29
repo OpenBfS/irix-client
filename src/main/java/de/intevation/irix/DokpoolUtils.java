@@ -89,14 +89,16 @@ public final class DokpoolUtils {
         "Dom",
         "DataSource",
         "LegalBase",
-        "MeasuringProgram",
-        "Status",
         "SamplingBegin",
         "SamplingEnd",
+        "Duration",
+        "OperationMode",
         "TrajectoryStartLocation",
         "TrajectoryEndLocation",
         "TrajectoryStartTime",
-        "TrajectoryEndTime"
+        "TrajectoryEndTime",
+        "MeasuringProgram",
+        "Status"
     };
 
     private static final String[] RODOS_FIELDS = new String[] {

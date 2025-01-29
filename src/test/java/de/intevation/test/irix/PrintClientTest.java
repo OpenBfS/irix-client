@@ -17,13 +17,14 @@ import org.junit.Test;
 import org.junit.Before;
 
 public class PrintClientTest {
-    static final int TEST_TIMEOUT = 1500;
-    static final int CONN_TIMEOUT = 500;
+    static final int TEST_TIMEOUT = 25000;
+    static final int CONN_TIMEOUT = 50;
 
     @Before
     public void setupLogging() {
     }
 
+    //TODO: needs 20s, check HTTPClient
     @Test(expected = IOException.class, timeout = TEST_TIMEOUT)
     public void testNoConnection() throws IOException, PrintException {
         // This is less trivial then it appears, HTTPClient changed

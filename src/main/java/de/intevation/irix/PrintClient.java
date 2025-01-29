@@ -8,8 +8,6 @@
 
 package de.intevation.irix;
 
-import static java.lang.System.Logger.Level.DEBUG;
-
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
