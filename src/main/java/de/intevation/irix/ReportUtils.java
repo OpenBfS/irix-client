@@ -79,43 +79,8 @@ public final class ReportUtils {
     /** The name of the json object containing the irix information. */
     private static final String IRIX_DATA_KEY = "irix";
 
-    /** The name of the json object containing the DokpoolMeta information. */
-    private static final String DOKPOOL_DATA_KEY = "DokpoolMeta";
-
     /** This is according to current documentation the fixed value.*/
     private static final String SCHEMA_VERSION = "1.0";
-
-    /** The fields to set in the DokpoolMeta object.
-     *
-     * SamplingBegin and SamplingEnd are handled wether or not they
-     * are part of this list.
-     **/
-    private static final String[] DOKPOOL_FIELDS = new String[] {
-        "DokpoolContentType",
-        "DokpoolName",
-        "DokpoolGroupFolder",
-        "DokpoolPrivateFolder",
-        "DokpoolTransferFolder",
-        "IsElan",
-        "IsDoksys",
-        "IsRodos",
-        "IsRei"
-    };
-
-    private static final String[] RODOS_FIELDS = new String[] {
-        "ProjectComment",
-        "Site",
-        "ReportRunID",
-        "Model",
-        "CalculationId",
-        "CalculationDate",
-        "CalculationUser",
-        "Projectname",
-        "ProjectChain",
-        "WorkingMode",
-        "Sourceterm",
-        "Prognosis"
-    };
 
     private ReportUtils() {
         // hidden constructor to avoid instantiation.
