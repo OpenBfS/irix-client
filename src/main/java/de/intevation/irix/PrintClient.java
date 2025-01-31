@@ -7,28 +7,19 @@
  */
 
 package de.intevation.irix;
-
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.HttpURLConnection;
-
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.HttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.StatusLine;
-import org.apache.http.util.EntityUtils;
+import java.net.URI;
+import java.net.http.HttpResponse.BodyHandlers;
 
 import org.json.JSONObject;
 
-import java.nio.charset.Charset;
+import java.time.Duration;
 
 /**
  * Utility class to handle interaction with the mapfish-print service.
@@ -90,51 +81,34 @@ public class PrintClient {
     public static byte[] getReport(String printUrl, String json, int timeout)
         throws IOException, PrintException {
 
-        RequestConfig config = RequestConfig.custom().
-            setConnectTimeout(timeout).build();
+        HttpClient client = java.net.http.HttpClient.newHttpClient();
 
-        CloseableHttpClient client = HttpClients.custom().
-            setDefaultRequestConfig(config).build();
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Content-Type", "application/json; charset=UTF-8")
+            .POST(BodyPublishers.ofString(json))
+            .uri(URI.create(printUrl))
+            .timeout(Duration.ofMillis(timeout))
+            .build();
 
-        HttpEntity entity = new StringEntity(json,
-            ContentType.create("application/json", Charset.forName("UTF-8")));
-
-        HttpPost post = new HttpPost(printUrl);
-        post.setEntity(entity);
-        CloseableHttpResponse resp = client.execute(post);
-
-        StatusLine status = resp.getStatusLine();
-
+        int statusCode = 0;
         byte[] retval = null;
         try {
-            HttpEntity respEnt = resp.getEntity();
-            InputStream in = respEnt.getContent();
-            if (in != null) {
-                try {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    byte[] buf = new byte[BYTE_ARRAY_SIZE];
-                    int r;
-                    while ((r = in.read(buf)) >= 0) {
-                        out.write(buf, 0, r);
-                    }
-                    retval = out.toByteArray();
-                } finally {
-                    in.close();
-                    EntityUtils.consume(respEnt);
-                }
-            }
-        } finally {
-            resp.close();
+            HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
+            statusCode = response.statusCode();
+            retval = response.body();
+        } catch (InterruptedException e) {
+            throw new PrintException("Communication with print service '"
+                                    + printUrl + "' was interrupted.");
         }
 
-        if (status.getStatusCode() < HttpURLConnection.HTTP_OK
-            || status.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+        if (statusCode < HttpURLConnection.HTTP_OK
+            || statusCode >= HttpURLConnection.HTTP_MULT_CHOICE) {
             if (retval != null) {
                 throw new PrintException(new String(retval));
             } else {
                 throw new PrintException("Communication with print service '"
-                                         + printUrl + "' failed."
-                                         + "\nNo response from print service.");
+                                        + printUrl + "' failed."
+                                        + "\nNo response from print service.");
             }
         }
         return retval;
@@ -145,7 +119,7 @@ public class PrintClient {
      * @param printUrl The url to send the request to..
      * @param timeout the timeout for the httpconnection.
      *
-     * @return byte[] with the report.
+     * @return JSONObject with the layouts.
      *
      * @throws IOException if communication with print service failed.
      * @throws PrintException if the print job failed.
@@ -153,36 +127,30 @@ public class PrintClient {
     public static JSONObject getLayouts(String printUrl, int timeout)
             throws IOException, PrintException {
 
-        RequestConfig config = RequestConfig.custom().
-                setConnectTimeout(timeout).build();
+        HttpClient client = java.net.http.HttpClient.newHttpClient();
 
-        CloseableHttpClient client = HttpClients.custom().
-                setDefaultRequestConfig(config).build();
+        HttpRequest request = HttpRequest.newBuilder()
+            .GET()//for clarity, actually GET is the default
+            .uri(URI.create(printUrl))
+            .timeout(Duration.ofMillis(timeout))
+            .build();
 
-        HttpGet get = new HttpGet(printUrl);
-        CloseableHttpResponse resp = client.execute(get);
-
-        StatusLine status = resp.getStatusLine();
-
+        int statusCode = 0;
         JSONObject retval = null;
         try {
-            HttpEntity respEnt = resp.getEntity();
-            if (respEnt != null) {
-                try {
-                    String respString = EntityUtils.toString(respEnt);
-                    retval = new JSONObject(respString);
-                } catch (IOException e) {
-                    throw new PrintException("Response wasn't JSON parseable: "
-                            + e);
-                } finally {
-                    EntityUtils.consume(respEnt);
-                }
-            }
-        } finally {
-            resp.close();
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            retval = new JSONObject(response.body());
+        } catch (InterruptedException e) {
+            throw new PrintException("Communication with print service '"
+                                     + printUrl + "' was interrupted.");
+        } catch (IOException e) {
+            throw new PrintException("Response from print service could not be parsed as valid JSON: "
+                    + e);
         }
-        if (status.getStatusCode() < HttpURLConnection.HTTP_OK
-            || status.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+
+        if (statusCode < HttpURLConnection.HTTP_OK
+            || statusCode >= HttpURLConnection.HTTP_MULT_CHOICE) {
             if (retval != null) {
                 throw new PrintException(new String(retval.toString()));
             } else {

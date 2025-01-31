@@ -8,20 +8,14 @@
 
 package de.intevation.irix;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.HttpURLConnection;
-//import java.nio.charset.Charset;
+import java.net.URI;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 
 /**
  * Utility class to handle interaction for external images.
@@ -66,41 +60,27 @@ public class ImageClient {
     public static byte[] getImage(String imageUrl, int timeout)
         throws IOException, ImageException {
 
-        RequestConfig config = RequestConfig.custom().
-            setConnectTimeout(timeout).build();
+        HttpClient client = java.net.http.HttpClient.newHttpClient();
 
-        CloseableHttpClient client = HttpClients.custom().
-            setDefaultRequestConfig(config).build();
+        HttpRequest request = HttpRequest.newBuilder()
+            .GET()//for clarity, actually GET is the default
+            .uri(URI.create(imageUrl))
+            .timeout(Duration.ofMillis(timeout))
+            .build();
 
-        HttpGet get = new HttpGet(imageUrl);
-        CloseableHttpResponse resp = client.execute(get);
-
-        StatusLine status = resp.getStatusLine();
-
+        int statusCode = 0;
         byte[] retval = null;
         try {
-            HttpEntity respEnt = resp.getEntity();
-            InputStream in = respEnt.getContent();
-            if (in != null) {
-                try {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    byte[] buf = new byte[BYTE_ARRAY_SIZE];
-                    int r;
-                    while ((r = in.read(buf)) >= 0) {
-                        out.write(buf, 0, r);
-                    }
-                    retval = out.toByteArray();
-                } finally {
-                    in.close();
-                    EntityUtils.consume(respEnt);
-                }
-            }
-        } finally {
-            resp.close();
+            HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
+            statusCode = response.statusCode();
+            retval = response.body();
+        } catch (InterruptedException e) {
+            throw new ImageException("Communication with print service '"
+                                     + imageUrl + "' was interrupted.");
         }
 
-        if (status.getStatusCode() < HttpURLConnection.HTTP_OK
-            || status.getStatusCode() >= HttpURLConnection.HTTP_MULT_CHOICE) {
+        if (statusCode < HttpURLConnection.HTTP_OK
+            || statusCode >= HttpURLConnection.HTTP_MULT_CHOICE) {
             if (retval != null) {
                 throw new ImageException(new String(retval));
             } else {
