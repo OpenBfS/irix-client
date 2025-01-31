@@ -9,6 +9,8 @@
 package de.intevation.irix;
 import java.io.IOException;
 
+import static java.lang.System.Logger.Level.ERROR;
+
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -57,7 +59,7 @@ public class PrintClient {
      *
      * @param printUrl The url to send the request to.
      *
-     * @return byte[] with the report.
+     * @return JSONObject with the layouts.
      *
      * @throws IOException if communication with print service failed.
      * @throws PrintException if the print job failed.
@@ -116,7 +118,7 @@ public class PrintClient {
 
     /** Obtains printLayouts from mapfish-print service.
      *
-     * @param printUrl The url to send the request to..
+     * @param printUrl The url to send the request to.
      * @param timeout the timeout for the httpconnection.
      *
      * @return JSONObject with the layouts.
@@ -137,6 +139,7 @@ public class PrintClient {
 
         int statusCode = 0;
         JSONObject retval = null;
+        PrintException throwLater = null;
         try {
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
             statusCode = response.statusCode();
@@ -144,9 +147,17 @@ public class PrintClient {
         } catch (InterruptedException e) {
             throw new PrintException("Communication with print service '"
                                      + printUrl + "' was interrupted.");
-        } catch (IOException e) {
-            throw new PrintException("Response from print service could not be parsed as valid JSON: "
-                    + e);
+        } catch (IOException | org.json.JSONException e) {
+            String errMsg = "Response from print service could not be parsed as valid JSON "
+                + "(also check connection settings): " + e.getMessage();
+            log.log(ERROR, errMsg);
+            //throwing this here would hide our PrintException in Tomcats Stacktrace and
+            //only show a JSONException, making debugging harder and API callers believe
+            //that their JSON was wrong.
+            throwLater = new PrintException(errMsg);
+        }
+        if (throwLater != null) {
+            throw throwLater;
         }
 
         if (statusCode < HttpURLConnection.HTTP_OK

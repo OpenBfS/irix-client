@@ -9,6 +9,7 @@
  - remove dependency on Apache HttpClient (use java.net.http.HttpClient instead)
  - fix some tests and temporarily disable others
  - allow ; as separator in rolesHeaderString to support multiple roles from Shibboleth
+ - sensible errors when mapfish-print is not responding (was a misleading JSON error)
  - tested running with Java 11 and Java 21 (build version still 11)
 
 ### 3.0.0 *2023-10-24* (changes vs. 2.7.1)
