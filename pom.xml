@@ -4,7 +4,7 @@
     <groupId>de.bfs</groupId>
     <artifactId>irix-client</artifactId>
     <packaging>war</packaging>
-    <version>3.2.0</version>
+    <version>3.3-SNAPSHOT</version>
     <name>Application to create IRIX reports with map attachments</name>
     <url>http://maven.apache.org</url>
     <dependencies>
