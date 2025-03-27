@@ -2,6 +2,10 @@
 
 ## Version 3.x
 
+### 3.2 *2025-03-27*
+
+ - simplify RODOS attributes according to current Dokpool version
+
 ### 3.1 *2025-01-31*
 
  - jaxws, javax.xml.bind, jaxb to current versions (libs and plugins)
