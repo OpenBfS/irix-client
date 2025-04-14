@@ -102,6 +102,10 @@ public class IRIXClient extends HttpServlet {
      */
     protected String defaultBaseUrl;
     /**
+     * Timeout of http requests to the mapfish-print service in milliseconds.
+     */
+    protected int printTimeout;
+    /**
      * URL of irix-webservice upload service.
      */
     protected URL irixServiceUrl;
@@ -144,6 +148,12 @@ public class IRIXClient extends HttpServlet {
 
         if (defaultBaseUrl == null) {
             throw new ServletException("Missing 'print-url' parameter");
+        }
+
+        try {
+            printTimeout = Integer.parseUnsignedInt(getInitParameter("print-timeout-ms"));
+        } catch (NumberFormatException nfe) { //also handles null
+            printTimeout = PrintClient.CONNECTION_TIMEOUT;
         }
 
         legendSuffix = getInitParameter("legend-layout-suffix");
@@ -425,7 +435,7 @@ public class IRIXClient extends HttpServlet {
 
             String baseLayout = spec.getString("layout");
 
-            JSONObject printLayouts = PrintClient.getLayouts(printCapaUrl);
+            JSONObject printLayouts = PrintClient.getLayouts(printCapaUrl, printTimeout);
             List<String> printLayoutsList = new ArrayList<String>();
             if (printLayouts.has("layouts")) {
                 JSONArray printLayoutsArray = printLayouts
@@ -438,7 +448,7 @@ public class IRIXClient extends HttpServlet {
 
             if (printLayoutsList.contains(baseLayout)) {
                 byte[] content = PrintClient.getReport(printUrl + ".pdf",
-                        spec.toString());
+                        spec.toString(), printTimeout);
                 ReportUtils.attachFile(title + suffix, content, report,
                         "application/pdf", title + suffix + ".pdf");
             } else {
@@ -451,7 +461,7 @@ public class IRIXClient extends HttpServlet {
             if (printLayoutsList.contains(baseLayout + mapSuffix)) {
                 spec.put("layout", baseLayout + mapSuffix);
                 byte[] content = PrintClient.getReport(printUrl + ".png",
-                        spec.toString());
+                        spec.toString(), printTimeout);
                 ReportUtils.attachFile(title + mapSuffix + suffix, content,
                         report, "image/png", title + mapSuffix + suffix
                                 + ".png");
@@ -464,7 +474,7 @@ public class IRIXClient extends HttpServlet {
             if (printLayoutsList.contains(baseLayout + legendSuffix)) {
                 spec.put("layout", baseLayout + legendSuffix);
                 byte[] content = PrintClient.getReport(printUrl + ".png",
-                        spec.toString());
+                        spec.toString(), printTimeout);
                 ReportUtils.attachFile(title + legendSuffix + suffix, content,
                         report, "image/png",
                         title + legendSuffix + suffix + ".png"

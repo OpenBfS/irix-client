@@ -20,8 +20,12 @@
          <init-param>
              <param-name>print-url</param-name>
              <!-- Base URL of the mapfish-print service -->
-             <!--<param-value>http://localhost:8080/print/</param-value>-->
-             <param-value>http://test-docker-fr.lab.bfs.de:18086/bfs-printservice/print/</param-value>
+             <param-value>http://localhost:8080/print/</param-value>
+         </init-param>
+         <init-param>
+             <param-name>print-timeout-ms</param-name>
+             <!-- Timeout for http request to the mapfish-print service in milliseconds. -->
+             <param-value>5000</param-value>
          </init-param>
          <init-param>
              <!-- Suffix to add to the layout for map only output -->

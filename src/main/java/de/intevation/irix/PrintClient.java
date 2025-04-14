@@ -30,9 +30,10 @@ import java.time.Duration;
 public class PrintClient {
     private static System.Logger log = System.getLogger(PrintClient.class.getName());
 
-    private static final int CONNECTION_TIMEOUT = 5000;
-
-    private static final int BYTE_ARRAY_SIZE = 4096;
+    /**
+     * Default timeout in milliseconds.
+     */
+    protected static final int CONNECTION_TIMEOUT = 5000;
 
     private PrintClient() {
         // hidden constructor to avoid instantiation.
