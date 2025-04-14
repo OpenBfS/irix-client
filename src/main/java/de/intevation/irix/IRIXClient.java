@@ -100,7 +100,7 @@ public class IRIXClient extends HttpServlet {
     /**
      * Base URL of mapfish-print service.
      */
-    protected String baseUrl;
+    protected String defaultBaseUrl;
     /**
      * URL of irix-webservice upload service.
      */
@@ -140,9 +140,9 @@ public class IRIXClient extends HttpServlet {
      */
     @Override
     public void init() throws ServletException {
-        baseUrl = getInitParameter("print-url");
+        defaultBaseUrl = getInitParameter("print-url");
 
-        if (baseUrl == null) {
+        if (defaultBaseUrl == null) {
             throw new ServletException("Missing 'print-url' parameter");
         }
 
@@ -354,11 +354,12 @@ public class IRIXClient extends HttpServlet {
     /**
      * Helper method to print / attach the requested documents.
      *
-     * @param specs    A list of the json print specs.
-     * @param report   The report to attach the data to.
-     * @param printApp The printApp to use
-     * @param title    The title for the Annex
-     * @param baseurl  The baseurl to use as mapfish print endpoint
+     * @param specs          A list of the json print specs.
+     * @param report         The report to attach the data to.
+     * @param printApp       The printApp to use
+     * @param title          The title for the Annex
+     * @param commonBaseUrl  The baseurl to use as mapfish print endpoint for all specs.
+     *                       Print spec "baseurl" takes precedence if it exists.
      * @throws IOException    if a requested document could not be printed
      *                        because of Connection problems.
      * @throws PrintException it the print service returned an error.
@@ -368,15 +369,16 @@ public class IRIXClient extends HttpServlet {
             ReportType report,
             String printApp,
             String title,
-            String baseurl
+            String commonBaseUrl
     ) throws IOException, PrintException {
         int i = 1;
         String suffix = "";
-        String printUrl = baseUrl + "/" + printApp + "/buildreport";
-        String printCapaUrl = baseUrl + "/" + printApp + "/capabilities.json";
-        if (baseurl != "") {
-            printUrl = baseurl + "/" + printApp + "/buildreport";
-            printCapaUrl = baseurl + "/" + printApp + "/capabilities.json";
+        // baseurl precedence: print spec > common (report) url > default url
+        String printUrl = defaultBaseUrl + "/" + printApp + "/buildreport";
+        String printCapaUrl = defaultBaseUrl + "/" + printApp + "/capabilities.json";
+        if (commonBaseUrl != "") {
+            printUrl = commonBaseUrl + "/" + printApp + "/buildreport";
+            printCapaUrl = commonBaseUrl + "/" + printApp + "/capabilities.json";
         }
         for (JSONObject spec : specs) {
             if (specs.size() > 1) {
@@ -664,9 +666,9 @@ public class IRIXClient extends HttpServlet {
         }
 
         ReportType report = null;
-        String baseurl = "";
+        String reportBaseUrl = "";
         if (jsonObject.has("baseurl")) {
-            baseurl = jsonObject.getString("baseurl");
+            reportBaseUrl = jsonObject.getString("baseurl");
         }
         try {
             // FIXME do we have to send userJsonObject as well?
@@ -696,7 +698,7 @@ public class IRIXClient extends HttpServlet {
                             jsonObject.getString("printapp"),
                             jsonObject.getJSONObject("irix")
                                     .getString("Title"),
-                            baseurl);
+                            reportBaseUrl);
                 }
             }
         } catch (JSONException e) {
