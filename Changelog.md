@@ -2,11 +2,17 @@
 
 ## Version 3.x
 
-### 3.2 *2025-03-27*
+### 3.3.0 *2025-04-28*
+
+ - IRIX-Schema 2.8 (more liberal Doksys)
+ - The HTTP Timeout for Mapfish Print can be configured via
+   print-timeout-ms (see READMR.md).
+
+### 3.2.0 *2025-03-27*
 
  - simplify RODOS attributes according to current Dokpool version
 
-### 3.1 *2025-01-31*
+### 3.1.0 *2025-01-31*
 
  - jaxws, javax.xml.bind, jaxb to current versions (libs and plugins)
  - remove dependency on log4j (use System.Logger instead)

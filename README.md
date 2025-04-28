@@ -74,6 +74,9 @@ The WSDL URL of the irix-webservice needs to be configured in the pom.xml
   If this param is configured, irix-client uses the Header set in param-value as the users displayname. This value overrides User in irix to set PersonContactInfo in while processing IRIX.!
 - `<param-name>roles-permission</param-name>`
   If this param is configured, irix-client uses the roles set in param-value to check if the user is allowed to use this service by comparing it with the roles in roles-header. This configuration only makes sense, if roles-header is set as well.
+- `<param-name>print-timeout-ms</param-name>`
+  If this param is configured, irix-client tries for the given number of milliseconds to contact Mapfish Print and returns an error message if
+  the service does not answer within this time limit.
 
 ## Examples
 
