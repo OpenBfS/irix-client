@@ -19,15 +19,25 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.stream.Collectors;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 
 import jakarta.xml.bind.JAXBException;
+
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.handler.MessageContext;
 
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.ERROR;
@@ -57,6 +67,12 @@ public class IRIXClient extends HttpServlet {
     private static final int BUF_SIZE = 8192;
 
     /**
+     * Default timeout in milliseconds.
+     * Currently only used for WSDL file download.
+     */
+    protected static final int CONNECTION_TIMEOUT = 5000;
+
+    /**
      * The name of the json array containing the print descriptions.
      */
     private static final String PRINT_JOB_LIST_KEY = "mapfish-print";
@@ -67,6 +83,15 @@ public class IRIXClient extends HttpServlet {
     private static final String REQUEST_TYPE_UPLOAD = "upload";
     private static final String REQUEST_TYPE_RESPOND = "respond";
     private static final String REQUEST_TYPE_UPLOAD_RESPOND = "upload/respond";
+
+    /**
+     * AUTH_TYPE_NONE = "none".
+     */
+    protected static final String AUTH_TYPE_NONE = "none";
+    /**
+     * AUTH_TYPE_BASIC = "basic-auth".
+     */
+    protected static final String AUTH_TYPE_BASIC = "basic-auth";
 
     /**
      * Path to the irixSchema xsd file.
@@ -109,6 +134,21 @@ public class IRIXClient extends HttpServlet {
      * URL of irix-webservice upload service.
      */
     protected URL irixServiceUrl;
+    /**
+     * Location of the local temporary compy of the WSDL file.
+     */
+    protected String irixServiceWsdlTmp;
+     /**
+      * Authentication type of irix-webservice upload service.
+      * Currently: "none" or "basic-auth".
+      */
+    protected String irixServiceAuthType;
+    /**
+     * Authentication credential of irix-webservice upload service.
+     * For "basic-auth" this is the base64 encoded string passend after
+     * "Basic " in the HTTP Authentication header.
+     */
+    protected String irixServiceAuthCred;
     /**
      * String of Header username - e.g. set by Shibboleth
      */
@@ -178,6 +218,31 @@ public class IRIXClient extends HttpServlet {
         } catch (MalformedURLException e) {
             throw new ServletException(
                     "Bad configuration value for: irix-webservice-url", e);
+        }
+
+        irixServiceWsdlTmp = getInitParameter("irix-webservice-wsdl-tmpfile");
+        if (irixServiceWsdlTmp == null) {
+            irixServiceWsdlTmp = "/tmp/upload-report.wsdl";
+        }
+
+        irixServiceAuthType = getInitParameter("irix-webservice-auth-type");
+        if (irixServiceAuthType == null) {
+            irixServiceAuthType = AUTH_TYPE_NONE;
+        }
+        switch (irixServiceAuthType) {
+            case AUTH_TYPE_NONE:
+            case AUTH_TYPE_BASIC:
+                break;
+
+            default:
+                throw new ServletException(
+                    "Unknown 'irix-webservice-auth-type' parameter.");
+        }
+
+        irixServiceAuthCred = getInitParameter("irix-webservice-auth-cred");
+        if (irixServiceAuthCred == null && !irixServiceAuthType.equals(AUTH_TYPE_NONE)) {
+            throw new ServletException(
+                    "All authentication types except 'none' require the 'irix-webservice-auth-cred' parameter.");
         }
 
         userHeaderString = getInitParameter("user-header");
@@ -558,6 +623,31 @@ public class IRIXClient extends HttpServlet {
         }
     }
 
+    private void fetchWSDL() throws ServletException {
+        HttpClient client = java.net.http.HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Authorization", "Basic " + irixServiceAuthCred)
+            .GET()
+            .uri(URI.create(irixServiceUrl.toString() + "?wsdl"))
+            .timeout(Duration.ofMillis(CONNECTION_TIMEOUT))
+            .build();
+
+        int statusCode = 0;
+        try {
+            HttpResponse<Path> response = client.send(request,
+                HttpResponse.BodyHandlers.ofFile(Path.of(irixServiceWsdlTmp)));
+            statusCode = response.statusCode();
+        } catch (InterruptedException | IOException e) {
+            throw new ServletException("WSDL could be downloaded.");
+        }
+
+        if (statusCode < HttpURLConnection.HTTP_OK
+            || statusCode >= HttpURLConnection.HTTP_MULT_CHOICE) {
+            throw new ServletException("WSDL could be downloaded.");
+        }
+
+    }
+
     /**
      * Sends a report to the configured UploadReport service.
      *
@@ -566,11 +656,32 @@ public class IRIXClient extends HttpServlet {
      */
     protected void sendReportToService(ReportType report)
             throws ServletException {
-        //FIXME how to handle authentication headers from original request??
-        UploadReportService service = new UploadReportService(irixServiceUrl);
+        //FIXME how pass on authentication headers from original request??
+
+        fetchWSDL();
+        URL wsdlUrl = null;
+        try {
+            wsdlUrl = new URL("file://" + irixServiceWsdlTmp);
+        } catch (MalformedURLException e) {
+        }
+
+        UploadReportService service = new UploadReportService(wsdlUrl);
         UploadReportInterface irixservice = service.getUploadReportPort();
 
-        // TODO Add HTTP headers to the web service request
+        // TODO Add further HTTP headers to the web service request?
+
+        switch (irixServiceAuthType) {
+            case AUTH_TYPE_BASIC:
+                Map<String, Object> reqCon = ((BindingProvider) irixservice).getRequestContext();
+                //TODO: This line seems to override the endpoint (e.g. host, port) found in the wsdl file.
+                //This is usually good, because bad proxy configurations cannot break the
+                //communication, but it also obstructs intentional changes to urls via wsdl file.
+                reqCon.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, irixServiceUrl.toString());
+                reqCon.put(MessageContext.HTTP_REQUEST_HEADERS, Map.of("Authorization",
+                    List.of("Basic " + irixServiceAuthCred)));
+            default:
+                break;
+        }
 
         log.log(DEBUG, "Sending report.");
         try {
