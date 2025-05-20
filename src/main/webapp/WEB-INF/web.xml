@@ -25,9 +25,15 @@
          </init-param>
          <init-param>
              <param-name>irix-webservice-auth-cred</param-name>
-             <!-- Authentication credentials  -->
+             <!-- Authentication credentials -->
              <!-- For basic-auth this is a base64 encoded string "user:password"  -->
              <param-value>dXNlcjpwYXNzd29yZA==</param-value>
+         </init-param>
+         <init-param>
+            <param-name>irix-webservice-wsdl-tmpfile</param-name>
+            <!-- Location of the local copy of the upload-report.wsdl. -->
+            <!-- Default: -->
+            <param-value>/tmp/upload-report.wsdl</param-value>
          </init-param>
          <init-param>
              <param-name>print-url</param-name>

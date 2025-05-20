@@ -135,7 +135,7 @@ public class IRIXClient extends HttpServlet {
      */
     protected URL irixServiceUrl;
     /**
-     * Location of the local temporary compy of the WSDL file.
+     * Location of the local temporary copy of the WSDL file.
      */
     protected String irixServiceWsdlTmp;
      /**
