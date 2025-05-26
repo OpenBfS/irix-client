@@ -2,6 +2,10 @@
 
 ## Version 3.x
 
+### 3.3.1 *2025-05-26*
+
+ - The client can now reach the webservice behind HTTP BasicAuthentication.
+
 ### 3.3.0 *2025-04-28*
 
  - IRIX-Schema 2.8 (more liberal Doksys)
