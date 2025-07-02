@@ -687,8 +687,12 @@ public class IRIXClient extends HttpServlet {
         try {
             irixservice.uploadReport(report);
         } catch (UploadReportException_Exception e) {
+            //getFaultInfo is UploadReportException
+            //this class does not inherit from Exception and is not Throwable
+            String origMsg = e.getFaultInfo().getMessage();
             throw new ServletException(
-                    "Failed to send report to IRIX service.", e);
+                    "Failed to send report to IRIX service.\n"
+                    + "Reason: " + origMsg, e);
         }
         log.log(DEBUG, "Report successfully sent.");
     }
