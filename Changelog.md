@@ -2,6 +2,10 @@
 
 ## Version 3.x
 
+### 3.3.2 *2025-07-23*
+
+ - Pass on errors from the webservice.
+
 ### 3.3.1 *2025-05-26*
 
  - The client can now reach the webservice behind HTTP BasicAuthentication.
