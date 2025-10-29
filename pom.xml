@@ -22,7 +22,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20250107</version>
+            <version>20250517</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.ws</groupId>
@@ -48,12 +48,12 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>4.0.5</version>
+            <version>4.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.5</version>
+            <version>4.0.6</version>
         </dependency>
     </dependencies>
     <build>
@@ -165,7 +165,7 @@
                 <dependency>
                     <groupId>jakarta.xml.bind</groupId>
                     <artifactId>jakarta.xml.bind-api</artifactId>
-                    <version>4.0.2</version>
+                    <version>4.0.4</version>
                     <exclusions>
                         <exclusion>
                             <groupId>javax.transaction</groupId>
@@ -208,7 +208,7 @@
 	        <plugin>
 		        <groupId>org.owasp</groupId>
 		        <artifactId>dependency-check-maven</artifactId>
-		        <version>8.4.0</version>
+		        <version>12.1.8</version>
 		        <executions>
 		            <execution>
 			            <goals>

@@ -2,6 +2,12 @@
 
 ## Version 3.x
 
+### 3.3.3 *2025-10-29*
+
+ - bump dependencies (jakarta.xml.bind, jaxb, org.json)
+ - bump dependency-check-maven version to 12.1.8
+ - because of this, the minimal maven version is now 3.6.3
+
 ### 3.3.2 *2025-07-23*
 
  - Pass on errors from the webservice.
