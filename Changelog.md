@@ -2,6 +2,11 @@
 
 ## Version 3.x
 
+### 3.3.4 *2026-02-16*
+
+ - bump dependencies (jakarta.xml.bind, org.json)
+ - specify version of war plugin
+
 ### 3.3.3 *2025-10-29*
 
  - bump dependencies (jakarta.xml.bind, jaxb, org.json)
