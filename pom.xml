@@ -235,7 +235,7 @@
         </plugins>
     </build>
     <properties>
-        <project.custom.java.version>11</project.custom.java.version>
+        <project.custom.java.version>25</project.custom.java.version>
         <maven.compiler.source>${project.custom.java.version}</maven.compiler.source>
         <maven.compiler.target>${project.custom.java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
