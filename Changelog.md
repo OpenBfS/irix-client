@@ -2,6 +2,10 @@
 
 ## Version 3.x
 
+### 3.4.1 *2026-06-23*
+
+ - bump dependencies (jaxws-rt, jakarta.xml.ws-api, org.glassfish.jaxb, org.json)
+
 ### 3.4.0 *2026-04-17*
 
  - move to Java 25
