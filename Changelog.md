@@ -2,6 +2,11 @@
 
 ## Version 3.x
 
+
+### 3.4.2 *2026-11-10*
+
+ - bump dependency org.json
+
 ### 3.4.1 *2026-06-23*
 
  - bump dependencies (jaxws-rt, jakarta.xml.ws-api, org.glassfish.jaxb, org.json)
